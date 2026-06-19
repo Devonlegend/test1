@@ -46,7 +46,7 @@ if not SECRET_KEY:
         raise RuntimeError('SECRET_KEY environment variable is required when DEBUG is off.')
 
 # Comma-separated list, e.g. ALLOWED_HOSTS=api.example.com,example.com
-ALLOWED_HOSTS = _env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1', 'test1-1-7bou.onrender.com' if DEBUG else '')
+ALLOWED_HOSTS = _env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1' if DEBUG else '')
 
 
 # Application definition
