@@ -1,0 +1,814 @@
+/* ─── BASE ─────────────────────────────────────────────────────────────── */
+.page {
+  min-height: 100vh;
+  background: #f4f6f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.main {
+  width: 100%;
+  max-width: 560px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e8ecf0;
+  border-radius: 24px;
+  padding: 40px 40px;
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.04),
+    0 8px 32px rgba(0,0,0,0.06),
+    0 24px 64px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ─── LOGO ──────────────────────────────────────────────────────────────── */
+.logoWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logoBox {
+  width: 38px;
+  height: 38px;
+  background: #15803d;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(21,128,61,0.25);
+}
+
+.logoLetter {
+  color: #fbbf24;
+  font-weight: 800;
+  font-size: 17px;
+}
+
+.logoText {
+  display: flex;
+  flex-direction: column;
+}
+
+.logoName {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.logoSub {
+  font-size: 9px;
+  font-weight: 600;
+  color: #15803d;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ─── HEADER ────────────────────────────────────────────────────────────── */
+.cardHeader {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.cardTitle {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+}
+
+.cardSubtitle {
+  font-size: 14px;
+  color: #94a3b8;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* ─── SIGN IN TOP ───────────────────────────────────────────────────────── */
+.signinTop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.signinTopLink {
+  color: #15803d;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.signinTopLink:hover { color: #166534; }
+
+/* ─── SECTION LABEL — NO GREEN BACKGROUND ──────────────────────────────── */
+/* Removed the rgba(21,128,61,0.06) background. Clean, minimal label. */
+.sectionLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sectionLabel::before {
+  content: '';
+  display: block;
+  width: 14px;
+  height: 2px;
+  background: #15803d;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.sectionLabel::after {
+  content: '';
+  display: block;
+  flex: 1;
+  height: 1px;
+  background: #f1f5f9;
+}
+
+/* ─── FORM ──────────────────────────────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  left: 12px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.inputIconRight {
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.input {
+  width: 100%;
+  font-size: 14px;
+  color: #0f172a;
+  background: #fafbfc;
+  border: 1.5px solid #e8ecf0;
+  border-radius: 10px;
+  padding: 10px 12px 10px 36px;
+  outline: none;
+  transition: all 0.18s ease;
+}
+
+.input:focus {
+  border-color: #15803d;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(21,128,61,0.08);
+}
+
+.input::placeholder { color: #c8d0da; }
+
+.inputPadRight {
+  padding-left: 12px;
+  padding-right: 38px;
+}
+
+/* ─── API ERROR ──────────────────────────────────────────────────────────── */
+.apiBanner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #dc2626;
+  font-weight: 500;
+}
+
+/* ─── DATE INPUT ─────────────────────────────────────────────────────────── */
+.inputDate {
+  padding-left: 36px;
+  padding-right: 12px;
+  color-scheme: light;
+  min-width: 0;
+}
+
+.inputDate::-webkit-calendar-picker-indicator { display: none; }
+.inputDate::-webkit-inner-spin-button { display: none; }
+.inputDate::-webkit-date-and-time-value { text-align: left; margin-left: 0; }
+.inputError { border-color: #ef4444 !important; }
+
+/* ─── SELECT ─────────────────────────────────────────────────────────────── */
+.select {
+  width: 100%;
+  font-size: 14px;
+  color: #0f172a;
+  background: #fafbfc;
+  border: 1.5px solid #e8ecf0;
+  border-radius: 10px;
+  padding: 10px 36px 10px 12px;
+  outline: none;
+  transition: all 0.18s ease;
+  appearance: none;
+  cursor: pointer;
+}
+
+.select:invalid,
+.select option[value=""] { color: #c8d0da; }
+.select:not([value=""]) { color: #0f172a; }
+.select option[value=""] { color: #c8d0da; }
+.select option:not([value=""]) { color: #0f172a; }
+.selectPadLeft { padding-left: 36px; }
+
+.select:focus {
+  border-color: #15803d;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(21,128,61,0.08);
+}
+
+.eyeBtn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  z-index: 1;
+}
+
+.ninCount {
+  position: absolute;
+  right: 12px;
+  font-size: 10px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.error {
+  font-size: 12px;
+  font-weight: 500;
+  color: #ef4444;
+}
+
+.hint {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.matchHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #15803d;
+  font-weight: 500;
+}
+
+/* ─── PASSWORD STRENGTH ──────────────────────────────────────────────────── */
+.strengthWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.strengthRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.strengthBars {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex: 1;
+}
+
+.strengthBar {
+  flex: 1;
+  height: 3px;
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.strengthLabel {
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 40px;
+}
+
+.checkList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.checkItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #94a3b8;
+  transition: color 0.2s;
+}
+
+/* ─── TERMS — NO GREEN BACKGROUND ──────────────────────────────────────── */
+/* Removed #f0fdf4 / #bbf7d0 — clean neutral */
+.terms {
+  background: #f8fafc;
+  border: 1px solid #e8ecf0;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.termsText {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #64748b;
+}
+
+.termsLink {
+  color: #15803d;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ─── SUBMIT BUTTON — MODERN LOADING ────────────────────────────────────── */
+.submitBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  background: #15803d;
+  border: none;
+  border-radius: 11px;
+  padding: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(21,128,61,0.22);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: -0.01em;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: #166534;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(21,128,61,0.32);
+}
+
+.submitBtn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Modern spinner */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── DIVIDER ────────────────────────────────────────────────────────────── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: #e8ecf0;
+}
+
+.dividerText {
+  font-size: 12px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+/* ─── SIGN IN BUTTON ─────────────────────────────────────────────────────── */
+.signinBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  font-size: 15px;
+  font-weight: 700;
+  color: #15803d;
+  background: transparent;
+  border: 1.5px solid #d1fae5;
+  border-radius: 11px;
+  padding: 13px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  background: #f0fdf4;
+  letter-spacing: -0.01em;
+}
+
+.signinBtn:hover {
+  background: #dcfce7;
+  border-color: #bbf7d0;
+}
+
+/* ─── BOTTOM BADGE ───────────────────────────────────────────────────────── */
+.bottomBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* ─── SUCCESS ────────────────────────────────────────────────────────────── */
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 20px 0;
+}
+
+.successIconWrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 20px;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.successTitle {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+}
+
+.successDesc {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #64748b;
+  max-width: 300px;
+}
+
+.successBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #15803d;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 12px 28px;
+  border-radius: 10px;
+  text-decoration: none;
+  margin-top: 8px;
+  transition: all 0.2s ease;
+}
+
+.successBtn:hover { background: #166534; }
+
+.successBack {
+  font-size: 13px;
+  color: #94a3b8;
+  text-decoration: none;
+}
+
+/* ─── UPLOAD ─────────────────────────────────────────────────────────────── */
+.uploadArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1.5px dashed #d1d9e0;
+  border-radius: 10px;
+  padding: 22px 16px;
+  background: #fafbfc;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.uploadArea:hover {
+  border-color: #15803d;
+  background: #f0fdf4;
+}
+
+.uploadTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.uploadHint {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+/* ─── FILE PREVIEW ───────────────────────────────────────────────────────── */
+.filePreview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.fileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.fileName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fileSize {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.fileRemove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.fileRemove:hover { background: #fee2e2; }
+
+/* ─── OTP — MODERN, EMAIL ONLY ───────────────────────────────────────────── */
+/* Clean OTP screen inspired by reference screenshot */
+.otpScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.otpIconRing {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #f0fdf4;
+  border: 1.5px solid #d1fae5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.otpTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.03em;
+}
+
+.otpSubtitle {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+.otpEmailBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-top: 2px;
+}
+
+.otpWrap {
+  display: flex;
+  gap: clamp(6px, 2vw, 10px);
+  justify-content: center;
+  width: 100%;
+  margin: 8px 0 4px;
+}
+
+.otpInput {
+  flex: 1;
+  min-width: 0;
+  max-width: 52px;
+  aspect-ratio: 1 / 1.1;
+  text-align: center;
+  font-size: clamp(18px, 5vw, 24px);
+  font-weight: 800;
+  color: #0f172a;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  outline: none;
+  transition: all 0.18s ease;
+  padding: 0;
+  -webkit-appearance: none;
+  caret-color: #15803d;
+  letter-spacing: -0.02em;
+}
+
+.otpInput:focus {
+  border-color: #15803d;
+  border-width: 2px;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(21,128,61,0.1);
+}
+
+.otpInput.inputError {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.otpResendRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* ─── RESEND BUTTON ──────────────────────────────────────────────────────── */
+.resendBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: #15803d;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.resendBtn:hover { color: #166534; }
+.resendBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ─── VERIFY TOGGLE — kept for completeness but phone hidden ─────────────── */
+.verifyToggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.verifyToggleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.verifyToggleBtn:hover {
+  border-color: #15803d;
+  color: #15803d;
+}
+
+.verifyToggleActive {
+  background: #f0fdf4;
+  border-color: #15803d;
+  color: #15803d;
+}
+
+/* ─── PASSPORT CAPTURE — MODERN, COMPACT ────────────────────────────────── */
+/* These classes are used by PassportCapture component if it reads from CSS vars.
+   Kept here as utility overrides if needed. */
+.passportWrap {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid #e8ecf0;
+  background: #0f172a;
+  position: relative;
+  /* Compact — not full-bleed */
+  max-height: 260px;
+  aspect-ratio: 4/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.passportWrap video,
+.passportWrap canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .card { padding: 24px 18px; }
+  .row { grid-template-columns: 1fr; }
+  .input { font-size: 16px; }
+}

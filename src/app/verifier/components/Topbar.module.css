@@ -1,0 +1,339 @@
+/* ══════════════════════════════════════════════
+   ADMIN TOPBAR — RMHCDT Admin Portal
+══════════════════════════════════════════════ */
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 70px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 0 16px;
+  gap: 12px;
+}
+
+/* ── LEFT ── */
+.left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Hamburger — always flex, hidden on desktop via visibility */
+.menuBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+  visibility: hidden; /* hidden on desktop */
+}
+
+.menuBtn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+/* ── RIGHT ── */
+.right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Separator */
+.sep {
+  width: 1px;
+  height: 20px;
+  background: #e2e8f0;
+  margin: 0 6px;
+}
+
+/* ── SEARCH ── */
+.searchWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  padding: 0 12px;
+  height: 34px;
+  width: 200px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.searchWrap:focus-within {
+  border-color: #15803d;
+  box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.08);
+}
+
+.searchIcon {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.searchInput::placeholder {
+  color: #cbd5e1;
+}
+
+/* Mobile search icon button — hidden on desktop */
+.searchIconBtn {
+  display: none;
+}
+
+/* ── AVATAR DROPDOWN ── */
+.avatarWrap { position: relative; }
+
+.avatarBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 4px;
+  border-radius: 50px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.avatarBtn:hover {
+  background: #f0fdf4;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #15803d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.avatarInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
+}
+
+.avatarName {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.avatarRole {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.chevron {
+  color: #94a3b8;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.chevronOpen { transform: rotate(180deg); }
+
+/* Avatar dropdown panel */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  z-index: 100;
+}
+
+.dropHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.dropAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #15803d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.dropName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.dropEmail {
+  font-size: 11.5px;
+  color: #94a3b8;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+}
+
+.dropRoleBadge {
+  display: none;
+}
+
+.dropDivider {
+  height: 1px;
+  background: #f1f5f9;
+}
+
+.dropItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  text-decoration: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.dropItem:hover { background: #f8fafc; }
+
+.dropLogout { color: #ef4444; }
+.dropLogout:hover { background: #fef2f2; }
+
+/* ══════════════════════════════════════════════
+   MOBILE
+══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Show hamburger on mobile */
+  .menuBtn {
+    visibility: visible;
+  }
+
+  .avatarInfo {
+    display: none;
+  }
+
+  .chevron {
+    display: none;
+  }
+
+  .dropdown {
+    right: 0;
+  }
+
+  /* Search — collapse to bordered icon on mobile */
+  .searchWrap {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .searchIcon {
+    display: none;
+  }
+
+  .searchInput {
+    display: none;
+  }
+
+  .searchIconBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    color: #64748b;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* Search open state — expands full width across topbar */
+  .searchWrapOpen {
+    position: fixed;
+    top: 18px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    height: 38px;
+    padding: 0 12px;
+    background: #ffffff;
+    border: 1.5px solid #15803d;
+    border-radius: 9px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    z-index: 200;
+    overflow: visible;
+  }
+
+  .searchWrapOpen .searchIcon {
+    display: flex;
+    color: #15803d;
+  }
+
+  .searchWrapOpen .searchInput {
+    display: flex;
+  }
+
+  .searchWrapOpen .searchIconBtn {
+    display: none;
+  }
+
+}
