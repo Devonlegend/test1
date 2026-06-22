@@ -36,18 +36,3 @@ export const forgotPasswordReset = (body) =>
 
 export const getAuditLogs = () =>
   api.get("/audit/");
-
-export const getAdminUsers = () =>
-  api.get("/auth/admin-users/");
-
-export const createAdminUser = (body) =>
-  api.post("/auth/admin-users/create/", body);
-
-export const updateUserRole = (id, body) =>
-  api.patch(`/auth/admin-users/${id}/role/`, body);
-
-export const deactivateUser = (id) =>
-  api.patch(`/auth/admin-users/${id}/deactivate/`);
-
-export const reactivateUser = (id) =>
-  api.patch(`/auth/admin-users/${id}/reactivate/`);

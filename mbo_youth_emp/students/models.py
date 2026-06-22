@@ -26,7 +26,7 @@ class Student(models.Model):
     level = models.IntegerField(null=True, blank=True)
     is_verified = models.BooleanField(default=True)
     active_award = models.CharField(max_length=300, blank=True)
-    nin_hash = models.CharField(max_length=20, blank=True, default='')
+    nin_hash = models.CharField(max_length=64, blank=True, default='')
     lga = models.CharField(max_length=80, blank=True)
     passport = models.FileField(null=True, blank=True)
     ward        = models.CharField(max_length=40, blank=True)

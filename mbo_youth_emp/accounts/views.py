@@ -1,9 +1,10 @@
-import logging
+﻿import logging
 import secrets
 from datetime import timedelta
 
 from django.conf import settings
-from django.db import transaction
+from django.core.exceptions import ValidationError
+from django.db import transaction, IntegrityError
 from django.db.models import F
 from django.utils import timezone
 from rest_framework import status
@@ -22,12 +23,13 @@ from .authentication import ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME
 from .services import ApiException, send_otp_email, send_password_reset_email
 from .validators import validate_upload, FileValidationError
 from .throttles import OTPThrottle, AuthThrottle
+from .utils import hash_nin
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
 
-# ──────────────────────────── cookie helpers ────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ cookie helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _cookie_flags():
     """Resolve secure/samesite from settings, with sane DEBUG defaults."""
@@ -68,14 +70,14 @@ def _clear_jwt_cookies(response):
     response.delete_cookie(REFRESH_COOKIE_NAME, path='/')
 
 
-# ──────────────────────────── endpoints ────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ endpoints â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 @extend_schema(
     summary="Register a new account",
     description=(
         "Creates a User + Student (multipart/form-data for the passport/certificate "
-        "files). NIN must be pre-hashed client-side. Does NOT log in — the client "
-        "must complete the OTP flow next."
+        "files). Send the raw 11-digit NIN; it is hashed server-side and only the hash "
+        "is stored. Does NOT log in â€” the client must complete the OTP flow next."
     ),
     request=inline_serializer(
         name='RegisterRequest',
@@ -85,7 +87,7 @@ def _clear_jwt_cookies(response):
             'lastname': drf_serializers.CharField(),
             'phone_number': drf_serializers.CharField(),
             'password': drf_serializers.CharField(),
-            'nin_hash': drf_serializers.CharField(),
+            'nin': drf_serializers.CharField(),
             'date_of_birth': drf_serializers.DateField(required=False),
             'gender': drf_serializers.CharField(required=False),
             'ward': drf_serializers.CharField(required=False),
@@ -102,9 +104,11 @@ def _clear_jwt_cookies(response):
 def register(request):
     """
     POST /auth/register/
-    Body: { email, firstname, lastname, phone_number, password, nin_hash,
+    Body: { email, firstname, lastname, phone_number, password, nin,
             date_of_birth?, ward?, gender?, lga?, passport?, certificate? }
 
+    `nin` is the raw 11-digit NIN; it is hashed server-side (accounts.utils.hash_nin)
+    and only the hash is stored â€” the raw NIN never touches the database.
     Every registered user is also created as a Student (multi-table inheritance),
     so request.user.student_profile is always available after registration.
     On success, JWTs are set as httpOnly cookies (access_token, refresh_token).
@@ -115,15 +119,22 @@ def register(request):
     phone_number = request.data.get('phone_number')
     password     = request.data.get('password')
     date_of_birth = request.data.get('date_of_birth')
-    nin_hash     = request.data.get('nin_hash')
+    nin          = request.data.get('nin')
     ward         = request.data.get('ward', '')
     gender       = request.data.get('gender')
     lga          = request.data.get('lga', '')
     passport    = request.FILES.get('passport')
     certificate = request.FILES.get('certificate')
 
-    if not all([email, firstname, lastname, phone_number, password, nin_hash]):
+    if not all([email, firstname, lastname, phone_number, password, nin]):
         return Response({"error": "All fields are required"},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    # Hash the NIN server-side so the client can't forge or pre-collide it.
+    try:
+        nin_hash = hash_nin(nin)
+    except ValueError:
+        return Response({"error": "Enter a valid 11-digit NIN"},
                         status=status.HTTP_400_BAD_REQUEST)
 
     try:
@@ -135,42 +146,53 @@ def register(request):
     if User.objects.filter(email=email).exists():
         return Response({"error": "Email already registered"},
                         status=status.HTTP_400_BAD_REQUEST)
+    # Friendly pre-check for a nicer message; the unique constraint on nin_hash is the
+    # real guard against the concurrent-registration race (handled below).
     if User.objects.filter(nin_hash=nin_hash).exists():
-        return Response({"error": "NIN already in use"},
+        return Response({"error": "NIN already in use", "code": "nin_taken"},
                         status=status.HTTP_400_BAD_REQUEST)
 
     # Every self-registered user is initially a Student. Role is forced here
     # (ignoring any client-supplied role) so privileged roles can't be claimed
-    # via the public endpoint — admins promote users to other roles later.
+    # via the public endpoint â€” admins promote users to other roles later.
     # User and Student are created together in a transaction so the registered
     # user always has a matching student row keyed by the same UUID.
-    with transaction.atomic():
-        user = User.objects.create_user(
-            email=email,
-            phone_number=phone_number,
-            role=Role.STUDENT,
-            password=password,
-            firstname=firstname,
-            lastname=lastname,
-            nin_hash=nin_hash,
-            date_of_birth=date_of_birth,
-            gender=gender,
-            passport=passport,
-        )
-        Student.objects.create(
-            user=user,
-            firstname=firstname,
-            lastname=lastname,
-            ward=ward or '',
-            lga=lga or '',
-            date_of_birth=date_of_birth,
-            nin_hash=nin_hash,
-            passport=passport,
-            certificate=certificate
-        )
+    try:
+        with transaction.atomic():
+            user = User.objects.create_user(
+                email=email,
+                phone_number=phone_number,
+                role=Role.STUDENT,
+                password=password,
+                firstname=firstname,
+                lastname=lastname,
+                nin_hash=nin_hash,
+                date_of_birth=date_of_birth,
+                gender=gender,
+                passport=passport,
+            )
+            Student.objects.create(
+                user=user,
+                firstname=firstname,
+                lastname=lastname,
+                ward=ward or '',
+                lga=lga or '',
+                date_of_birth=date_of_birth,
+                nin_hash=nin_hash,
+                passport=passport,
+                certificate=certificate
+            )
+    except IntegrityError:
+        # Lost the race to another concurrent registration with the same NIN
+        # (or email/phone). Surface the NIN case with the same friendly code.
+        if User.objects.filter(nin_hash=nin_hash).exists():
+            return Response({"error": "NIN already in use", "code": "nin_taken"},
+                            status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "Account already exists"},
+                        status=status.HTTP_400_BAD_REQUEST)
 
-    # No JWT cookies here — the client must complete the OTP flow
-    # (/auth/otp/send/ → /auth/otp/verify/) before being logged in.
+    # No JWT cookies here â€” the client must complete the OTP flow
+    # (/auth/otp/send/ â†’ /auth/otp/verify/) before being logged in.
     return Response(
         {"message": "Account created. Please verify your email.", "email": user.email},
         status=status.HTTP_201_CREATED,
@@ -213,7 +235,7 @@ def login(request):
     return Response({"otp_required": True, "email": user.email})
 
 
-# ──────────────────────────── OTP ────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ OTP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _generate_code() -> str:
     """Cryptographically-random 6-digit code, zero-padded."""
@@ -281,7 +303,7 @@ def _issue_otp(email):
 @extend_schema(
     summary="Send login/verification OTP",
     request=inline_serializer(name='OtpSendRequest', fields={'email': drf_serializers.EmailField()}),
-    responses=OpenApiResponse(description='{ message } — or 429 { error, retry_after_seconds } during cooldown.'),
+    responses=OpenApiResponse(description='{ message } â€” or 429 { error, retry_after_seconds } during cooldown.'),
 )
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -297,7 +319,7 @@ def otp_send(request):
 @extend_schema(
     summary="Resend login/verification OTP",
     request=inline_serializer(name='OtpResendRequest', fields={'email': drf_serializers.EmailField()}),
-    responses=OpenApiResponse(description='{ message } — or 429 { error, retry_after_seconds } during cooldown.'),
+    responses=OpenApiResponse(description='{ message } â€” or 429 { error, retry_after_seconds } during cooldown.'),
 )
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -311,7 +333,7 @@ def otp_resend(request):
 
 
 @extend_schema(
-    summary="Verify OTP (step 2 of 2 — sets cookies)",
+    summary="Verify OTP (step 2 of 2 â€” sets cookies)",
     description='On success marks the email verified and sets the httpOnly JWT cookies.',
     request=inline_serializer(
         name='OtpVerifyRequest',
@@ -376,7 +398,7 @@ def otp_verify(request):
     return response
 
 
-# ──────────────────────────── identity ────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ identity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 @extend_schema(
     summary="Current user identity",
@@ -385,7 +407,7 @@ def otp_verify(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def me(request):
-    """GET /auth/me/ — who am I?"""
+    """GET /auth/me/ â€” who am I?"""
     passport_url =request.user.passport.url if request.user.passport else None
     return Response({
         "id":           str(request.user.id),
@@ -453,7 +475,7 @@ def logout(request):
     return response
 
 
-# ──────────────────────────── password reset ────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ password reset â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 # Generic message returned by request/verify/confirm so an attacker can't probe
 # which emails are registered.
@@ -478,7 +500,7 @@ def password_reset_request(request):
     """
     email = (request.data.get('email') or '').strip().lower()
     if not email:
-        # Even bad input gets the generic response — no info leak.
+        # Even bad input gets the generic response â€” no info leak.
         return Response(_RESET_GENERIC_OK)
 
     try:
@@ -555,7 +577,7 @@ def _find_valid_reset_otp(email, code):
 
 @extend_schema(
     summary="Verify a password reset code",
-    description='Validates the code without consuming it — gates the "enter new password" step.',
+    description='Validates the code without consuming it â€” gates the "enter new password" step.',
     request=inline_serializer(
         name='PasswordResetVerify',
         fields={'email': drf_serializers.EmailField(), 'code': drf_serializers.CharField()},
@@ -569,7 +591,7 @@ def password_reset_verify(request):
     """
     POST /auth/password/reset/verify/  Body: { email, code }
 
-    Validates the OTP without consuming it — the client uses this to gate the
+    Validates the OTP without consuming it â€” the client uses this to gate the
     "enter new password" step before calling confirm.
     """
     otp, err, http_status = _find_valid_reset_otp(

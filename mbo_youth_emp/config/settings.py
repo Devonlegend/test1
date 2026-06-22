@@ -45,6 +45,12 @@ if not SECRET_KEY:
     else:
         raise RuntimeError('SECRET_KEY environment variable is required when DEBUG is off.')
 
+# Secret "pepper" mixed into the NIN hash before SHA-256 (see accounts.utils.hash_nin).
+# An 11-digit NIN has a tiny keyspace, so a server-only pepper is what makes the stored
+# hash resistant to offline brute force. Defaults to SECRET_KEY so dev works out of the box;
+# set NIN_HASH_PEPPER independently in production so rotating one doesn't affect the other.
+NIN_HASH_PEPPER = os.getenv('NIN_HASH_PEPPER', SECRET_KEY)
+
 # Comma-separated list, e.g. ALLOWED_HOSTS=api.example.com,example.com
 ALLOWED_HOSTS = _env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1' if DEBUG else '')
 

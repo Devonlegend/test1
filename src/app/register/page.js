@@ -174,11 +174,9 @@ function handleCertificateChange(e) {
       formData.append("email", form.email);
       formData.append("phone_number", form.phone);
 
-      // nin hashed
-      const ninBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(form.nin));
-      const fullHash = Array.from(new Uint8Array(ninBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
-      const ninHash = fullHash.slice(0, 20);
-      formData.append("nin_hash", ninHash);
+      // Send the raw NIN over HTTPS; the backend hashes it (with a server-side pepper)
+      // and only ever stores the hash.
+      formData.append("nin", form.nin);
 
       formData.append("date_of_birth", form.dob);
       formData.append("gender", form.gender);
@@ -194,11 +192,21 @@ function handleCertificateChange(e) {
       setStep("verify");
       startCountdown();
     } catch (err) {
-      setApiError(
-        err?.response?.data?.error ||
-        err?.response?.data?.message ||
-        "Something went wrong. Please try again."
-      );
+      const data = err?.response?.data;
+      if (data?.code === "nin_taken" || data?.error === "NIN already in use") {
+        // Someone already registered with this NIN. Direct the user to support so
+        // ownership can be verified with their physical NIN slip.
+        setApiError(
+          "This NIN is already registered. If this wasn't you, please contact support " +
+          "with your NIN slip so we can verify ownership."
+        );
+      } else {
+        setApiError(
+          data?.error ||
+          data?.message ||
+          "Something went wrong. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
     }

@@ -29,10 +29,15 @@ class StudentSerializer(serializers.ModelSerializer):
 
 
 class StudentCreateSerializer(serializers.ModelSerializer):
-    """Used only when creating a new student profile."""
+    """Used only when creating a new student profile.
+
+    nin_hash is intentionally NOT writable here: it is derived server-side from the
+    raw NIN at registration (accounts.utils.hash_nin) and mirrored onto the Student.
+    Exposing it as an input would let a caller set an arbitrary, unverified hash.
+    """
     class Meta:
         model  = Student
         fields = [
             'firstname', 'lastname', 'ward', 'lga', 'level', 'cgpa',
-            'nin_hash', 'active_award',
+            'active_award',
         ]

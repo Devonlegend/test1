@@ -2,12 +2,10 @@
 import { useState, useEffect } from "react";
 import {
   User, Mail, Phone, Lock, Eye, EyeOff,
-  Save, Loader2, ShieldCheck, AlertCircle,
-  Users, Plus, X, ChevronDown, Check,
-  Shield, ShieldAlert, UserX, Settings, UserCheck, RefreshCw,
+  Loader2, ShieldCheck, AlertCircle, Check, Settings,
 } from "lucide-react";
 import styles from "./page.module.css";
-import { getMe, getAdminUsers, createAdminUser, updateUserRole, deactivateUser, reactivateUser } from "@/services/auth";
+import { getMe } from "@/services/auth";
 import { getSchemes, getStudents, getApplications } from "@/services";
 
 // ── PASSWORD STRENGTH ─────────────────────────────────────────────────────────
@@ -83,24 +81,8 @@ export default function AdminSettingsPage() {
   const [pwdError,     setPwdError]     = useState("");
   const [editingPwd, setEditingPwd] = useState(false);
 
-  // Admin users state (super admin only)
-  const [adminUsers,   setAdminUsers]   = useState([]);
-  const [loadingUsers, setLoadingUsers] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [newUser,      setNewUser]      = useState({
-    firstname: "", lastname: "", email: "",
-    phone_number: "", nin_hash: "", password: "", role: "admin",
-  });
-  const [creatingUser, setCreatingUser] = useState(false);
-  const [createError,  setCreateError]  = useState("");
-  const [createSuccess, setCreateSuccess] = useState(false);
-  const [roleUpdating, setRoleUpdating] = useState({});
-  const [deactivating, setDeactivating] = useState({});
-
   const [stats, setStats] = useState({ schemes: 0, students: 0, applications: 0 });
   const [loadingStats, setLoadingStats] = useState(true);
-
-  const isSuperAdmin = user?.role === "superadmin";
 
   // ── LOAD CURRENT USER ────────────────────────────────────────────────────
   useEffect(() => {
@@ -143,25 +125,6 @@ export default function AdminSettingsPage() {
   loadStats();
 }, []);
 
-  // ── LOAD ADMIN USERS (super admin only) ───────────────────────────────────
-  useEffect(() => {
-    if (!isSuperAdmin) return;
-    loadAdminUsers();
-  }, [isSuperAdmin]);
-
-  async function loadAdminUsers() {
-    setLoadingUsers(true);
-    try {
-    const res = await getAdminUsers();
-    const data = res.data;
-    setAdminUsers(Array.isArray(data) ? data : (data?.results ?? []));
-    } catch {
-      // Endpoint may not be ready yet — fail silently
-    } finally {
-      setLoadingUsers(false);
-    }
-  }
-
   // ── CHANGE PASSWORD ───────────────────────────────────────────────────────
   async function handleChangePassword(e) {
     e.preventDefault();
@@ -185,85 +148,6 @@ export default function AdminSettingsPage() {
       );
     } finally {
       setSavingPwd(false);
-    }
-  }
-
-  // ── CREATE ADMIN USER ─────────────────────────────────────────────────────
-  async function handleCreateUser(e) {
-    e.preventDefault();
-    setCreateError("");
-    setCreateSuccess(false);
-
-    if (!newUser.firstname.trim() || !newUser.lastname.trim() ||
-        !newUser.email.trim() || !newUser.phone_number.trim() ||
-        !newUser.nin_hash.trim() || !newUser.password.trim()) {
-      setCreateError("All fields are required.");
-      return;
-    }
-
-    setCreatingUser(true);
-    try {
-      await createAdminUser(newUser);
-      setCreateSuccess(true);
-      setNewUser({ firstname: "", lastname: "", email: "", phone_number: "", nin_hash: "", password: "", role: "admin" });
-      setShowCreateForm(false);
-      loadAdminUsers();
-    } catch (err) {
-      setCreateError(
-        err?.response?.data?.error ||
-        err?.response?.data?.message ||
-        "Failed to create user."
-      );
-    } finally {
-      setCreatingUser(false);
-    }
-  }
-
-  // ── UPDATE ROLE ───────────────────────────────────────────────────────────
-async function handleRoleChange(id, newRole) {
-  if (!confirm(`Change this user's role to ${newRole}?`)) return;
-  
-  setRoleUpdating((p) => ({ ...p, [id]: true }));
-  try {
-    await updateUserRole(id, { role: newRole });
-    setAdminUsers((prev) => prev.map((u) =>
-      u.id === id ? { ...u, role: newRole } : u
-    ));
-  } catch {
-    // Fail silently for now
-  } finally {
-    setRoleUpdating((p) => ({ ...p, [id]: false }));
-  }
-}
-
-  // ── DEACTIVATE & ACTIVATE USER ───────────────────────────────────────────────────────
-async function handleReactivate(id) {
-  if (!confirm("Reactivate this account?")) return;
-  setDeactivating((p) => ({ ...p, [id]: true }));
-  try {
-    await reactivateUser(id);
-    setAdminUsers((prev) => prev.map((u) =>
-      u.id === id ? { ...u, is_active: true } : u
-    ));
-  } catch {
-    // Fail silently
-  } finally {
-    setDeactivating((p) => ({ ...p, [id]: false }));
-  }
-}
-
-  async function handleDeactivate(id) {
-    if (!confirm("Are you sure you want to deactivate this account?")) return;
-    setDeactivating((p) => ({ ...p, [id]: true }));
-    try {
-      await deactivateUser(id);
-      setAdminUsers((prev) => prev.map((u) =>
-        u.id === id ? { ...u, is_active: false } : u
-      ));
-    } catch {
-      // Fail silently
-    } finally {
-      setDeactivating((p) => ({ ...p, [id]: false }));
     }
   }
 
@@ -560,8 +444,8 @@ async function handleReactivate(id) {
                 <div className={styles.formRow}>
                   <div className={styles.formField}>
                     <label className={styles.formLabel}>NIN</label>
-                    <input className={styles.formInput} value={newUser.nin_hash}
-                      onChange={(e) => setNewUser((u) => ({ ...u, nin_hash: e.target.value }))}
+                    <input className={styles.formInput} value={newUser.nin}
+                      onChange={(e) => setNewUser((u) => ({ ...u, nin: e.target.value }))}
                       placeholder="11-digit NIN" maxLength={11} />
                   </div>
                   <div className={styles.formField}>

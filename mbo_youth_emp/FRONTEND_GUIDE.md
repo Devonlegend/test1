@@ -53,7 +53,7 @@ Login and registration are **two-step**: credentials → email OTP → cookies s
 
 ### Register
 1. `POST /auth/register/` — `multipart/form-data`:
-   `email, firstname, lastname, phone_number, password, nin_hash, passport` (file, required),
+   `email, firstname, lastname, phone_number, password, nin` (raw 11-digit NIN, hashed server-side), `passport` (file, required),
     `certificate` (file, required), `date_of_birth`, `gender`, `ward`, `lga`.
    → `201 { message, email }`. **Not logged in yet.**
 2. `POST /auth/otp/send/` `{ email }` → `{ message }` (OTP emailed; in DEBUG it is logged, not sent).
