@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { useState, useEffect } from "react";
 import {
   User, Mail, Phone, Lock, Eye, EyeOff,
@@ -8,7 +8,7 @@ import styles from "./page.module.css";
 import { getMe } from "@/services/auth";
 import { getSchemes, getStudents, getApplications } from "@/services";
 
-// ── PASSWORD STRENGTH ─────────────────────────────────────────────────────────
+// â”€â”€ PASSWORD STRENGTH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function PasswordStrength({ password }) {
   const checks = [
     { label: "At least 8 characters",      pass: password.length >= 8 },
@@ -35,7 +35,7 @@ function PasswordStrength({ password }) {
   );
 }
 
-// ── SECTION WRAPPER ───────────────────────────────────────────────────────────
+// â”€â”€ SECTION WRAPPER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Section({ title, sub, children }) {
   return (
     <div className={styles.section}>
@@ -48,7 +48,7 @@ function Section({ title, sub, children }) {
   );
 }
 
-// ── ROLE BADGE ────────────────────────────────────────────────────────────────
+// â”€â”€ ROLE BADGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function RoleBadge({ role }) {
   const config = {
     superadmin: { label: "Super Admin", color: "#7e22ce", bg: "#faf5ff", border: "#e9d5ff" },
@@ -63,7 +63,7 @@ function RoleBadge({ role }) {
   );
 }
 
-// ── PAGE ──────────────────────────────────────────────────────────────────────
+// â”€â”€ PAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function AdminSettingsPage() {
   const [user,         setUser]         = useState(null);
   const [loadingUser,  setLoadingUser]  = useState(true);
@@ -84,7 +84,7 @@ export default function AdminSettingsPage() {
   const [stats, setStats] = useState({ schemes: 0, students: 0, applications: 0 });
   const [loadingStats, setLoadingStats] = useState(true);
 
-  // ── LOAD CURRENT USER ────────────────────────────────────────────────────
+  // â”€â”€ LOAD CURRENT USER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -125,7 +125,7 @@ export default function AdminSettingsPage() {
   loadStats();
 }, []);
 
-  // ── CHANGE PASSWORD ───────────────────────────────────────────────────────
+  // â”€â”€ CHANGE PASSWORD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   async function handleChangePassword(e) {
     e.preventDefault();
     if (passwords.newPass.length < 8) { setPwdError("Password must be at least 8 characters."); return; }
@@ -181,14 +181,14 @@ export default function AdminSettingsPage() {
         ].map((s) => (
           <div key={s.label} className={styles.statusItem}>
             <span className={styles.statusValue} style={{ color: s.color }}>
-              {loadingStats ? "—" : s.value}
+              {loadingStats ? "â€”" : s.value}
             </span>
             <span className={styles.statusLabel}>{s.label}</span>
           </div>
         ))}
       </div>
 
-      {/* ── SECTION 1: MY PROFILE ── */}
+      {/* â”€â”€ SECTION 1: MY PROFILE â”€â”€ */}
       <Section title="My Profile" sub="Update your contact information.">
         <div className={styles.profileCard}>
           <div className={styles.profileAvatar}>
@@ -205,7 +205,7 @@ export default function AdminSettingsPage() {
                     day: "numeric", month: "short", year: "numeric",
                     hour: "2-digit", minute: "2-digit",
                   })
-                : "—"
+                : "â€”"
               }
             </p>
             <RoleBadge role={user?.role} />
@@ -261,7 +261,7 @@ export default function AdminSettingsPage() {
         </div>
       </Section>
 
-      {/* ── SECTION 2: CHANGE PASSWORD ── */}
+      {/* â”€â”€ SECTION 2: CHANGE PASSWORD â”€â”€ */}
         <Section title="Password & Security" sub="Keep your account secure with a strong password.">
            {!editingPwd ? (
             <div className={styles.pwdEmptyState}>
@@ -366,223 +366,6 @@ export default function AdminSettingsPage() {
           </>
         )}
       </Section>
-      {/* ── SECTION 3: ADMIN USERS (super admin only) ── */}
-      {isSuperAdmin && (
-        <Section
-          title="Admin Users"
-          sub="Manage all administrators and verifiers on the portal."
-        >
-          {/* Create success banner */}
-          {createSuccess && (
-            <div className={styles.successBanner}>
-              <ShieldCheck size={14} strokeWidth={2} /> New admin user created successfully.
-            </div>
-          )}
-
-          {/* Header row */}
-          <div className={styles.usersHeader}>
-            <span className={styles.usersCount}>
-              {loadingUsers ? "Loading..." : `${adminUsers.length} user${adminUsers.length !== 1 ? "s" : ""}`}
-            </span>
-            <div className={styles.usersActions}>
-              <button
-                className={styles.refreshUsersBtn}
-                onClick={loadAdminUsers}
-                disabled={loadingUsers}
-              >
-                <RefreshCw size={13} strokeWidth={2} className={loadingUsers ? styles.spin : ""} />
-              </button>
-              <button
-                className={styles.createUserBtn}
-                onClick={() => { setShowCreateForm((v) => !v); setCreateError(""); setCreateSuccess(false); }}
-              >
-                {showCreateForm ? <X size={14} strokeWidth={2} /> : <Plus size={14} strokeWidth={2} />}
-                {showCreateForm ? "Cancel" : "New User"}
-              </button>
-            </div>
-          </div>
-
-          {/* Create user form */}
-          {showCreateForm && (
-            <div className={styles.createForm}>
-              <h3 className={styles.createFormTitle}>Create Admin User</h3>
-              {createError && (
-                <div className={styles.errorBanner}>
-                  <AlertCircle size={14} strokeWidth={2} /> {createError}
-                </div>
-              )}
-              <form onSubmit={handleCreateUser} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-
-                <div className={styles.formRow}>
-                  <div className={styles.formField}>
-                    <label className={styles.formLabel}>First Name</label>
-                    <input className={styles.formInput} value={newUser.firstname}
-                      onChange={(e) => setNewUser((u) => ({ ...u, firstname: e.target.value }))}
-                      placeholder="First name" />
-                  </div>
-                  <div className={styles.formField}>
-                    <label className={styles.formLabel}>Last Name</label>
-                    <input className={styles.formInput} value={newUser.lastname}
-                      onChange={(e) => setNewUser((u) => ({ ...u, lastname: e.target.value }))}
-                      placeholder="Last name" />
-                  </div>
-                </div>
-                <div className={styles.formRow}>
-                  <div className={styles.formField}>
-                    <label className={styles.formLabel}>Email Address</label>
-                    <input type="email" className={styles.formInput} value={newUser.email}
-                      onChange={(e) => setNewUser((u) => ({ ...u, email: e.target.value }))}
-                      placeholder="admin@rmhcdt.org" />
-                  </div>
-                  <div className={styles.formField}>
-                    <label className={styles.formLabel}>Phone Number</label>
-                    <input className={styles.formInput} value={newUser.phone_number}
-                      onChange={(e) => setNewUser((u) => ({ ...u, phone_number: e.target.value }))}
-                      placeholder="08000000000" />
-                  </div>
-                </div>
-                <div className={styles.formRow}>
-                  <div className={styles.formField}>
-                    <label className={styles.formLabel}>NIN</label>
-                    <input className={styles.formInput} value={newUser.nin}
-                      onChange={(e) => setNewUser((u) => ({ ...u, nin: e.target.value }))}
-                      placeholder="11-digit NIN" maxLength={11} />
-                  </div>
-                  <div className={styles.formField}>
-                    <label className={styles.formLabel}>Role</label>
-                    <select className={styles.formInput} value={newUser.role}
-                      onChange={(e) => setNewUser((u) => ({ ...u, role: e.target.value }))}>
-                      <option value="admin">Admin</option>
-                      <option value="verifier">Verifier</option>
-                    </select>
-                  </div>
-                </div>
-                <div className={styles.formField}>
-                  <label className={styles.formLabel}>Temporary Password</label>
-                  <input type="password" className={styles.formInput} value={newUser.password}
-                    onChange={(e) => setNewUser((u) => ({ ...u, password: e.target.value }))}
-                    placeholder="Minimum 8 characters" />
-                  <span className={styles.formHint}>User should change this on first login.</span>
-                </div>
-                <div className={styles.formFoot}>
-                  <button type="submit" className={styles.saveBtn} disabled={creatingUser}>
-                    {creatingUser
-                      ? <><Loader2 size={14} strokeWidth={2} className={styles.spin} /> Creating...</>
-                      : <><Plus size={14} strokeWidth={2} /> Create User</>
-                    }
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
-          {/* Admin users table */}
-          {loadingUsers ? (
-            <div className={styles.usersLoading}>
-              <div className={styles.spinner} />
-            </div>
-          ) : adminUsers.length === 0 ? (
-            <div className={styles.usersEmpty}>
-              <Users size={24} color="#cbd5e1" strokeWidth={1.5} />
-              <p>No admin users found.</p>
-            </div>
-          ) : (
-            <div className={styles.usersTable}>
-              {/* Header */}
-              <div className={styles.usersTableHeader}>
-                <span>User</span>
-                <span>Role</span>
-                <span>Status</span>
-                <span>Actions</span>
-              </div>
-
-              {adminUsers.map((u) => {
-                const initials =
-                  (u.firstname?.[0] || "").toUpperCase() +
-                  (u.lastname?.[0]  || "").toUpperCase();
-                const isMe = u.id === user?.id;
-
-                return (
-                  <div key={u.id} className={`${styles.userRow} ${!u.is_active ? styles.userRowInactive : ""}`}>
-
-                    {/* User info */}
-                    <div className={styles.userInfo}>
-                      <div className={styles.userAvatar}>{initials}</div>
-                      <div>
-                        <p className={styles.userName}>
-                          {u.firstname} {u.lastname}
-                          {isMe && <span className={styles.youBadge}>You</span>}
-                        </p>
-                        <p className={styles.userEmail}>{u.email}</p>
-                      </div>
-                    </div>
-
-                    {/* Role */}
-                    <div className={styles.userRole}>
-                      {isMe ? (
-                        <RoleBadge role={u.role} />
-                      ) : (
-                        <select
-                          className={styles.roleSelect}
-                          value={u.role}
-                          onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                          disabled={roleUpdating[u.id] || !u.is_active}
-                        >
-                          <option value="admin">Admin</option>
-                          <option value="verifier">Verifier</option>
-                        </select>
-                      )}
-                    </div>
-
-                    {/* Status */}
-                    <div>
-                      {u.is_active ? (
-                        <span className={styles.activeChip}>Active</span>
-                      ) : (
-                        <span className={styles.inactiveChip}>Inactive</span>
-                      )}
-                    </div>
-
-                    {/* Actions */}
-                    <div className={styles.userActions}>
-                      {!isMe && u.is_active && (
-                        <button
-                          className={styles.deactivateBtn}
-                          onClick={() => handleDeactivate(u.id)}
-                          disabled={deactivating[u.id]}
-                        >
-                          {deactivating[u.id]
-                            ? <Loader2 size={12} strokeWidth={2} className={styles.spin} />
-                            : <UserX size={12} strokeWidth={2} />
-                          }
-                          Deactivate
-                        </button>
-                      )}
-                      {isMe && (
-                        <span className={styles.selfNote}>Current session</span>
-                      )}
-                      {!isMe && !u.is_active && (
-                          <button
-                            className={styles.reactivateBtn}
-                            onClick={() => handleReactivate(u.id)}
-                            disabled={deactivating[u.id]}
-                          >
-                            {deactivating[u.id]
-                              ? <Loader2 size={12} strokeWidth={2} className={styles.spin} />
-                              : <UserCheck size={12} strokeWidth={2} />
-                            }
-                            Reactivate
-                          </button>
-                        )}
-                    </div>
-
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </Section>
-      )}
 
     </div>
   );
