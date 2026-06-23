@@ -179,7 +179,6 @@ def register(request):
                 lga=lga or '',
                 date_of_birth=date_of_birth,
                 nin_hash=nin_hash,
-                passport=passport,
                 certificate=certificate
             )
     except IntegrityError:
