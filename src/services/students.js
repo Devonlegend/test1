@@ -24,11 +24,5 @@ export const addAcademicRecord = (body) =>
 export const getBankDetail = () => 
   api.get("/students/bank/");
 
-export const updateBankDetail = (data) => 
-  api.patch("/students/bank/", data);
-
-export const addBankDetail = (body) =>
-  api.post("/students/bank-detail/", body);
-
-export const verifyStudent = (id) => 
+export const verifyStudent = (id) =>
   api.post(`/students/${id}/verify/`);

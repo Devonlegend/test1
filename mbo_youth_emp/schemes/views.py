@@ -43,7 +43,7 @@ class ScholarshipSchemeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
+        if self.action in ['list', 'retrieve', 'fields']:
             return [AllowAny()]
         return [IsAdmin()]
 
@@ -98,3 +98,54 @@ class ScholarshipSchemeViewSet(viewsets.ModelViewSet):
             'status': 'scheme closed successfully',
             'is_active': scheme.is_active
         })
+
+    @action(detail=True, methods=['post'])
+    def reopen(self, request, pk=None):
+        """POST /schemes/{id}/reopen/"""
+        scheme = self.get_object()
+        scheme.is_active = True
+        scheme.save()
+        return Response({
+            'status': 'scheme reopened successfully',
+            'is_active': scheme.is_active
+        })
+
+    @action(detail=True, methods=['get'])
+    def fields(self, request, pk=None):
+        """GET /schemes/{id}/fields/ — form-field definitions for the dynamic apply page."""
+        scheme = self.get_object()
+        criteria = scheme.eligibility_criteria or {}
+
+        if scheme.award_type == 'scholarship':
+            defs = [
+                {'field_name': 'institution_name', 'field_label': 'Institution Name', 'field_type': 'text', 'placeholder': 'e.g. University of Lagos', 'is_required': True, 'section': 'Academic Information', 'options': []},
+                {'field_name': 'course_of_study',  'field_label': 'Course of Study',  'field_type': 'text', 'placeholder': 'e.g. Computer Science',   'is_required': True, 'section': 'Academic Information', 'options': []},
+                {'field_name': 'current_level',    'field_label': 'Current Level',    'field_type': 'select', 'placeholder': '', 'is_required': True, 'section': 'Academic Information', 'options': criteria.get('allowed_levels', ['100','200','300','400','500'])},
+                {'field_name': 'cgpa',             'field_label': 'CGPA',             'field_type': 'number', 'placeholder': 'e.g. 3.50', 'is_required': True, 'section': 'Academic Information', 'options': []},
+                {'field_name': 'admission_year',   'field_label': 'Admission Year',   'field_type': 'number', 'placeholder': 'e.g. 2023', 'is_required': True, 'section': 'Academic Information', 'options': []},
+                {'field_name': 'matric_number',    'field_label': 'Matric Number',    'field_type': 'text',   'placeholder': 'e.g. U2019/1234567', 'is_required': True, 'section': 'Academic Information', 'options': []},
+                {'field_name': 'admission_letter', 'field_label': 'Admission Letter', 'field_type': 'file',   'placeholder': 'Upload your admission letter (PDF, JPG or PNG)', 'is_required': True, 'section': 'Documents', 'options': []},
+                {'field_name': 'last_result',      'field_label': 'Latest Result',    'field_type': 'file',   'placeholder': 'Upload your latest result (PDF, JPG or PNG)',  'is_required': True, 'section': 'Documents', 'options': []},
+            ]
+
+        elif scheme.award_type == 'empowerment':
+            defs = [
+                {'field_name': 'trade_or_skill',           'field_label': 'Trade or Skill',           'field_type': 'select',   'placeholder': '', 'is_required': True,  'section': 'Training Details', 'options': criteria.get('allowed_trades', [])},
+                {'field_name': 'training_provider',        'field_label': 'Training Provider',         'field_type': 'text',     'placeholder': 'e.g. NDE Training Centre', 'is_required': False, 'section': 'Training Details', 'options': []},
+                {'field_name': 'training_duration_months', 'field_label': 'Training Duration (months)','field_type': 'number',   'placeholder': 'e.g. 6', 'is_required': False, 'section': 'Training Details', 'options': []},
+                {'field_name': 'prior_experience',         'field_label': 'Prior Experience',           'field_type': 'textarea', 'placeholder': 'Describe any prior experience', 'is_required': False, 'section': 'Training Details', 'options': []},
+            ]
+
+        elif scheme.award_type == 'grant':
+            defs = [
+                {'field_name': 'business_name',        'field_label': 'Business Name',      'field_type': 'text',     'placeholder': "e.g. Ada's Fashion House", 'is_required': True,  'section': 'Business Information', 'options': []},
+                {'field_name': 'business_stage',       'field_label': 'Business Stage',     'field_type': 'select',   'placeholder': '', 'is_required': True,  'section': 'Business Information', 'options': ['Idea Stage','Startup / Early-stage','Growth Stage','Established']},
+                {'field_name': 'business_description', 'field_label': 'Business Description','field_type': 'textarea', 'placeholder': 'Describe your business and what it does', 'is_required': True,  'section': 'Business Information', 'options': []},
+                {'field_name': 'requested_amount',     'field_label': 'Requested Amount (₦)', 'field_type': 'number', 'placeholder': 'e.g. 50000', 'is_required': True,  'section': 'Business Information', 'options': []},
+                {'field_name': 'intended_use',         'field_label': 'Intended Use',        'field_type': 'textarea', 'placeholder': 'How do you plan to use the funds?', 'is_required': True,  'section': 'Business Information', 'options': []},
+            ]
+
+        else:
+            defs = []
+
+        return Response(defs)

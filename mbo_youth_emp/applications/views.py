@@ -1,3 +1,4 @@
+import json
 import logging
 
 from rest_framework import viewsets, status
@@ -5,8 +6,11 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
+from django.core.files.storage import default_storage
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
+
+from accounts.validators import validate_upload, FileValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -285,8 +289,21 @@ class ApplicationViewSet(viewsets.ViewSet):
         POST /applications/submit/
 
         Creates the application row in THIS scheme's dedicated table.
+
+        Accepts multipart: a `payload` text part with the JSON body, plus each
+        document as a file part keyed by its field name. Falls back to a plain
+        JSON body (no files) for non-browser callers.
         """
-        submit_serializer = ApplicationSubmitSerializer(data=request.data)
+        raw = request.data.get('payload')
+        if raw is not None:
+            try:
+                parsed = json.loads(raw)
+            except (TypeError, ValueError):
+                return Response({"error": "Malformed payload."}, status=400)
+        else:
+            parsed = request.data
+
+        submit_serializer = ApplicationSubmitSerializer(data=parsed)
         if not submit_serializer.is_valid():
             return Response(submit_serializer.errors, status=400)
 
@@ -331,10 +348,26 @@ class ApplicationViewSet(viewsets.ViewSet):
                 status=400,
             )
 
+        # ── Upload documents to Cloudinary, build the {key: url} dict ──────────
+        # Same mechanism as passport/certificate on register: validate at the
+        # request boundary, then save through default_storage (Cloudinary).
+        # Uploaded files win; any URLs in the JSON payload are a fallback for
+        # non-browser callers that pass already-hosted documents.
+        documents = dict(data.get('documents', {}))
+        for doc_key, uploaded in request.FILES.items():
+            try:
+                validate_upload(uploaded, doc_key, required=True)
+            except FileValidationError as exc:
+                return Response({"error": str(exc)}, status=400)
+            stored = default_storage.save(
+                f"application_documents/{doc_key}/{uploaded.name}", uploaded
+            )
+            documents[doc_key] = default_storage.url(stored)
+
         # ── Validate required documents per award type ─────────────────────────
         missing_docs = []
         for doc_key, doc_label in REQUIRED_DOCUMENTS.get(scheme.award_type, []):
-            if not data.get('documents', {}).get(doc_key, '').strip():
+            if not documents.get(doc_key, '').strip():
                 missing_docs.append(
                     dict(key=doc_key, label=f"Please upload your {doc_label}.")
                 )
@@ -365,16 +398,14 @@ class ApplicationViewSet(viewsets.ViewSet):
             self_declaration_received_support = data['self_declaration_received_support'],
             self_declaration_details          = data.get('self_declaration_details', []),
             attestation_agreed = data['attestation_agreed'],
-            documents          = data.get('documents', {}),
+            documents          = documents,
             changed_by         = request.user,
             history_reason     = 'Auto-evaluated by EligibilityEngine on submission',
         )
         initial_status = application.status
 
         # ── Send notifications ────────────────────────────────────────────────
-        # A conflict routes to the waiver flow; every other submission (eligible
-        # or not) is now received and pending verifier review, so it gets the
-        # standard submission confirmation.
+
         if result['has_conflict']:
             _dispatch_email(send_double_dip_flagged_email, application, scheme)
         else:

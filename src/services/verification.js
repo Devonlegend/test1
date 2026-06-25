@@ -8,8 +8,3 @@ export const verifyBank = (body) =>
 
 export const getBanks = () =>
   api.get("/verification/banks/");
-
-export const uploadDocument = (formData) =>
-  api.post("/verification/upload/", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });

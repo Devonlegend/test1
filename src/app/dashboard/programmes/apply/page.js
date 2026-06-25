@@ -7,7 +7,7 @@ import {
   UploadCloud, FileText, Trash2, Loader2, CheckCircle2,
 } from "lucide-react";
 import styles from "./apply-form.module.css";
-import { getScheme, getSchemeFields, submitApplication, uploadDocument, getBanks, verifyBank, getBankDetail } from "@/services";
+import { getScheme, getSchemeFields, submitApplication, getBanks, verifyBank, getBankDetail } from "@/services";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
@@ -267,22 +267,13 @@ export default function DynamicApplyPage() {
     setApiError("");
   }
 
-  async function handleFileChange(fieldName, file) {
+  function handleFileChange(fieldName, file) {
     if (!file) return;
     if (file.size > MAX_FILE_SIZE) { alert("File must not exceed 5MB."); return; }
 
-    setFiles((f) => ({ ...f, [fieldName]: { file, uploading: true, url: null } }));
+    // Hold the file in state; it is uploaded with the application on submit.
+    setFiles((f) => ({ ...f, [fieldName]: { file } }));
     setErrors((er) => ({ ...er, [fieldName]: "" }));
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await uploadDocument(formData);
-      setFiles((f) => ({ ...f, [fieldName]: { file, uploading: false, url: res.data.url } }));
-    } catch {
-      setFiles((f) => ({ ...f, [fieldName]: null }));
-      setErrors((er) => ({ ...er, [fieldName]: "Upload failed. Please try again." }));
-    }
   }
 
   function handleFileRemove(fieldName) {
@@ -352,7 +343,7 @@ export default function DynamicApplyPage() {
     for (const field of fields) {
       if (!field.is_required) continue;
       if (field.field_type === "file") {
-        if (!files[field.field_name]?.url) e[field.field_name] = "This document is required.";
+        if (!files[field.field_name]?.file) e[field.field_name] = "This document is required.";
       } else if (field.field_type === "checkbox") {
         if (!values[field.field_name]) e[field.field_name] = "Required.";
       } else {
@@ -384,14 +375,6 @@ export default function DynamicApplyPage() {
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
 
-    const stillUploading = fields.some(
-      (f) => f.field_type === "file" && files[f.field_name]?.uploading
-    );
-    if (stillUploading) {
-      setApiError("Please wait for all files to finish uploading.");
-      return;
-    }
-
     setSubmitting(true);
     setApiError("");
 
@@ -403,13 +386,6 @@ export default function DynamicApplyPage() {
         }
       }
 
-      const documents = {};
-      for (const field of fields) {
-        if (field.field_type === "file" && files[field.field_name]?.url) {
-          documents[field.field_name] = files[field.field_name].url;
-        }
-      }
-
       const self_declaration_details = declaredExternal === "yes"
         ? declarationRows.map((r) => ({
             organisation: r.organisation.trim(),
@@ -418,7 +394,10 @@ export default function DynamicApplyPage() {
           }))
         : [];
 
-      await submitApplication({
+      // Multipart: JSON body in `payload`, each document as a file part.
+      // The server uploads the files to Cloudinary and stores the URLs.
+      const fd = new FormData();
+      fd.append("payload", JSON.stringify({
         scheme_id:                         schemeId,
         programme_answers,
         bank_account_number:               accountNumber,
@@ -429,8 +408,14 @@ export default function DynamicApplyPage() {
         self_declaration_received_support: declaredExternal === "yes",
         self_declaration_details,
         attestation_agreed:                attested,
-        documents,
-      });
+      }));
+      for (const field of fields) {
+        if (field.field_type === "file" && files[field.field_name]?.file) {
+          fd.append(field.field_name, files[field.field_name].file);
+        }
+      }
+
+      await submitApplication(fd);
 
       setSubmitted(true);
 
