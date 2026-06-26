@@ -79,8 +79,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  
-    'django.middleware.security.SecurityMiddleware',
+    'django.middleware.security.SecurityMiddleware',      
+    'whitenoise.middleware.WhiteNoiseMiddleware',         
+    'corsheaders.middleware.CorsMiddleware',              
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -156,13 +157,13 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.getenv('CLOUDINARY_API_SECRET', ''),
 }
 
-# Django 6.0 uses the STORAGES setting (DEFAULT_FILE_STORAGE was removed in 5.1).
+
 STORAGES = {
     'default': {
         'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
     },
     'staticfiles': {
-        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',  # ✅
     },
 }
 
