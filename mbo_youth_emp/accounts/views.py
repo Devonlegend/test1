@@ -416,6 +416,8 @@ def me(request):
         "phone_number": request.user.phone_number,
         "role":         request.user.role,
         "passport":     passport_url,
+        "gender":      request.user.gender,
+        "date_of_birth": request.user.date_of_birth,
     })
 
 

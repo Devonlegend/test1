@@ -8,13 +8,10 @@ from .serializers import ScholarshipSchemeSerializer, CycleSerializer
 from accounts.permissions import IsAdmin
 
 
-# ── Cycle ViewSet ─────────────────────────────────────────────────────────────
+
 
 class CycleViewSet(viewsets.ModelViewSet):
-    """
-    CRUD for programme cycles.
-    Admin-only for write operations; anyone can read.
-    """
+   
     queryset           = Cycle.objects.all().order_by('-start_year')
     serializer_class   = CycleSerializer
     permission_classes = [IsAuthenticated]
@@ -35,7 +32,7 @@ class CycleViewSet(viewsets.ModelViewSet):
         return Response({'status': 'Cycle activated', 'cycle': CycleSerializer(cycle).data})
 
 
-# ── ScholarshipScheme ViewSet ─────────────────────────────────────────────────
+
 
 class ScholarshipSchemeViewSet(viewsets.ModelViewSet):
     queryset           = ScholarshipScheme.objects.all().order_by('-created_at')
