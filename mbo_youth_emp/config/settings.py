@@ -30,12 +30,7 @@ def _env_list(name, default=''):
     return [item.strip() for item in os.getenv(name, default).split(',') if item.strip()]
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-# Must be provided via the environment in production. The insecure default only
-# applies when DEBUG is on so local development still works out of the box.
 DEBUG = _env_bool('DEBUG', 'False')
 
 SECRET_KEY = os.getenv('SECRET_KEY', '')
@@ -155,9 +150,6 @@ ROOT_URLCONF = 'config.urls'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-# ── Cloudinary (media storage) ─────────────────────────────────────────────
-# Credentials come from .env (see .env.example). FileField/ImageField uploads
-# (user passports, certificates, application documents) are stored on Cloudinary.
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME', ''),
     'API_KEY':    os.getenv('CLOUDINARY_API_KEY', ''),
