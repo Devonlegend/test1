@@ -269,7 +269,7 @@ CELERY_TASK_ALWAYS_EAGER = _env_bool('CELERY_TASK_ALWAYS_EAGER', str(DEBUG))
 PORTAL_URL = os.getenv('PORTAL_URL', 'http://localhost:3000')
 
 
-# ──────────────────────────── Security ────────────────────────────
+
 # HTTPS/cookie hardening. Active when DEBUG is off; relaxed locally so http
 # development keeps working. Individual flags can be overridden via env.
 SESSION_COOKIE_SECURE = _env_bool('SESSION_COOKIE_SECURE', str(not DEBUG))
@@ -282,9 +282,10 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = _env_bool('SECURE_SSL_REDIRECT', 'True')
     # Trust the proxy's X-Forwarded-Proto header (set by most PaaS load balancers).
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '31536000'))
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+    if os.getenv('ENVIRONMENT') == 'production':
+        SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', '31536000'))
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+        SECURE_HSTS_PRELOAD = True
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
