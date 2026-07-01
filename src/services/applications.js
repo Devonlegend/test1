@@ -25,3 +25,12 @@ export const getQueueApplications = (status = "") =>
 
 export const getFlaggedApplications = () =>
   api.get("/applications/flagged/");
+
+export const getSchemeOverview = () =>
+  api.get("/applications/schemes-overview/");
+
+export const getApplicationsByScheme = (schemeId, status = "") =>
+  api.get(`/applications/by-scheme/${schemeId}/${status ? `?status=${status}` : ""}`);
+
+export const publishSchemeApprovals = (schemeId) =>
+  api.post(`/applications/publish/${schemeId}/`);

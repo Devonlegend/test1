@@ -1,119 +1,80 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import {
-  ClipboardList, Search,
-  ArrowRight, AlertCircle, CheckCircle2,
-  ShieldAlert,
+  ClipboardList, AlertCircle, CheckCircle2,
+  GraduationCap, Briefcase, Banknote, ArrowRight,
 } from "lucide-react";
 import styles from "./page.module.css";
-import { getQueueApplications, getFlaggedApplications } from "@/services/applications";
-
-// ── STATUS MAPPING ────────────────────────────────────────────────────────────
-const statusConfig = {
-  submitted:         { label: "Pending",  color: "#f59e0b", bg: "#fffbeb" },
-  eligibility_check: { label: "Pending",  color: "#f59e0b", bg: "#fffbeb" },
-  document_review:   { label: "Pending",  color: "#f59e0b", bg: "#fffbeb" },
-  shortlisted:       { label: "Pending",  color: "#f59e0b", bg: "#fffbeb" },
-  draft:             { label: "Pending",  color: "#f59e0b", bg: "#fffbeb" },
-  double_dip_flag:   { label: "Flagged",  color: "#ef4444", bg: "#fef2f2" },
-  approved:          { label: "Approved", color: "#15803d", bg: "#f0fdf4" },
-  rejected:          { label: "Rejected", color: "#64748b", bg: "#f8fafc" },
-  withdrawn:         { label: "Rejected", color: "#64748b", bg: "#f8fafc" },
-};
+import { getSchemeOverview } from "@/services";
 
 // ── CATEGORY CONFIG ───────────────────────────────────────────────────────────
 const categoryConfig = {
-  scholarship: { label: "Scholarship", color: "#15803d", bg: "#f0fdf4" },
-  empowerment: { label: "Empowerment", color: "#b45309", bg: "#fffbeb" },
-  grant:       { label: "Grant",       color: "#7e22ce", bg: "#faf5ff" },
+  scholarship: { label: "Scholarship", color: "#15803d", bg: "#f0fdf4", icon: GraduationCap },
+  empowerment: { label: "Empowerment", color: "#b45309", bg: "#fffbeb", icon: Briefcase },
+  grant:       { label: "Grant",       color: "#7e22ce", bg: "#faf5ff", icon: Banknote },
 };
 
-function formatDate(dateStr) {
-  if (!dateStr) return "—";
-  return new Date(dateStr).toLocaleDateString("en-GB", {
-    day: "numeric", month: "short", year: "numeric",
-  });
-}
+const POLL_INTERVAL = 30_000; // 30 seconds
 
-// ── SKELETON ROW ──────────────────────────────────────────────────────────────
-function SkeletonRow() {
+// ── SKELETON CARD ──────────────────────────────────────────────────────────────
+function SkeletonCard() {
   return (
-    <div className={styles.tableRow}>
-      <div className={styles.skeletonCell} style={{ width: "20%" }} />
-      <div className={styles.skeletonCell} style={{ width: "28%" }} />
-      <div className={styles.skeletonCell} style={{ width: "12%" }} />
-      <div className={styles.skeletonCell} style={{ width: "10%" }} />
-      <div className={styles.skeletonCell} style={{ width: "8%"  }} />
+    <div className={styles.schemeCard}>
+      <div className={styles.cardHeaderSkeleton}>
+        <div className={styles.skeletonCircle} />
+        <div className={styles.skeletonLines}>
+          <div className={styles.skeletonCell} style={{ width: "60%", height: 16 }} />
+          <div className={styles.skeletonCell} style={{ width: "40%", height: 12 }} />
+        </div>
+      </div>
+      <div className={styles.cardBodySkeleton}>
+        <div className={styles.skeletonCell} style={{ width: "50%", height: 40 }} />
+      </div>
     </div>
   );
 }
 
-// ── TABS ──────────────────────────────────────────────────────────────────────
-const TABS = [
-  { key: "pending", label: "Review Queue" },
-  { key: "flagged", label: "Flagged" },
-];
-
 // ── PAGE ──────────────────────────────────────────────────────────────────────
 export default function VerifierApplicationsPage() {
-  const router       = useRouter();
-  const searchParams = useSearchParams();
+  const router = useRouter();
 
-  const initialTab = searchParams.get("tab") || "pending";
+  const [schemes, setSchemes]   = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null);
 
-  const [applications, setApplications] = useState([]);
-  const [counts,       setCounts]       = useState({ pending: 0, flagged: 0 });
-  const [loading,      setLoading]      = useState(true);
-  const [error,        setError]        = useState(null);
-  const [activeTab,    setActiveTab]    = useState(initialTab);
-  const [search,       setSearch]       = useState("");
-
-  // ── FETCH ─────────────────────────────────────────────────────────────────
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      setLoading(true);
+  // ── FETCH SCHEMES ─────────────────────────────────────────────────────────
+  const fetchSchemes = useCallback(async (silent) => {
+    try {
+      const res = await getSchemeOverview();
+      setSchemes(res.data || []);
+      if (silent !== true) setLoading(false);
       setError(null);
-      try {
-        // Fetch both queues to update counts
-        const [qRes, fRes] = await Promise.all([
-          getQueueApplications(),
-          getFlaggedApplications()
-        ]);
-        if (cancelled) return;
-        
-        const qData = Array.isArray(qRes.data?.results) ? qRes.data.results : [];
-        const fData = Array.isArray(fRes.data?.results) ? fRes.data.results : [];
-
-        setCounts({
-          pending: qData.length,
-          flagged: fData.length
-        });
-
-        if (activeTab === "pending") {
-          setApplications(qData);
-        } else if (activeTab === "flagged") {
-          setApplications(fData);
-        }
-      } catch (err) {
-        if (!cancelled) setError("Failed to load applications. Please try again.");
-      } finally {
-        if (!cancelled) setLoading(false);
+    } catch {
+      if (silent !== true) {
+        setError("Failed to load schemes. Please try again.");
+        setLoading(false);
       }
     }
-    load();
-    return () => { cancelled = true; };
-  }, [activeTab]);
+  }, []);
 
-  // ── FILTER BY SEARCH ──────────────────────────────────────────────────────
-  const filtered = applications.filter((app) => {
-    const studentName = (app.student?.full_name || "").toLowerCase();
-    const schemeName  = (app.scheme?.name || "").toLowerCase();
-    return search.trim() === "" ? true :
-      studentName.includes(search.toLowerCase()) ||
-      schemeName.includes(search.toLowerCase());
-  });
+  // Initial fetch + 30s polling
+  useEffect(() => {
+    fetchSchemes();
+    const id = setInterval(() => fetchSchemes(true), POLL_INTERVAL);
+    return () => clearInterval(id);
+  }, [fetchSchemes]);
+
+  // Re-fetch on window focus (returning from a review page)
+  useEffect(() => {
+    function onFocus() { fetchSchemes(true); }
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [fetchSchemes]);
+
+  // ── DERIVED TOTALS ────────────────────────────────────────────────────────
+  const totalPending  = schemes.reduce((s, d) => s + d.pending_review, 0);
+  const totalUnpublished = schemes.reduce((s, d) => s + d.unpublished, 0);
 
   // ── RENDER ────────────────────────────────────────────────────────────────
   return (
@@ -122,183 +83,135 @@ export default function VerifierApplicationsPage() {
       {/* PAGE HEADER */}
       <div className={styles.header}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: "#f0fdf4", border: "1px solid #bbf7d0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 10,
+            background: "#f0fdf4", border: "1px solid #bbf7d0",
+            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+          }}>
             <ClipboardList size={20} color="#15803d" strokeWidth={1.8} />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0px" }}>
             <h1 className={styles.title}>Applications</h1>
-            <p className={styles.sub}>Review and manage pending queue and flagged applications.</p>
+            <p className={styles.sub}>Select a scheme to review its applications.</p>
           </div>
         </div>
       </div>
 
-      {/* MAIN CARD */}
-      <div className={styles.card}>
-
-        {/* TABS + TOOLBAR */}
-        <div className={styles.cardTop}>
-          <div className={styles.tabs}>
-            {TABS.map((tab) => (
-              <button
-                key={tab.key}
-                className={`${styles.tab} ${activeTab === tab.key ? styles.tabActive : ""}`}
-                onClick={() => setActiveTab(tab.key)}
-              >
-                {tab.label}
-                {tab.key === "flagged" && counts.flagged > 0 && (
-                  <span className={styles.tabBadge}>{counts.flagged}</span>
-                )}
-                {tab.key === "pending" && counts.pending > 0 && (
-                  <span className={styles.tabBadge} style={{background: "#f59e0b", color: "white"}}>{counts.pending}</span>
-                )}
-              </button>
-            ))}
-          </div>
-
-          <div className={styles.toolbar}>
-            <div className={styles.searchWrap}>
-              <Search size={14} className={styles.searchIcon} />
-              <input
-                className={styles.searchInput}
-                placeholder="Search by student or scheme..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-          </div>
+      {/* SUMMARY STRIP */}
+      <div className={styles.summaryStrip}>
+        <div className={styles.summaryItem}>
+          <span className={styles.summaryValue} style={{ color: "#0f172a" }}>
+            {loading ? "—" : schemes.length}
+          </span>
+          <span className={styles.summaryLabel}>Schemes</span>
         </div>
+        <div className={styles.summaryItem}>
+          <span className={styles.summaryValue} style={{ color: "#f59e0b" }}>
+            {loading ? "—" : totalPending}
+          </span>
+          <span className={styles.summaryLabel}>Pending Review</span>
+        </div>
+        <div className={styles.summaryItem}>
+          <span className={styles.summaryValue} style={{ color: "#15803d" }}>
+            {loading ? "—" : totalUnpublished}
+          </span>
+          <span className={styles.summaryLabel}>Unpublished</span>
+        </div>
+      </div>
 
-        {/* TABLE */}
-        <div className={styles.tableWrap}>
+      {/* ERROR */}
+      {error && !loading && (
+        <div className={styles.emptyState}>
+          <AlertCircle size={28} color="#f87171" strokeWidth={1.5} />
+          <p style={{ color: "#ef4444", fontWeight: 600 }}>{error}</p>
+          <button className={styles.retryBtn} onClick={() => { setError(null); setLoading(true); fetchSchemes(); }}>
+            Try again
+          </button>
+        </div>
+      )}
 
-          {/* Header */}
-          <div className={`${styles.tableRow} ${styles.tableHeader}`}>
-            <span>Student</span>
-            <span>Scheme</span>
-            <span>Submitted</span>
-            <span>Status</span>
-            <span></span>
+      {/* LOADING */}
+      {loading && !error && (
+        <div className={styles.cardGrid}>
+          {[1, 2, 3, 4, 5, 6].map((i) => <SkeletonCard key={i} />)}
+        </div>
+      )}
+
+      {/* SCHEME CARDS GRID */}
+      {!loading && !error && schemes.length === 0 && (
+        <div className={styles.emptyState}>
+          <div className={styles.emptyIconWrap} style={{ background: "#f0fdf4", border: "1.5px solid #bbf7d0" }}>
+            <CheckCircle2 size={24} color="#15803d" strokeWidth={1.8} />
           </div>
+          <p className={styles.emptyTitle}>No schemes yet</p>
+          <p className={styles.emptySub}>Applications will appear here once schemes are created.</p>
+        </div>
+      )}
 
-          {/* Loading */}
-          {loading && [1,2,3,4,5].map((i) => <SkeletonRow key={i} />)}
-
-          {/* Error */}
-          {!loading && error && (
-            <div className={styles.emptyState}>
-              <AlertCircle size={28} color="#f87171" strokeWidth={1.5} />
-              <p style={{ color: "#ef4444", fontWeight: 600 }}>{error}</p>
-              <button
-                className={styles.retryBtn}
-                onClick={() => { setError(null); setLoading(true); }}
-              >
-                Try again
-              </button>
-            </div>
-          )}
-
-          {/* Empty — flagged queue clear */}
-          {!loading && !error && activeTab === "flagged" && filtered.length === 0 && (
-            <div className={styles.emptyState}>
-              <div className={styles.emptyIconWrap} style={{ background: "#f0fdf4", border: "1.5px solid #bbf7d0" }}>
-                <CheckCircle2 size={24} color="#15803d" strokeWidth={1.8} />
-              </div>
-              <p className={styles.emptyTitle} style={{ color: "#15803d" }}>Flagged queue is clear</p>
-              <p className={styles.emptySub}>No conflict or false declaration flags at this time.</p>
-            </div>
-          )}
-
-          {/* Empty — pending queue clear */}
-          {!loading && !error && activeTab === "pending" && filtered.length === 0 && (
-            <div className={styles.emptyState}>
-              <div className={styles.emptyIconWrap} style={{ background: "#f0fdf4", border: "1.5px solid #bbf7d0" }}>
-                <CheckCircle2 size={24} color="#15803d" strokeWidth={1.8} />
-              </div>
-              <p className={styles.emptyTitle} style={{ color: "#15803d" }}>All caught up</p>
-              <p className={styles.emptySub}>No pending applications waiting for review.</p>
-            </div>
-          )}
-
-          {/* TABLE ROWS */}
-          {!loading && !error && filtered.map((app) => {
-            const status     = statusConfig[app.status] || statusConfig.submitted;
-            const catKey     = (app.scheme?.award_type || "").toLowerCase();
-            const category   = categoryConfig[catKey] || categoryConfig.scholarship;
-            const isConflict = app.status === "double_dip_flag";
-            const fullName   = app.student?.full_name || "Unknown";
-            const initials   = fullName
-              .split(" ")
-              .map((n) => n[0] || "")
-              .slice(0, 2)
-              .join("")
-              .toUpperCase();
+      {!loading && !error && schemes.length > 0 && (
+        <div className={styles.cardGrid}>
+          {schemes.map((entry) => {
+            const s = entry.scheme;
+            const cat = categoryConfig[s.award_type] || categoryConfig.scholarship;
+            const Icon = cat.icon;
+            const hasPending = entry.pending_review > 0;
+            const hasUnpublished = entry.unpublished > 0;
 
             return (
-              <div
-                key={app.id}
-                className={`${styles.tableRow} ${styles.tableRowData} ${isConflict ? styles.tableRowFlagged : ""}`}
+              <button
+                key={s.id}
+                className={`${styles.schemeCard} ${hasPending ? styles.schemeCardActive : ""}`}
+                onClick={() => router.push(`/verifier/applications/scheme/${s.id}`)}
               >
-                {/* Student */}
-                <div className={styles.tdStudent}>
-                  <div className={styles.studentAvatar}>{initials}</div>
-                  <div className={styles.studentInfo}>
-                    <span className={styles.studentName}>{fullName}</span>
-                    <span className={styles.studentMeta}>{app.student?.ward || "—"}</span>
+                <div className={styles.cardHeader}>
+                  <div
+                    className={styles.cardIcon}
+                    style={{ background: cat.bg, border: `1.5px solid ${cat.color}30` }}
+                  >
+                    <Icon size={18} color={cat.color} strokeWidth={1.8} />
+                  </div>
+                  <div className={styles.cardMeta}>
+                    <span className={styles.cardName}>{s.name}</span>
+                    <span
+                      className={styles.cardChip}
+                      style={{ color: cat.color, background: cat.bg }}
+                    >
+                      {cat.label}
+                    </span>
                   </div>
                 </div>
 
-                {/* Scheme */}
-                <div className={styles.tdScheme}>
-                  <span className={styles.schemeName}>{app.scheme?.name || "—"}</span>
-                  <span
-                    className={styles.categoryChip}
-                    style={{ color: category.color, background: category.bg }}
-                  >
-                    {category.label}
-                  </span>
-                </div>
-
-                {/* Date */}
-                <span className={styles.tdDate}>{formatDate(app.submission_date)}</span>
-
-                {/* Status */}
-                <div className={styles.tdStatus}>
-                  <span
-                    className={styles.statusBadge}
-                    style={{ color: status.color, background: status.bg }}
-                  >
-                    {status.label}
-                  </span>
-                  {isConflict && (
-                    <span className={styles.conflictChip}>
-                      <ShieldAlert size={10} strokeWidth={2} />
-                      Conflict
+                <div className={styles.cardBody}>
+                  <div className={styles.cardStat}>
+                    <span
+                      className={styles.cardStatValue}
+                      style={{ color: hasPending ? "#f59e0b" : "#15803d" }}
+                    >
+                      {entry.pending_review}
                     </span>
+                    <span className={styles.cardStatLabel}>to review</span>
+                  </div>
+                  {hasUnpublished > 0 && (
+                    <div className={styles.cardStat}>
+                      <span className={styles.cardStatValue} style={{ color: "#15803d" }}>
+                        {entry.unpublished}
+                      </span>
+                      <span className={styles.cardStatLabel}>to publish</span>
+                    </div>
                   )}
                 </div>
 
-                {/* Action */}
-                <button
-                  className={styles.viewBtn}
-                  onClick={() => router.push(`/verifier/applications/${app.id}`)}
-                >
-                  Review <ArrowRight size={11} strokeWidth={2} />
-                </button>
-              </div>
+                <div className={styles.cardFooter}>
+                  <span className={styles.cardSlots}>
+                    {s.remaining_slots} / {s.total_slots} slots remaining
+                  </span>
+                  <ArrowRight size={14} strokeWidth={2} className={styles.cardArrow} />
+                </div>
+              </button>
             );
           })}
-
         </div>
-
-        {/* Row count */}
-        {!loading && !error && (
-          <div className={styles.tableFooter}>
-            Showing {filtered.length} of {applications.length} applications
-          </div>
-        )}
-
-      </div>
-
+      )}
     </div>
   );
 }

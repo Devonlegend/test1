@@ -245,9 +245,7 @@ OTP_TTL_SECONDS             = int(os.getenv('OTP_TTL_SECONDS', '600'))
 OTP_MAX_ATTEMPTS            = int(os.getenv('OTP_MAX_ATTEMPTS', '5'))
 OTP_RESEND_COOLDOWN_SECONDS = int(os.getenv('OTP_RESEND_COOLDOWN_SECONDS', '60'))
 
-# ── Paystack ──────────────────────────────────────────────────────────────
-# Mock mode defaults to on in DEBUG, off in production, so a missing env var
-# never silently mocks a live deployment. Override explicitly with the env var.
+
 PAYSTACK_MOCK_MODE   = _env_bool('PAYSTACK_MOCK_MODE', str(DEBUG))
 PAYSTACK_SECRET_KEY  = os.getenv('PAYSTACK_SECRET_KEY', '')
 

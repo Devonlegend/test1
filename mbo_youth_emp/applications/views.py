@@ -14,7 +14,7 @@ from accounts.validators import validate_upload, FileValidationError
 
 logger = logging.getLogger(__name__)
 
-from .models import ApplicationStatus, ApplicationStatusHistory, REVIEWABLE_STATUSES
+from .models import ApplicationStatus, ApplicationStatusHistory, REVIEWABLE_STATUSES, PendingApplicationNotification
 from .serializers import (
     ApplicationStatusHistorySerializer,
     ApplicationSubmitSerializer,
@@ -36,10 +36,11 @@ from schemes.models import ScholarshipScheme
 from accounts.permissions import IsVerifier
 
 # ── Notification tasks ────────────────────────────────────────────────────────
+# send_application_rejected_email is intentionally NOT imported: rejection emails
+# are deprecated. Approval emails are deferred until a scheme is Published.
 from verification.tasks import (
     send_application_submitted_email,
     send_application_approved_email,
-    send_application_rejected_email,
     send_double_dip_flagged_email,
 )
 
@@ -246,6 +247,12 @@ class ApplicationViewSet(viewsets.ViewSet):
             qs = qs.filter(status=status_filter)
 
         apps = list(qs)
+        # Live counts: how many still need a decision, and how many approval
+        # emails are staged for the Publish button.
+        pending_review = model.objects.filter(status__in=REVIEWABLE_STATUSES).count()
+        unpublished = PendingApplicationNotification.objects.filter(
+            scheme=scheme, sent_at__isnull=True
+        ).count()
         return Response({
             "scheme": {
                 "id":         str(scheme.id),
@@ -253,7 +260,9 @@ class ApplicationViewSet(viewsets.ViewSet):
                 "award_type": scheme.award_type,
                 "total":      len(apps),
             },
-            "applications": [serialize_application(a) for a in apps],
+            "pending_review": pending_review,
+            "unpublished":    unpublished,
+            "applications":   [serialize_application(a) for a in apps],
         })
 
     # ── Status history ────────────────────────────────────────────────────────
@@ -542,16 +551,122 @@ class ApplicationViewSet(viewsets.ViewSet):
             reason         = reason,
         )
 
-        # ── Send notifications ────────────────────────────────────────────────
+        # ── Notifications ─────────────────────────────────────────────────────
+        # Approval emails are NOT sent here. They are staged as a pending
+        # notification and dispatched in bulk when a reviewer Publishes the
+        # scheme (see the `publish` action). Rejection emails are deprecated
+        # entirely and never sent.
         if decision == 'approved':
-            _dispatch_email(send_application_approved_email, application, scheme)
-        elif decision == 'rejected':
-            _dispatch_email(send_application_rejected_email, application, scheme)
+            PendingApplicationNotification.objects.create(
+                application_id   = application.id,
+                scheme           = scheme,
+                notification_type = 'approved',
+            )
 
         return Response({
             "message": f"Application {decision} successfully.",
             "status":  application.status,
+            "note":    ("Approval email will be sent when this scheme is published."
+                        if decision == 'approved' else None),
         })
+
+    # ── Publish scheme approvals ──────────────────────────────────────────────
+    @extend_schema(
+        summary="Publish approval emails for a scheme",
+        description=(
+            "Sends all staged approval emails for one scheme that have not yet "
+            "been sent. Idempotent — already-sent notifications are skipped. "
+            "Verifier/admin only."
+        ),
+        request=None,
+        responses=OpenApiResponse(description='{ sent, scheme }'),
+    )
+    @action(detail=False, methods=['post'],
+            url_path='publish/(?P<scheme_id>[^/.]+)',
+            permission_classes=[IsVerifier])
+    def publish(self, request, scheme_id=None):
+        """
+        POST /applications/publish/{scheme_id}/
+
+        Dispatches approval emails for every unsent PendingApplicationNotification
+        for the given scheme. Marks each row's `sent_at` on success.
+        """
+        scheme = ScholarshipScheme.objects.filter(id=scheme_id).first()
+        if not scheme:
+            return Response({"error": "Scheme not found"}, status=404)
+
+        pending = PendingApplicationNotification.objects.filter(
+            scheme=scheme, sent_at__isnull=True,
+        ).select_related('scheme')
+
+        sent = 0
+        model = None
+        for notification in pending:
+            if model is None and scheme.table_name:
+                model = get_application_model(scheme)
+            # Resolve the application row (may have been deleted, skip gracefully)
+            if model:
+                row = model.objects.filter(id=notification.application_id).first()
+            else:
+                row = None
+            if row is not None:
+                _dispatch_email(send_application_approved_email, row, scheme)
+                sent += 1
+            notification.sent_at = timezone.now()
+            notification.save(update_fields=['sent_at'])
+
+        return Response({
+            "sent":   sent,
+            "scheme": scheme.name,
+        })
+
+    # ── Schemes overview (for scheme-card grid) ──────────────────────────────
+    @extend_schema(
+        summary="Schemes overview with pending counts",
+        description=(
+            "Returns every scheme that has applications, with counts of pending "
+            "review and unpublished approval notifications. Verifier/admin only."
+        ),
+        responses=OpenApiResponse(description='[{ scheme, pending_review, unpublished }]'),
+    )
+    @action(detail=False, methods=['get'],
+            url_path='schemes-overview',
+            permission_classes=[IsVerifier])
+    def schemes_overview(self, request):
+        """
+        GET /applications/schemes-overview/
+
+        Drives the scheme-card grid on the verifier/admin dashboard. For every
+        scheme whose table exists, returns the scheme metadata plus how many
+        applications still need review and how many approved emails are staged
+        but not yet published.
+        """
+        result = []
+        for scheme, model in iter_application_models():
+            total_in_scheme = model.objects.count()
+            if total_in_scheme == 0:
+                continue
+
+            pending_review = model.objects.filter(
+                status__in=REVIEWABLE_STATUSES,
+            ).count()
+            unpublished = PendingApplicationNotification.objects.filter(
+                scheme=scheme, sent_at__isnull=True,
+            ).count()
+
+            result.append({
+                "scheme": {
+                    "id":           str(scheme.id),
+                    "name":         scheme.name,
+                    "award_type":   scheme.award_type,
+                    "total_slots":  scheme.total_slots,
+                    "remaining_slots": scheme.remaining_slots,
+                },
+                "pending_review": pending_review,
+                "unpublished":    unpublished,
+            })
+
+        return Response(result)
 
     # ── Helpers ───────────────────────────────────────────────────────────────
     @staticmethod
