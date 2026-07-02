@@ -30,10 +30,10 @@ function LoadingSpinner() {
 
 export default function DashboardLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [user, setUser]               = useState(null);
-  const [loading, setLoading]         = useState(true);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
-  
+
   useInactivityLogout();
 
   useEffect(() => {
@@ -44,27 +44,27 @@ export default function DashboardLayout({ children }) {
           getStudentProfile(),
         ]);
 
-        const auth    = authRes.data;
+        const auth = authRes.data;
         const profile = studentRes.data;
 
         setUser({
-          id:           auth.id,
-          email:        auth.email,
-          phone:        auth.phone_number   || "",
-          role:         auth.role           || "student",
-          first_name:   auth.firstname      || "",
-          last_name:    auth.lastname       || "",
-          lga:          profile.lga         || "",
-          ward:         profile.ward        || "",
-          level:        profile.level       || null,
-          cgpa:         profile.cgpa        || null,
-          is_verified:  profile.is_verified  || false,
+          id: auth.id,
+          email: auth.email,
+          phone: auth.phone_number || "",
+          role: auth.role || "student",
+          first_name: auth.firstname || "",
+          last_name: auth.lastname || "",
+          lga: profile.lga || "",
+          ward: profile.ward || "",
+          level: profile.level || null,
+          cgpa: profile.cgpa || null,
+          is_verified: profile.is_verified || false,
           active_award: profile.active_award || "",
           has_active_award: profile.has_active_award || false,
           passport_photo: auth.passport || null,
-          nin_masked:     "****-***-****",
-          date_of_birth:  auth.date_of_birth || "",
-          gender:         auth.gender        || "",
+          nin_masked: "****-***-****",
+          date_of_birth: auth.date_of_birth || "",
+          gender: auth.gender || "",
         });
 
       } catch (err) {

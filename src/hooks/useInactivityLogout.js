@@ -34,5 +34,5 @@ export function useInactivityLogout() {
       events.forEach((e) => window.removeEventListener(e, resetTimer));
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [router]);
 }

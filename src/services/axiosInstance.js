@@ -31,9 +31,8 @@ function isPublicAuthRequest(url) {
 //
 // _isRetry flag prevents infinite loops — if the retry also 401s, we stop.
 
-let isRefreshing  = false;
-let failedQueue   = [];
-let isNavigating  = false; // guard: only redirect to /login once
+let isRefreshing = false;
+let failedQueue  = [];
 
 function processQueue(error) {
   failedQueue.forEach((prom) => {
@@ -55,11 +54,13 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // Only handle 401 and only if we haven't already retried this request
-    if (
+   // Only handle 401 and only if we haven't already retried this request
+if (
   error.response?.status !== 401 ||
   originalRequest._isRetry ||
   isPublicAuthRequest(originalRequest.url) ||
-  originalRequest.url === "/auth/token/refresh/"
+  originalRequest.url === "/auth/token/refresh/" ||
+  originalRequest.url === "/auth/me/"
 ) {
   return Promise.reject(error);
 }
@@ -90,10 +91,7 @@ api.interceptors.response.use(
     } catch (refreshError) {
       // Refresh token is also expired — clear queue and send to login
       processQueue(refreshError);
-      if (!isNavigating) {
-        isNavigating = true;
-        window.location.replace("/login");
-      }
+      window.location.href = "/login";
       return Promise.reject(refreshError);
 
     } finally {

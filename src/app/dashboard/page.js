@@ -22,49 +22,49 @@ function formatTimeAgo(date) {
   const days = Math.floor((new Date() - date) / (1000 * 60 * 60 * 24));
   if (days === 0) return "Today";
   if (days === 1) return "Yesterday";
-  if (days < 7)  return `${days} days ago`;
+  if (days < 7) return `${days} days ago`;
   if (days < 14) return "1 week ago";
   return `${Math.floor(days / 7)} weeks ago`;
 }
 
 function mapApplicationToActivity(app) {
   const statusMap = {
-    approved:        { icon: CheckCircle2, iconClass: "act_green", title: "Application approved"           },
-    submitted:       { icon: Hourglass,    iconClass: "act_amber", title: "Application submitted"          },
-    double_dip_flag: { icon: AlertCircle,  iconClass: "act_blue",  title: "Application flagged for review" },
-    rejected:        { icon: AlertCircle,  iconClass: "act_amber", title: "Application unsuccessful"       },
-    document_review: { icon: Hourglass,    iconClass: "act_amber", title: "Documents under review"         },
-    shortlisted:     { icon: CheckCircle2, iconClass: "act_green", title: "Application shortlisted"        },
+    approved: { icon: CheckCircle2, iconClass: "act_green", title: "Application approved" },
+    submitted: { icon: Hourglass, iconClass: "act_amber", title: "Application submitted" },
+    double_dip_flag: { icon: AlertCircle, iconClass: "act_blue", title: "Application flagged for review" },
+    rejected: { icon: AlertCircle, iconClass: "act_amber", title: "Application unsuccessful" },
+    document_review: { icon: Hourglass, iconClass: "act_amber", title: "Documents under review" },
+    shortlisted: { icon: CheckCircle2, iconClass: "act_green", title: "Application shortlisted" },
   };
   const meta = statusMap[app.status] || { icon: FileText, iconClass: "act_blue", title: "Application updated" };
   const date = app.submission_date ? new Date(app.submission_date) : null;
   return {
-    icon:      meta.icon,
+    icon: meta.icon,
     iconClass: meta.iconClass,
-    title:     meta.title,
+    title: meta.title,
     desc: app.scheme_name || app.scheme?.name || "Programme",
-    time:      date ? formatTimeAgo(date) : "",
+    time: date ? formatTimeAgo(date) : "",
   };
 }
 
 function getSchemeIcon(awardType) {
   switch (awardType) {
-    case "scholarship":  return { icon: GraduationCap, iconClass: "qa_green"  };
-    case "vocational":   return { icon: Wrench,        iconClass: "qa_amber"  };
-    case "empowerment":  return { icon: Briefcase,     iconClass: "qa_blue"   };
-    case "grant":        return { icon: Banknote,      iconClass: "qa_red"    };
-    default:             return { icon: GraduationCap, iconClass: "qa_green"  };
+    case "scholarship": return { icon: GraduationCap, iconClass: "qa_green" };
+    case "vocational": return { icon: Wrench, iconClass: "qa_amber" };
+    case "empowerment": return { icon: Briefcase, iconClass: "qa_blue" };
+    case "grant": return { icon: Banknote, iconClass: "qa_red" };
+    default: return { icon: GraduationCap, iconClass: "qa_green" };
   }
 }
 
 export default function DashboardPage() {
   const router = useRouter();
 
-  const [user,           setUser]          = useState(null);
-  const [stats,          setStats]         = useState(null);
+  const [user, setUser] = useState(null);
+  const [stats, setStats] = useState(null);
   const [recentActivity, setRecentActivity] = useState([]);
-  const [schemes,        setSchemes]       = useState([]);
-  const [loading,        setLoading]       = useState(true);
+  const [schemes, setSchemes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const daysLeft = getDaysLeft();
   const today = new Date().toLocaleDateString("en-GB", {
@@ -84,28 +84,28 @@ export default function DashboardPage() {
 
         if (cancelled) return;
 
-        const auth    = authRes.data;
+        const auth = authRes.data;
         const profile = studentRes.data;
         const apps = Array.isArray(appsRes.data?.results) ? appsRes.data.results : [];
         const schemesList = Array.isArray(schemesRes.data?.results) ? schemesRes.data.results : [];
 
         setUser({
-          first_name:     auth.firstname      || "",
-          last_name:      auth.lastname       || "",
-          email:          auth.email          || "",
-          phone:          auth.phone_number   || "",
-          lga:            profile.lga         || "",
-          ward:           profile.ward        || "",
-          is_verified:    profile.is_verified || false,
+          first_name: auth.firstname || "",
+          last_name: auth.lastname || "",
+          email: auth.email || "",
+          phone: auth.phone_number || "",
+          lga: profile.lga || "",
+          ward: profile.ward || "",
+          is_verified: profile.is_verified || false,
           passport_photo: profile.passport || null,
         });
 
         setStats({
-          total:       apps.length,
-          approved:    apps.filter((a) => a.status === "approved").length,
+          total: apps.length,
+          approved: apps.filter((a) => a.status === "approved").length,
           underReview: apps.filter((a) =>
             ["submitted", "document_review", "shortlisted",
-             "eligibility_check", "double_dip_flag"].includes(a.status)
+              "eligibility_check", "double_dip_flag"].includes(a.status)
           ).length,
         });
 
