@@ -38,9 +38,26 @@ export default function DashboardLayout({ children }) {
 
   useEffect(() => {
     async function loadUser() {
+      // ── Retry helper with exponential backoff ────────────────────────────
+      // After login/register, cookies may not be synced to the browser yet.
+      // We retry getMe() up to 2 times with backoff (500ms, 1s) before
+      // giving up and redirecting to /login. This prevents the 307 loop.
+      async function retryGetMe(maxRetries = 2) {
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+          try {
+            const res = await getMe();
+            return res;
+          } catch (err) {
+            if (attempt === maxRetries) throw err;
+            // Exponential backoff: 500ms, then 1000ms
+            await new Promise((r) => setTimeout(r, 500 * Math.pow(2, attempt)));
+          }
+        }
+      }
+
       try {
         const [authRes, studentRes] = await Promise.all([
-          getMe(),
+          retryGetMe(),
           getStudentProfile(),
         ]);
 

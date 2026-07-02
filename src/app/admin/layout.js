@@ -16,8 +16,21 @@ export default function AdminLayout({ children }) {
   useEffect(() => {
     let cancelled = false;
     async function loadUser() {
+      // ── Retry helper with exponential backoff ────────────────────────────
+      async function retryGetMe(maxRetries = 2) {
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+          try {
+            const res = await getMe();
+            return res;
+          } catch (err) {
+            if (attempt === maxRetries) throw err;
+            await new Promise((r) => setTimeout(r, 500 * Math.pow(2, attempt)));
+          }
+        }
+      }
+
       try {
-        const res = await getMe();
+        const res = await retryGetMe();
         if (cancelled) return;
 
         const u = res.data;

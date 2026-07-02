@@ -167,7 +167,29 @@ export default function LoginPage() {
 
     try {
       await otpVerify({ email: form.email, code });
-      const meRes = await getMe();
+
+      // ── Verify auth is live before redirecting ──────────────────────────
+      // Cookies may not be synced to the browser yet after OTP verify.
+      // We call getMe() with a timeout to confirm the access_token cookie
+      // is available before doing a hard redirect. This prevents the 307
+      // redirect loop caused by the dashboard layout getting a 401 on mount.
+      const mePromise = getMe();
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("AUTH_TIMEOUT")), 3000)
+      );
+
+      let meRes;
+      try {
+        meRes = await Promise.race([mePromise, timeoutPromise]);
+      } catch (raceErr) {
+        if (raceErr.message === "AUTH_TIMEOUT") {
+          setOtpError("Authentication is taking longer than expected. Please wait a moment and try again.");
+          setLoading(false);
+          return;
+        }
+        throw raceErr;
+      }
+
       const role = meRes.data.role;
 
       if (role === "admin" || role === "superadmin") {
