@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 // ── PROTECTED ROUTES ────────────────────────────────────────────────────────
 // These routes require a valid access_token cookie to access.
@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 
 const PROTECTED = ["/dashboard", "/admin", "/verifier"];
 
-export function middleware(request) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check if this is a protected route
