@@ -1,5 +1,18 @@
 @import "tailwindcss";
 
+/*
+  Font-token aliases.
+  layout.js loads Sora -> --font-sora and DM Sans -> --font-dm, but the
+  codebase (admin, verifier, student dashboards) references --font-jakarta
+  and --font-inter. Alias the legacy names to the loaded families so every
+  surface renders in the design-system pair (Sora display, DM Sans body)
+  instead of falling back to system sans.
+*/
+:root {
+  --font-jakarta: var(--font-sora), 'Sora', sans-serif;
+  --font-inter:   var(--font-dm),    'DM Sans', sans-serif;
+}
+
 @layer base {
   * {
     box-sizing: border-box;

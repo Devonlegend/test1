@@ -12,20 +12,15 @@ import { getApplication, reviewApplication } from "@/services";
 
 // ── STATUS MAPPING ────────────────────────────────────────────────────────────
 const statusConfig = {
-  submitted:         { label: "Pending",     color: "#f59e0b", bg: "#fffbeb" },
-  eligibility_check: { label: "Pending",     color: "#f59e0b", bg: "#fffbeb" },
-  document_review:   { label: "Pending",     color: "#f59e0b", bg: "#fffbeb" },
-  shortlisted:       { label: "Shortlisted", color: "#3b82f6", bg: "#eff6ff" },
-  draft:             { label: "Pending",     color: "#f59e0b", bg: "#fffbeb" },
-  double_dip_flag:   { label: "Flagged",     color: "#ef4444", bg: "#fef2f2" },
-  approved:          { label: "Approved",    color: "#15803d", bg: "#f0fdf4" },
-  rejected:          { label: "Rejected",    color: "#64748b", bg: "#f8fafc" },
-  withdrawn:         { label: "Rejected",    color: "#64748b", bg: "#f8fafc" },
+  submitted:         { label: "Pending",  color: "#f59e0b", bg: "#fffbeb" },
+  eligibility_check: { label: "Pending",  color: "#f59e0b", bg: "#fffbeb" },
+  document_review:   { label: "Pending",  color: "#f59e0b", bg: "#fffbeb" },
+  draft:             { label: "Pending",  color: "#f59e0b", bg: "#fffbeb" },
+  double_dip_flag:   { label: "Flagged",  color: "#ef4444", bg: "#fef2f2" },
+  approved:          { label: "Approved", color: "#15803d", bg: "#f0fdf4" },
+  rejected:          { label: "Rejected", color: "#64748b", bg: "#f8fafc" },
+  withdrawn:         { label: "Rejected", color: "#64748b", bg: "#f8fafc" },
 };
-// NOTE: "shortlisted" entry above is left in place intentionally. Existing
-// applications that were shortlisted before this change (if any) still need
-// a valid label/color to render. Going forward, no new application can reach
-// this status since the Shortlist button below is disabled.
 
 // ── CATEGORY CONFIG ───────────────────────────────────────────────────────────
 const categoryConfig = {
@@ -184,7 +179,7 @@ export default function VerifierApplicationDetailPage() {
   const [submitting,  setSubmitting]  = useState(false);
   const [actionError, setActionError] = useState("");
   const [decided,     setDecided]     = useState(false);
-  const [confirmModal,setConfirmModal]= useState(null); // "approved" | "rejected" | "shortlisted" | null
+  const [confirmModal,setConfirmModal]= useState(null); // "approved" | "rejected" | null
 
   // ── FETCH APPLICATION ────────────────────────────────────────────────────
   useEffect(() => {
@@ -539,22 +534,6 @@ export default function VerifierApplicationDetailPage() {
                   </button>
 
                   <button
-                    className={styles.shortlistBtn}
-                    style={{ background: "#eff6ff", color: "#3b82f6", border: "1px solid #bfdbfe", borderRadius: 8, padding: "10px 16px", cursor: "pointer", fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}
-                    onClick={() => {
-                      if (note.trim().length < 10) { setNoteError("Decision note must be at least 10 characters."); return; }
-                      setConfirmModal("shortlisted");
-                    }}
-                    disabled={submitting}
-                  >
-                    {submitting && confirmModal === "shortlisted"
-                      ? <Loader2 size={15} strokeWidth={2} className={styles.spin} />
-                      : <CheckCircle2 size={15} strokeWidth={2} />
-                    }
-                    Shortlist
-                  </button>
-
-                  <button
                     className={styles.rejectBtn}
                     onClick={() => {
                       if (note.trim().length < 10) { setNoteError("Decision note must be at least 10 characters."); return; }
@@ -587,39 +566,29 @@ export default function VerifierApplicationDetailPage() {
 
       {/* CONFIRM MODAL */}
       {confirmModal && (
-        <div style={{
-          position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)",
-          display: "flex", alignItems: "center", justifyContent: "center", zIndex: 999,
-        }}>
-          <div style={{
-            background: "#fff", borderRadius: 16, padding: 32, maxWidth: 400, width: "90%",
-          }}>
-            <h3 style={{ fontWeight: 700, fontSize: 16, marginBottom: 8 }}>
-              {confirmModal === "approved" ? "Approve Application?" : confirmModal === "shortlisted" ? "Shortlist Application?" : "Reject Application?"}
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3 className={styles.modalTitle}>
+              {confirmModal === "approved" ? "Approve Application?" : "Reject Application?"}
             </h3>
-            <p style={{ fontSize: 13, color: "#64748b", marginBottom: 24 }}>
+            <p className={styles.modalDesc}>
               This action is permanent and cannot be undone.
             </p>
-            <div style={{ display: "flex", gap: 12 }}>
+            <div className={styles.modalActions}>
               <button
+                className={styles.modalCancel}
                 onClick={() => setConfirmModal(null)}
-                style={{
-                  flex: 1, padding: "10px 0", borderRadius: 8,
-                  border: "1px solid #e2e8f0", background: "#fff",
-                  fontSize: 13, cursor: "pointer", color: "#374151",
-                }}
+                disabled={submitting}
               >
                 Cancel
               </button>
               <button
+                className={confirmModal === "approved" ? styles.modalConfirmApprove : styles.modalConfirmReject}
                 onClick={() => { const d = confirmModal; setConfirmModal(null); handleDecision(d); }}
-                style={{
-                  flex: 1, padding: "10px 0", borderRadius: 8, border: "none",
-                  background: confirmModal === "approved" ? "#15803d" : confirmModal === "shortlisted" ? "#3b82f6" : "#ef4444",
-                  fontSize: 13, cursor: "pointer", color: "#fff", fontWeight: 600,
-                }}
+                disabled={submitting}
               >
-                {confirmModal === "approved" ? "Yes, Approve" : confirmModal === "shortlisted" ? "Yes, Shortlist" : "Yes, Reject"}
+                {submitting ? <Loader2 size={14} strokeWidth={2} className={styles.spin} /> : null}
+                {confirmModal === "approved" ? "Yes, Approve" : "Yes, Reject"}
               </button>
             </div>
           </div>

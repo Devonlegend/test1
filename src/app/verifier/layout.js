@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import VerifierSidebar from "./components/VerifierSidebar";
 import VerifierTopbar from "./components/VerifierTopbar";
-import styles from "./components/Sidebar.module.css";
+import styles from "./verifier.module.css";
 import { getMe } from "@/services/auth";
 
 export default function VerifierLayout({ children }) {
@@ -46,15 +46,8 @@ export default function VerifierLayout({ children }) {
 
   if (loading) {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100vh", background: "#f8fafc" }}>
-        <div style={{
-          width: 28, height: 28,
-          borderRadius: "50%",
-          border: "2.5px solid #e2e8f0",
-          borderTopColor: "#15803d",
-          animation: "spin 0.7s linear infinite",
-        }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <div className={styles.loadingShell}>
+        <div className={styles.loadingSpinner} />
       </div>
     );
   }
@@ -62,18 +55,18 @@ export default function VerifierLayout({ children }) {
   if (!user) return null;
 
   return (
-    <div className={styles.layout}>
+    <div className={styles.shell}>
       <VerifierSidebar
         isOpen={menuOpen}
         onClose={() => setMenuOpen(false)}
         user={user}
       />
-      <div className={styles.mainContent}>
+      <div className={styles.mainWrap}>
         <VerifierTopbar
           onMenuOpen={() => setMenuOpen(true)}
           user={user}
         />
-        <main className={styles.pageContent}>
+        <main className={styles.content}>
           {children}
         </main>
       </div>

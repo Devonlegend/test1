@@ -29,7 +29,7 @@
 
 .sub {
   font-size: 12px;
-  color: #94a3b8;
+  color: #64748b;
   margin: -2px 0 0;
 }
 
@@ -70,7 +70,7 @@
 
 .summaryLabel {
   font-size: 11px;
-  color: #94a3b8;
+  color: #64748b;
   font-weight: 500;
 }
 
@@ -189,7 +189,7 @@
 
 .cardStatLabel {
   font-size: 11px;
-  color: #94a3b8;
+  color: #64748b;
   font-weight: 500;
 }
 
@@ -431,7 +431,7 @@
 
 .studentMeta {
   font-size: 11.5px;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .tdScheme {
@@ -524,9 +524,9 @@
 .tableFooter {
   padding: 12px 20px;
   font-size: 12px;
-  color: #94a3b8;
+  color: #64748b;
   border-top: 1px solid #f1f5f9;
-  text-align: right;
+  margin-bottom: 4px;
 }
 
 /* ── SKELETON ── */

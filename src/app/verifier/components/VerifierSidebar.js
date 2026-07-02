@@ -2,8 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, ClipboardList, Users, BookOpen,
-  BadgeCheck, ShieldAlert, ScrollText, Settings,
+  LayoutDashboard, ClipboardList,
   LogOut, X,
 } from "lucide-react";
 import styles from "./Sidebar.module.css";
@@ -14,17 +13,6 @@ const navMain = [
   { label: "Overview",      href: "/verifier",              icon: LayoutDashboard, roles: ["verifier"] },
   { label: "Applications",  href: "/verifier/applications", icon: ClipboardList,   roles: ["verifier"] },
 ];
-
-const navRecords = [];
-
-  async function handleLogout() {
-    try {
-      await logout();
-    } catch {}
-    finally {
-      window.location.href = "/login";
-    }
-  }
 
 // ── NAV ITEM ──────────────────────────────────────────────────────────────────
 function NavItem({ item, active, onClick }) {
@@ -90,40 +78,18 @@ export default function VerifierSidebar({ isOpen, onClose, user }) {
         </div>
 
         {/* ── NAV ── */}
-          <nav className={styles.nav}>
+        <nav className={styles.nav}>
 
-            <span className={styles.sectionLabel}>Main</span>
+          <span className={styles.sectionLabel}>Main</span>
 
-            {navMain.filter(item => item.roles.includes(user?.role)).map((item) => (
-              <NavItem key={item.href} item={item} active={isActive(item.href)} onClick={onClose} />
-            ))}
+          {navMain.filter(item => item.roles.includes(user?.role)).map((item) => (
+            <NavItem key={item.href} item={item} active={isActive(item.href)} onClick={onClose} />
+          ))}
 
-            <div className={styles.divider} />
-
-            <span className={styles.sectionLabel}>Records</span>
-
-            {navRecords.filter(item => item.roles.includes(user?.role)).map((item) => (
-              <NavItem key={item.href} item={item} active={isActive(item.href)} onClick={onClose} />
-            ))}
-
-          </nav>
+        </nav>
 
         {/* ── BOTTOM ── */}
         <div className={styles.bottom}>
-
-          <Link
-            href="/verifier/settings"
-            className={`${styles.navItem} ${isActive("/verifier/settings") ? styles.navItemActive : ""}`}
-            title="Settings"
-            onClick={onClose}
-          >
-            <span className={styles.navIcon}>
-              <Settings size={20} strokeWidth={1.8} />
-            </span>
-            <span className={styles.navLabel}>Settings</span>
-          </Link>
-
-          <div className={styles.divider} />
 
           {/* Static profile display */}
           <div className={styles.adminProfile}>
@@ -138,11 +104,16 @@ export default function VerifierSidebar({ isOpen, onClose, user }) {
             </div>
           </div>
 
+          <div className={styles.divider} />
+
           {/* Sign out */}
           <button
             className={`${styles.navItem} ${styles.signOut}`}
             title="Sign out"
-            onClick={handleLogout}
+            onClick={async () => {
+              try { await logout(); } catch {}
+              window.location.href = "/login";
+            }}
           >
             <span className={styles.navIcon}>
               <LogOut size={17} strokeWidth={1.8} />

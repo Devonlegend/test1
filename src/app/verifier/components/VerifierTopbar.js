@@ -1,6 +1,6 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, Settings, LogOut, ChevronDown, Search } from "lucide-react";
+import { Menu, LogOut, ChevronDown, Search } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import styles from "./Topbar.module.css";
 import { logout } from "@/services";
@@ -116,10 +116,6 @@ export default function VerifierTopbar({ user, onMenuOpen }) {
                 </div>
               </div>
               <div className={styles.dropDivider} />
-              <a href="/verifier/settings" className={styles.dropItem} onClick={() => setDropOpen(false)}>
-                <Settings size={14} strokeWidth={1.8} />
-                Settings
-              </a>
               <button className={`${styles.dropItem} ${styles.dropLogout}`} onClick={handleLogout}>
                 <LogOut size={14} strokeWidth={1.8} />
                 Sign out
