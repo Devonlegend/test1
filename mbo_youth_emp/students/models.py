@@ -24,7 +24,7 @@ class Student(models.Model):
     lastname     = models.CharField(max_length=50, blank=True, default='')
     cgpa = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     level = models.IntegerField(null=True, blank=True)
-    is_verified = models.BooleanField(default=True)
+    is_verified = models.BooleanField(default=False)
     active_award = models.CharField(max_length=300, blank=True)
     nin_hash = models.CharField(max_length=64, blank=True, default='')
     lga = models.CharField(max_length=80, blank=True)
