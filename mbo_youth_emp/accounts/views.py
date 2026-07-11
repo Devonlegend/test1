@@ -173,6 +173,7 @@ def register(request):
             )
             Student.objects.create(
                 user=user,
+                email=email,
                 firstname=firstname,
                 lastname=lastname,
                 ward=ward or '',

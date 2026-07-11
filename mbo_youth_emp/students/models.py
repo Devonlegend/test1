@@ -20,6 +20,7 @@ class Student(models.Model):
     # primary_key=True so the Student row reuses the User's UUID as its PK —
     # student.pk == user.id, matching the contract the register view relies on.
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='student')
+    email = models.CharField(max_length=100)
     firstname    = models.CharField(max_length=50, blank=True, default='')
     lastname     = models.CharField(max_length=50, blank=True, default='')
     cgpa = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
