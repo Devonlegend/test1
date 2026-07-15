@@ -34,7 +34,7 @@
 }
 
 .title {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 22px;
   font-weight: 800;
   color: #0f172a;
@@ -63,7 +63,7 @@
 }
 
 .sectionTitle {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 15px;
   font-weight: 700;
   color: #0f172a;
@@ -92,18 +92,18 @@
   padding: 14px 16px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
 }
 
 .profileAvatar {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #15803d;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 16px;
   font-weight: 800;
   color: #ffffff;
@@ -157,7 +157,7 @@
 .statusItem:last-child { border-right: none; }
 
 .statusValue {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.03em;
@@ -174,7 +174,7 @@
   display: inline-flex;
   align-items: center;
   padding: 2px 8px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 11px;
   font-weight: 600;
   border: 1px solid;
@@ -240,12 +240,12 @@
   height: 40px;
   padding: 0 12px;
   border: 1px solid #e2e8f0;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   color: #0f172a;
   background: #f8fafc;
   outline: none;
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-inter), 'DM Sans', sans-serif;
   transition: border-color 0.15s, background 0.15s;
   width: 100%;
   box-sizing: border-box;
@@ -279,7 +279,7 @@
   align-items: center;
   gap: 6px;
   padding: 9px 18px;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   color: #ffffff;
@@ -298,7 +298,7 @@
   align-items: center;
   gap: 6px;
   padding: 9px 16px;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   color: #374151;
@@ -315,7 +315,7 @@
   align-items: center;
   gap: 6px;
   padding: 9px 16px;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   color: #64748b;
@@ -343,14 +343,14 @@
   padding: 32px 20px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
   text-align: center;
 }
 
 .pwdEmptyIcon {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #f0fdf4;
   border: 1.5px solid #bbf7d0;
   display: flex;
@@ -422,7 +422,7 @@
 .strengthBar {
   flex: 1;
   height: 4px;
-  border-radius: 2px;
+  border-radius: 4px;
   transition: background 0.2s;
 }
 
@@ -478,7 +478,7 @@
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   color: #ffffff;
@@ -503,7 +503,7 @@
 }
 
 .createFormTitle {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 14px;
   font-weight: 700;
   color: #0f172a;
@@ -533,7 +533,7 @@
   display: flex;
   flex-direction: column;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
 }
 
@@ -565,7 +565,7 @@
 }
 
 .userRow:last-child { border-bottom: none; }
-.userRow:hover { background: #fafafa; }
+.userRow:hover { background: #f8fafc; }
 
 .userRowInactive { opacity: 0.6; }
 
@@ -585,7 +585,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 11px;
   font-weight: 800;
   color: #15803d;
@@ -632,13 +632,13 @@
   height: 32px;
   padding: 0 8px;
   border: 1px solid #e2e8f0;
-  border-radius: 7px;
+  border-radius: 8px;
   font-size: 12px;
   color: #374151;
   background: #f8fafc;
   outline: none;
   cursor: pointer;
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-inter), 'DM Sans', sans-serif;
   transition: border-color 0.15s;
 }
 
@@ -649,7 +649,7 @@
   display: inline-flex;
   align-items: center;
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 11px;
   font-weight: 600;
   background: #f0fdf4;
@@ -661,7 +661,7 @@
   display: inline-flex;
   align-items: center;
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 11px;
   font-weight: 600;
   background: #f8fafc;
@@ -680,7 +680,7 @@
   align-items: center;
   gap: 4px;
   padding: 5px 10px;
-  border-radius: 7px;
+  border-radius: 8px;
   font-size: 11.5px;
   font-weight: 600;
   color: #ef4444;
@@ -691,7 +691,7 @@
   white-space: nowrap;
 }
 
-.deactivateBtn:hover:not(:disabled) { background: #fee2e2; }
+.deactivateBtn:hover:not(:disabled) { background: #fecaca; }
 .deactivateBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .selfNote {
@@ -704,7 +704,7 @@
   align-items: center;
   gap: 4px;
   padding: 5px 10px;
-  border-radius: 7px;
+  border-radius: 8px;
   font-size: 11.5px;
   font-weight: 600;
   color: #15803d;

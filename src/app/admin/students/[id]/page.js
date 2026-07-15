@@ -97,7 +97,7 @@ export default function StudentDetailPage() {
         if (appsRes.status === "fulfilled") {
           const allApps = Array.isArray(appsRes.value.data) ? appsRes.value.data : [];
           const studentApps = allApps.filter((a) =>
-          String(a.student?.user_id) === String(params.id)
+          String(a.student?.id) === String(params.id)
           );
           setApplications(studentApps);
         }

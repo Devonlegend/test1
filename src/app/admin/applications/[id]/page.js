@@ -2,13 +2,13 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
-  ArrowLeft, CheckCircle2, XCircle, AlertCircle,
+  ArrowLeft, ArrowRight, CheckCircle2, XCircle, AlertCircle,
   ShieldAlert, FileText, User, MapPin,
   GraduationCap, Briefcase, Banknote,
-  ShieldCheck, AlertTriangle, Loader2,
+  ShieldCheck, AlertTriangle, Loader2, Clock,
 } from "lucide-react";
 import styles from "./page.module.css";
-import { getApplication, reviewApplication } from "@/services";
+import { getApplication, reviewApplication, getApplicationHistory } from "@/services";
 
 // ── STATUS MAPPING ────────────────────────────────────────────────────────────
 const statusConfig = {
@@ -85,6 +85,14 @@ function Stepper({ step, uiStatus }) {
       })}
     </div>
   );
+}
+
+function formatDateTime(dateStr) {
+  if (!dateStr) return "—";
+  return new Date(dateStr).toLocaleString("en-GB", {
+    day: "numeric", month: "short", year: "numeric",
+    hour: "2-digit", minute: "2-digit",
+  });
 }
 
 // ── BUILD FORM FIELDS from details ────────────────────────────────────────────
@@ -175,6 +183,7 @@ export default function AdminApplicationDetailPage() {
   const params = useParams();
 
   const [app,         setApp]         = useState(null);
+  const [history,     setHistory]     = useState([]);
   const [loading,     setLoading]     = useState(true);
   const [error,       setError]       = useState(null);
 
@@ -191,9 +200,16 @@ export default function AdminApplicationDetailPage() {
     let cancelled = false;
     async function load() {
       try {
-        const res = await getApplication(params.id);
+        const [appRes, histRes] = await Promise.allSettled([
+          getApplication(params.id),
+          getApplicationHistory(params.id),
+        ]);
         if (cancelled) return;
-        setApp(res.data);
+        if (appRes.status === "fulfilled") setApp(appRes.value.data);
+        if (histRes.status === "fulfilled") {
+          const data = Array.isArray(histRes.value.data) ? histRes.value.data : [];
+          setHistory(data);
+        }
       } catch {
         if (!cancelled) setError("Failed to load application.");
       } finally {
@@ -444,7 +460,7 @@ export default function AdminApplicationDetailPage() {
 
         </div>
 
-        {/* RIGHT — decision panel */}
+        {/* RIGHT — decision panel + history */}
         <div className={styles.rightCol}>
           <div className={`${styles.card} ${styles.decisionCard}`}>
 
@@ -580,6 +596,39 @@ export default function AdminApplicationDetailPage() {
               </>
             )}
 
+          </div>
+
+          {/* Status History */}
+          <div className={styles.card}>
+            <div className={styles.cardHead}>
+              <h2 className={styles.cardTitle}>Status History</h2>
+              <Clock size={15} color="#94a3b8" strokeWidth={1.8} />
+            </div>
+            {history.length === 0 ? (
+              <p style={{ fontSize: 13, color: "#94a3b8", margin: 0 }}>No status changes recorded.</p>
+            ) : (
+              <div className={styles.timeline}>
+                {history.map((entry, i) => (
+                  <div key={entry.id || i} className={styles.timelineItem}>
+                    <div className={styles.timelineDot} />
+                    {i < history.length - 1 && <div className={styles.timelineLine} />}
+                    <div className={styles.timelineContent}>
+                      <div className={styles.timelineStatus}>
+                        <span className={styles.timelineFrom}>{entry.from_status}</span>
+                        <ArrowRight size={11} strokeWidth={2} style={{ color: "#94a3b8" }} />
+                        <span className={styles.timelineTo}>{entry.to_status}</span>
+                      </div>
+                      {entry.reason && (
+                        <p className={styles.timelineReason}>{entry.reason}</p>
+                      )}
+                      <p className={styles.timelineMeta}>
+                        {entry.changed_by_email || "System"} · {formatDateTime(entry.changed_at)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

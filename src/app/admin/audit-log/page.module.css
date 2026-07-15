@@ -19,7 +19,7 @@
 }
 
 .title {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 22px;
   font-weight: 800;
   color: #0f172a;
@@ -40,7 +40,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   color: #374151;
@@ -107,14 +107,14 @@
   height: 36px;
   padding: 0 12px 0 34px;
   border: 1px solid #e2e8f0;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   color: #0f172a;
   background: #f8fafc;
   outline: none;
   width: 100%;
   transition: border-color 0.15s, background 0.15s;
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-inter), 'DM Sans', sans-serif;
 }
 
 .searchInput:focus {
@@ -131,7 +131,7 @@
   gap: 6px;
   height: 36px;
   padding: 0 14px;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 500;
   color: #64748b;
@@ -159,7 +159,7 @@
   width: 160px;
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   z-index: 50;
@@ -229,7 +229,7 @@
 }
 
 .tableRowData:last-child { border-bottom: none; }
-.tableRowData:hover { background: #fafafa; }
+.tableRowData:hover { background: #f8fafc; }
 
 /* ── TABLE CELLS ── */
 .tdAdmin {
@@ -248,7 +248,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 10px;
   font-weight: 800;
   color: #15803d;
@@ -282,7 +282,7 @@
   align-items: center;
   gap: 4px;
   padding: 3px 8px;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 11px;
   font-weight: 600;
   white-space: nowrap;
@@ -373,7 +373,7 @@
 .comingSoonIcon {
   width: 64px;
   height: 64px;
-  border-radius: 18px;
+  border-radius: 20px;
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   display: flex;
@@ -383,7 +383,7 @@
 }
 
 .comingSoonTitle {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 16px;
   font-weight: 700;
   color: #0f172a;
@@ -411,7 +411,7 @@
 .comingSoonSteps {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 16px 20px;
   text-align: left;
   width: 100%;

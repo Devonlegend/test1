@@ -1,12 +1,10 @@
 import api from "./axiosInstance";
 
 export const submitApplication = (body) =>
-  api.post("/applications/submit/", body, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  api.post("/applications/submit/", body);
 
-export const getApplications = () =>
-  api.get("/applications/");
+export const getApplications = (page = 1, params = {}) =>
+  api.get("/applications/", { params: { page, ...params } });
 
 export const getApplication = (id) =>
   api.get(`/applications/${id}/`);
@@ -32,5 +30,11 @@ export const getSchemeOverview = () =>
 export const getApplicationsByScheme = (schemeId, status = "") =>
   api.get(`/applications/by-scheme/${schemeId}/${status ? `?status=${status}` : ""}`);
 
+export const getApplicationHistory = (id) =>
+  api.get(`/applications/${id}/history/`);
+
 export const publishSchemeApprovals = (schemeId) =>
   api.post(`/applications/publish/${schemeId}/`);
+
+export const staffCreateApplication = (body) =>
+  api.post("/applications/staff-create/", body);

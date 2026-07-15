@@ -24,7 +24,7 @@
 .pageHeaderIcon {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
   display: flex;
@@ -217,7 +217,7 @@
   right: 0;
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.1);
   padding: 6px;
   z-index: 50;
@@ -284,7 +284,7 @@
 .faqGroupIcon {
   width: 28px;
   height: 28px;
-  border-radius: 7px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -314,7 +314,7 @@
 }
 
 .faqItem:last-child { border-bottom: none; }
-.faqItemOpen { background: #fafcff; }
+.faqItemOpen { background: #eff6ff; }
 
 .faqQ {
   display: flex;
@@ -417,7 +417,7 @@
   align-items: flex-start;
   gap: 13px;
   padding: 16px 18px;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1.5px solid transparent;
   transition: all 0.2s ease;
 }
@@ -430,7 +430,7 @@
 .infoIconBox {
   width: 36px;
   height: 36px;
-  border-radius: 9px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -462,7 +462,7 @@
 .contactRight {
   background: #ffffff;
   border: 1.5px solid #e2e8f0;
-  border-radius: 18px;
+  border-radius: 20px;
   padding: 32px 28px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.04);
 }
@@ -497,7 +497,7 @@
   color: #0f172a;
   background: #f8fafc;
   border: 1.5px solid #e2e8f0;
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 10px 13px;
   outline: none;
   transition: all 0.2s ease;
@@ -518,7 +518,7 @@
   color: #0f172a;
   background: #f8fafc;
   border: 1.5px solid #e2e8f0;
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 10px 13px;
   outline: none;
   transition: all 0.2s ease;
@@ -588,7 +588,7 @@
 .successIconWrap {
   width: 72px;
   height: 72px;
-  border-radius: 18px;
+  border-radius: 20px;
   background: #f0fdf4;
   border: 1.5px solid #bbf7d0;
   display: flex;

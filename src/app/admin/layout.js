@@ -16,21 +16,8 @@ export default function AdminLayout({ children }) {
   useEffect(() => {
     let cancelled = false;
     async function loadUser() {
-      // ── Retry helper with exponential backoff ────────────────────────────
-      async function retryGetMe(maxRetries = 2) {
-        for (let attempt = 0; attempt <= maxRetries; attempt++) {
-          try {
-            const res = await getMe();
-            return res;
-          } catch (err) {
-            if (attempt === maxRetries) throw err;
-            await new Promise((r) => setTimeout(r, 500 * Math.pow(2, attempt)));
-          }
-        }
-      }
-
       try {
-        const res = await retryGetMe();
+        const res = await getMe();
         if (cancelled) return;
 
         const u = res.data;
@@ -91,7 +78,7 @@ export default function AdminLayout({ children }) {
           user={user}
           onMenuOpen={() => setSidebarOpen(true)}
         />
-        <main className={styles.content}>
+        <main id="main-content" className={styles.content}>
           {children}
         </main>
       </div>

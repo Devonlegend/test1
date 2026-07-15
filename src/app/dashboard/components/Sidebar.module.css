@@ -85,7 +85,7 @@
   display: none;
   width: 28px;
   height: 28px;
-  border-radius: 7px;
+  border-radius: 8px;
   background: rgba(255,255,255,0.07);
   border: none;
   color: rgba(255,255,255,0.5);
@@ -215,7 +215,7 @@
 .logout { color: rgba(248,113,113,0.6) !important; }
 .logout:hover {
   background: rgba(248,113,113,0.07) !important;
-  color: #f87171 !important;
+  color: #ef4444 !important;
 }
 
 /* ── MOBILE ── */

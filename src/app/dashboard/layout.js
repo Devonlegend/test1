@@ -5,7 +5,7 @@ import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import styles from "./dashboard.module.css";
 import { useInactivityLogout } from "@/hooks/useInactivityLogout";
-import { getMe, getStudentProfile } from "@/services";
+import { getMe, getStudentProfile, getCycles } from "@/services";
 
 function LoadingSpinner() {
   return (
@@ -31,6 +31,7 @@ function LoadingSpinner() {
 export default function DashboardLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [activeCycle, setActiveCycle] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -56,13 +57,20 @@ export default function DashboardLayout({ children }) {
       }
 
       try {
-        const [authRes, studentRes] = await Promise.all([
+        const [authRes, studentRes, cyclesRes] = await Promise.all([
           retryGetMe(),
           getStudentProfile(),
+          getCycles().catch(() => ({ data: [] })),
         ]);
 
         const auth = authRes.data;
         const profile = studentRes.data;
+        const cyclesList = Array.isArray(cyclesRes.data?.results)
+          ? cyclesRes.data.results
+          : (cyclesRes.data || []);
+        const active = cyclesList.find((cycle) => cycle.is_active) || null;
+
+        setActiveCycle(active);
 
         setUser({
           id: auth.id,
@@ -113,9 +121,10 @@ export default function DashboardLayout({ children }) {
       <div className={styles.mainWrap}>
         <Topbar
           user={user}
+          activeCycle={activeCycle}
           onMenuOpen={() => setSidebarOpen(true)}
         />
-        <main className={styles.content}>
+        <main id="main-content" className={styles.content}>
           {children}
         </main>
       </div>

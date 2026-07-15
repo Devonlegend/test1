@@ -22,7 +22,7 @@ export const addAcademicRecord = (body) =>
   api.post("/students/academic-records/", body);
 
 export const getBankDetail = () => 
-  api.get("/students/bank/");
+  api.get("/verification/bank/");
 
 export const verifyStudent = (id) =>
   api.post(`/students/${id}/verify/`);

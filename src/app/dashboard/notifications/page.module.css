@@ -27,7 +27,7 @@
 .pageHeadIcon {
   width: 38px;
   height: 38px;
-  border-radius: 11px;
+  border-radius: 10px;
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
   display: flex;
@@ -89,7 +89,7 @@
   transition: background 0.15s;
   white-space: nowrap;
 }
-.btnGhostDanger:hover { background: #fee2e2; }
+.btnGhostDanger:hover { background: #fecaca; }
 
 /* ── FILTER TABS ── */
 .filters {
@@ -178,8 +178,8 @@
 }
 
 .notifUnread {
-  background: #fafffe;
-  border-color: #d1fae5;
+  background: #f0fdf4;
+  border-color: #bbf7d0;
 }
 
 
@@ -236,7 +236,7 @@
   justify-content: center;
   width: 28px;
   height: 28px;
-  border-radius: 7px;
+  border-radius: 8px;
   border: none;
   background: transparent;
   color: #cbd5e1;

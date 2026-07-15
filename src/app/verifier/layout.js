@@ -79,7 +79,7 @@ export default function VerifierLayout({ children }) {
           onMenuOpen={() => setMenuOpen(true)}
           user={user}
         />
-        <main className={styles.content}>
+        <main id="main-content" className={styles.content}>
           {children}
         </main>
       </div>

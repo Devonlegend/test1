@@ -26,6 +26,8 @@ class Student(models.Model):
     cgpa = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     level = models.IntegerField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)
+    verification_rejection_reason = models.TextField(blank=True, default='')
+    verification_reviewed_at = models.DateTimeField(null=True, blank=True)
     active_award = models.CharField(max_length=300, blank=True)
     nin_hash = models.CharField(max_length=64, blank=True, default='')
     lga = models.CharField(max_length=80, blank=True)
@@ -33,6 +35,10 @@ class Student(models.Model):
     ward        = models.CharField(max_length=40, blank=True)
     date_of_birth = models.DateField(null=True)
     certificate = models.FileField(null=True, blank=True)
+    bank_name = models.CharField(max_length=100, blank=True, default='')
+    bank_code = models.CharField(max_length=10, blank=True, default='')
+    bank_account_number = models.CharField(max_length=10, blank=True, default='')
+    bank_account_name = models.CharField(max_length=150, blank=True, default='')
 
     def __str__(self):
         return f"{self.firstname} {self.lastname} - {self.is_verified}"

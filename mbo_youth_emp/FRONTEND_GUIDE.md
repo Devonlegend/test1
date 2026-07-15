@@ -140,7 +140,7 @@ Login and registration are **two-step**: credentials → email OTP → cookies s
   `documents`, `reviewer_notes`, `rejection_reason`.
 - Timeline: `GET /applications/{id}/history/` → list of `{ from_status, to_status, reason, changed_by_email, changed_at }`.
 
-**6. Profile** — `GET /students/me/`; edit via `PATCH /students/{user}/` (the path id is the user's UUID — same value as `me`'s `id`).
+**6. Profile** — `GET /students/me/` (current user's profile). Bank details: `GET /students/bank/` / `PATCH /students/bank/`.
 
 **7. Notifications** — `GET /notifications/` (`[{ id, type, title, message, read, time }]`);
 `POST /notifications/{id}/read/`; `POST /notifications/read-all/`; `DELETE /notifications/{id}/`; `DELETE /notifications/clear/`.
@@ -248,6 +248,8 @@ or `age`/`trade` (empowerment).
 | GET/PUT/PATCH | `/students/{user}/` | auth (scoped) | Student detail / update (path id = user UUID) |
 | DELETE | `/students/{user}/` | admin | Delete student |
 | GET | `/students/me/` | auth | My profile |
+| GET/PATCH | `/students/bank/` | auth | Get / update bank details |
+| PATCH | `/students/{id}/verify/` | admin | Approve/reject student verification |
 | GET | `/students/stats/` | auth | Aggregate stats |
 | GET | `/students/{user}/eligibility-check/` | auth | Quick pre-check |
 | POST | `/verification/bank/` | auth | Resolve bank account |

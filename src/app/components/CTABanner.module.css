@@ -61,7 +61,7 @@
 .floatingIcon {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: rgba(21, 128, 61, 0.12);
   border: 1px solid rgba(21, 128, 61, 0.2);
   display: flex;
@@ -125,10 +125,7 @@
 }
 
 .headingAccent {
-  background: linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #4ade80;
 }
 
 .subtext {
@@ -159,17 +156,17 @@
   font-family: var(--font-jakarta), sans-serif;
   font-size: 14px;
   font-weight: 700;
-  padding: 14px 32px;
+  padding: 13px 28px;
   border-radius: 10px;
   text-decoration: none;
   transition: all 0.2s ease;
-  box-shadow: 0 4px 16px rgba(21, 128, 61, 0.35);
+  box-shadow: 0 4px 14px rgba(21, 128, 61, 0.22);
 }
 
 .btnPrimary:hover {
   background: #166534;
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(21, 128, 61, 0.45);
+  box-shadow: 0 8px 24px rgba(21, 128, 61, 0.35);
 }
 
 .btnSecondary {
@@ -180,7 +177,7 @@
   font-family: var(--font-jakarta), sans-serif;
   font-size: 14px;
   font-weight: 600;
-  padding: 14px 32px;
+  padding: 13px 28px;
   border-radius: 10px;
   border: 1.5px solid rgba(255, 255, 255, 0.1);
   text-decoration: none;

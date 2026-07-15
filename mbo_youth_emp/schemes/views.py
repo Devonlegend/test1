@@ -3,11 +3,20 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .models import ScholarshipScheme, Cycle
-from .serializers import ScholarshipSchemeSerializer, CycleSerializer
+from .models import ScholarshipScheme, Cycle, SchemeProvider
+from .serializers import ScholarshipSchemeSerializer, CycleSerializer, SchemeProviderSerializer
 from accounts.permissions import IsAdmin
 
 
+class SchemeProviderViewSet(viewsets.ModelViewSet):
+    queryset           = SchemeProvider.objects.all().order_by('name')
+    serializer_class   = SchemeProviderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [IsAuthenticated()]
+        return [IsAdmin()]
 
 
 class CycleViewSet(viewsets.ModelViewSet):

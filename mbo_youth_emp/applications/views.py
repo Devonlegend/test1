@@ -33,7 +33,7 @@ from .dynamic import (
 )
 from .services.creation import create_application
 from schemes.models import ScholarshipScheme
-from accounts.permissions import IsVerifier
+from accounts.permissions import IsVerifier, IsAdmin
 
 # ── Notification tasks ────────────────────────────────────────────────────────
 # send_application_rejected_email is intentionally NOT imported: rejection emails
@@ -428,6 +428,136 @@ class ApplicationViewSet(viewsets.ViewSet):
             "conflict_details": result['conflict_scheme_ids'],
             "checks":           result['checks'],
             "message":          self._status_message(initial_status),
+        }, status=status.HTTP_201_CREATED)
+
+    # ── Staff create (admin) ─────────────────────────────────────────────────
+    @extend_schema(
+        summary="Create an application (staff/admin)",
+        description=(
+            "Admin creates an application on behalf of a student. Accepts a "
+            "student_id instead of using the authenticated user's profile. "
+            "Skips scheme-open, slot, and duplicate checks. Optional "
+            "status_override sets the initial status directly."
+        ),
+        request=ApplicationSubmitSerializer,
+        responses={201: OpenApiResponse(description=(
+            '{ application_id, status, eligible, has_conflict, checks, message }'
+        ))},
+    )
+    @action(detail=False, methods=['post'], url_path='staff-create', permission_classes=[IsAdmin])
+    def staff_create(self, request):
+        raw = request.data.get('payload')
+        if raw is not None:
+            try:
+                parsed = json.loads(raw)
+            except (TypeError, ValueError):
+                return Response({"error": "Malformed payload."}, status=400)
+        else:
+            parsed = request.data
+
+        # Require student_id
+        student_id = parsed.get('student_id')
+        if not student_id:
+            return Response({"error": "student_id is required."}, status=400)
+
+        from students.models import Student
+        try:
+            student = Student.objects.get(pk=student_id)
+        except (Student.DoesNotExist, ValueError):
+            return Response({"error": "Student not found."}, status=404)
+
+        submit_serializer = ApplicationSubmitSerializer(data=parsed)
+        if not submit_serializer.is_valid():
+            return Response(submit_serializer.errors, status=400)
+
+        data = submit_serializer.validated_data
+
+        scheme = ScholarshipScheme.objects.filter(id=data['scheme_id']).first()
+        if not scheme:
+            return Response({"error": "Scheme not found"}, status=404)
+
+        model = get_application_model(scheme)
+
+        # ── Validate programme_answers against award type ──────────────────
+        answer_serializer_cls = PROGRAMME_ANSWER_SERIALIZERS.get(scheme.award_type)
+        if answer_serializer_cls is None:
+            return Response(
+                {"error": f"Unknown award type '{scheme.award_type}'"},
+                status=400,
+            )
+
+        answers_serializer = answer_serializer_cls(data=data['programme_answers'])
+        if not answers_serializer.is_valid():
+            return Response(
+                {"error": "Invalid application details", "fields": answers_serializer.errors},
+                status=400,
+            )
+
+        # ── Upload documents to Cloudinary ─────────────────────────────────
+        documents = dict(data.get('documents', {}))
+        for doc_key, uploaded in request.FILES.items():
+            try:
+                validate_upload(uploaded, doc_key, required=True)
+            except FileValidationError as exc:
+                return Response({"error": str(exc)}, status=400)
+            stored = default_storage.save(
+                f"application_documents/{doc_key}/{uploaded.name}", uploaded
+            )
+            documents[doc_key] = default_storage.url(stored)
+
+        # ── Build bank fields ──────────────────────────────────────────────
+        bank_fields = {
+            'account_number':    data['bank_account_number'],
+            'bank_code':         data['bank_code'],
+            'bank_name':         data['bank_name'],
+            'account_name':      data['bank_account_name'],
+            'name_match_passed': data['bank_name_match_passed'],
+        }
+
+        # ── Create through the shared pipeline ─────────────────────────────
+        answers = answers_serializer.validated_data
+        application, result = create_application(
+            scheme    = scheme,
+            student   = student,
+            answers   = answers,
+            bank      = bank_fields,
+            self_declaration_received_support = data['self_declaration_received_support'],
+            self_declaration_details          = data.get('self_declaration_details', []),
+            attestation_agreed = data['attestation_agreed'],
+            documents          = documents,
+            changed_by         = request.user,
+            history_reason     = f'Created by admin {request.user.get_full_name() or request.user.email}',
+        )
+
+        # ── Optional status override ───────────────────────────────────────
+        status_override = parsed.get('status_override')
+        valid_overrides = {s.value for s in ApplicationStatus}
+        if status_override and status_override in valid_overrides:
+            from_status = application.status
+            application.status = status_override
+            if status_override == ApplicationStatus.APPROVED:
+                student.active_award = scheme.name
+                student.save(update_fields=['active_award'])
+                scheme.remaining_slots = max(0, scheme.remaining_slots - 1)
+                scheme.save(update_fields=['remaining_slots'])
+            application.save()
+            ApplicationStatusHistory.objects.create(
+                application_id = application.id,
+                scheme         = scheme,
+                from_status    = from_status,
+                to_status      = status_override,
+                changed_by     = request.user,
+                reason         = f'Admin set initial status to {status_override}',
+            )
+
+        return Response({
+            "application_id":   str(application.id),
+            "status":           application.status,
+            "eligible":         result['eligible'],
+            "has_conflict":     result['has_conflict'],
+            "conflict_details": result['conflict_scheme_ids'],
+            "checks":           result['checks'],
+            "message":          self._status_message(application.status),
         }, status=status.HTTP_201_CREATED)
 
     # ── Waiver ────────────────────────────────────────────────────────────────

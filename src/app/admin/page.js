@@ -146,12 +146,12 @@ export default function AdminOverviewPage() {
   }, []);
 
   const statCards = [
-    { icon: ClipboardList, label: "Total Applications", value: stats?.total      ?? 0, iconBg: "#eff6ff", iconColor: "#3b82f6" },
-    { icon: Clock,         label: "Pending Review",     value: stats?.pending    ?? 0, iconBg: "#fffbeb", iconColor: "#f59e0b" },
-    { icon: AlertCircle,   label: "Flagged",            value: stats?.flagged    ?? 0, iconBg: "#fef2f2", iconColor: "#ef4444" },
-    { icon: CheckCircle2,  label: "Approved",           value: stats?.approved   ?? 0, iconBg: "#f0fdf4", iconColor: "#15803d" },
-    { icon: XCircle,       label: "Rejected",           value: stats?.rejected   ?? 0, iconBg: "#f8fafc", iconColor: "#64748b" },
-    { icon: BookOpen,      label: "Open Schemes",       value: stats?.openSchemes ?? 0, iconBg: "#f0fdf4", iconColor: "#15803d" },
+    { icon: ClipboardList, label: "Total Applications", value: stats?.total      ?? 0, iconBg: "rgba(59,130,246,0.1)",  iconColor: "#3b82f6" },
+    { icon: Clock,         label: "Pending Review",     value: stats?.pending    ?? 0, iconBg: "rgba(245,158,11,0.1)",  iconColor: "#f59e0b" },
+    { icon: AlertCircle,   label: "Flagged",            value: stats?.flagged    ?? 0, iconBg: "rgba(239,68,68,0.1)",   iconColor: "#ef4444" },
+    { icon: CheckCircle2,  label: "Approved",           value: stats?.approved   ?? 0, iconBg: "rgba(21,128,61,0.1)",   iconColor: "#4ade80" },
+    { icon: XCircle,       label: "Rejected",           value: stats?.rejected   ?? 0, iconBg: "rgba(100,116,139,0.1)", iconColor: "#64748b" },
+    { icon: BookOpen,      label: "Open Schemes",       value: stats?.openSchemes ?? 0, iconBg: "rgba(21,128,61,0.1)",   iconColor: "#4ade80" },
   ];
 
   return (
@@ -160,8 +160,8 @@ export default function AdminOverviewPage() {
       {/* PAGE HEADER */}
       <div className={styles.header}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: "#f0fdf4", border: "1px solid #bbf7d0", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <LayoutDashboard size={20} color="#15803d" strokeWidth={1.8} />
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: "var(--color-primary-light)", border: "1.5px solid var(--color-primary-border)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <LayoutDashboard size={20} color="var(--color-primary)" strokeWidth={1.8} />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0px" }}>
             <h1 className={styles.title}>Overview</h1>

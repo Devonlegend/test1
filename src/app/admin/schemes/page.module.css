@@ -25,7 +25,7 @@
 }
 
 .title {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 22px;
   font-weight: 800;
   color: #0f172a;
@@ -86,7 +86,7 @@
 .summaryItem:last-child { border-right: none; }
 
 .summaryValue {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.03em;
@@ -125,7 +125,7 @@
   height: 36px;
   padding: 0 12px 0 34px;
   border: 1px solid #e2e8f0;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   color: #0f172a;
   background: #f0fdf4; 
@@ -133,7 +133,7 @@
   outline: none;
   width: 100%;
   transition: border-color 0.15s, background 0.15s;
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-inter), 'DM Sans', sans-serif;
 }
 
 .searchInput:focus {
@@ -163,7 +163,7 @@
 }
 
 .schemeCard:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.04);
 }
 
 .schemeCardClosed {
@@ -218,7 +218,7 @@
 
 /* Scheme name */
 .schemeName {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 14px;
   font-weight: 700;
   color: #0f172a;
@@ -278,7 +278,7 @@
   align-items: center;
   gap: 6px;
   padding: 9px 16px;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   color: #15803d;
@@ -385,7 +385,7 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.14);
 }
 
 .modalHead {
@@ -396,7 +396,7 @@
 }
 
 .modalTitle {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 17px;
   font-weight: 800;
   color: #0f172a;
@@ -468,12 +468,12 @@
   height: 38px;
   padding: 0 12px;
   border: 1px solid #e2e8f0;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   color: #0f172a;
   background: #f8fafc;
   outline: none;
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-inter), 'DM Sans', sans-serif;
   transition: border-color 0.15s, background 0.15s;
   width: 100%;
   box-sizing: border-box;
@@ -487,12 +487,12 @@
 .formTextarea {
   padding: 10px 12px;
   border: 1px solid #e2e8f0;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   color: #0f172a;
   background: #f8fafc;
   outline: none;
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-inter), 'DM Sans', sans-serif;
   resize: vertical;
   transition: border-color 0.15s, background 0.15s;
   width: 100%;
@@ -513,7 +513,7 @@
 
 .cancelBtn {
   padding: 9px 18px;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   color: #374151;
@@ -530,7 +530,7 @@
   align-items: center;
   gap: 6px;
   padding: 9px 18px;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
   color: #ffffff;

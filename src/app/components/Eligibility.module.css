@@ -90,16 +90,11 @@
   line-height: 1.15;
 }
 
-.headingAccent {
-  background: linear-gradient(135deg, #15803d 0%, #16a34a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+.headingAccent { color: #15803d; }
 
 .subtext {
   font-family: var(--font-inter), sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 400;
   line-height: 1.7;
   color: #64748b;
@@ -135,7 +130,7 @@
 
 .colTitle {
   font-family: var(--font-jakarta), sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: #0f172a;
   letter-spacing: -0.01em;
@@ -178,7 +173,7 @@
 
 .requirementTitle {
   font-family: var(--font-jakarta), sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
   color: #0f172a;
   letter-spacing: -0.01em;
@@ -211,7 +206,7 @@
 
 .ruleCard:hover {
   transform: translateX(4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.04);
 }
 
 .ruleNum {

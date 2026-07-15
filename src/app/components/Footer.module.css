@@ -38,7 +38,7 @@
   width: 32px;
   height: 32px;
   background: #15803d;
-  border-radius: 7px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -49,7 +49,7 @@
   color: #fbbf24;
   font-family: var(--font-jakarta), sans-serif;
   font-weight: 800;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .logoText {
@@ -90,7 +90,7 @@
   font-family: var(--font-inter), sans-serif;
   font-size: 12px;
   font-weight: 400;
-  color: #475569;
+  color: #64748b;
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -109,7 +109,7 @@
   font-family: var(--font-inter), sans-serif;
   font-size: 12px;
   font-weight: 400;
-  color: #475569;
+  color: #64748b;
 }
 /* Add this new rule */
 .rightGroup {

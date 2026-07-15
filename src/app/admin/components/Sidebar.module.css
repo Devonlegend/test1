@@ -67,7 +67,7 @@
 }
 
 .logoLetter {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 16px;
   font-weight: 800;
   color: #ffffff;
@@ -88,7 +88,7 @@
 }
 
 .logoName {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 13px;
   font-weight: 800;
   color: #0f172a;
@@ -187,11 +187,11 @@
 
 /* Active — green pill */
 .navItemActive {
-  background: transparent;
+  background: #f0fdf4;
   color: #15803d;
-  border-left: 3px solid #15803d;
-  border-radius: 0;
-  padding-left: 7px;
+  border-left: none;
+  border-radius: 8px;
+  padding-left: 10px;
 }
 
 .navItemActive:hover {
@@ -211,7 +211,7 @@
 
 /* Label — hidden until hover */
 .navLabel {
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-inter), 'DM Sans', sans-serif;
   font-size: 13.5px;
   font-weight: 500;
   opacity: 0;
@@ -255,7 +255,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 12px;
   font-weight: 800;
   color: #ffffff;

@@ -6,9 +6,13 @@ import {
   Wrench, Banknote, AlertCircle, CheckCircle2,
   Loader2, XCircle, Edit2, Save, X,
   Users, Calendar, DollarSign, Shield,
+  Building2, CalendarRange,
 } from "lucide-react";
 import styles from "./page.module.css";
-import { getScheme, publishScheme, closeScheme, updateScheme, reopenScheme } from "@/services";
+import {
+  getScheme, publishScheme, closeScheme, updateScheme, reopenScheme,
+  getProviders, getCycles,
+} from "@/services";
 
 // ── CATEGORY CONFIG ───────────────────────────────────────────────────────────
 const categoryConfig = {
@@ -61,20 +65,41 @@ export default function SchemeDetailPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError,   setActionError]   = useState("");
   const [actionSuccess, setActionSuccess] = useState("");
+  const [providers,    setProviders]    = useState([]);
+  const [cycles,       setCycles]       = useState([]);
+  const [loadingMeta,  setLoadingMeta]  = useState(true);
 
   // ── FETCH ─────────────────────────────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
     async function load() {
       try {
-        const res = await getScheme(params.id);
+        const [schemeRes, provRes, cycRes] = await Promise.allSettled([
+          getScheme(params.id),
+          getProviders(),
+          getCycles(),
+        ]);
         if (cancelled) return;
-        setScheme(res.data);
-        setForm(res.data);
+        if (schemeRes.status === "fulfilled") {
+          setScheme(schemeRes.value.data);
+          setForm(schemeRes.value.data);
+        } else {
+          setError("Failed to load scheme.");
+        }
+        if (provRes.status === "fulfilled") {
+          const data = Array.isArray(provRes.value.data?.results) ? provRes.value.data.results :
+                       Array.isArray(provRes.value.data) ? provRes.value.data : [];
+          setProviders(data);
+        }
+        if (cycRes.status === "fulfilled") {
+          const data = Array.isArray(cycRes.value.data?.results) ? cycRes.value.data.results :
+                       Array.isArray(cycRes.value.data) ? cycRes.value.data : [];
+          setCycles(data);
+        }
       } catch {
         if (!cancelled) setError("Failed to load scheme.");
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelled) { setLoading(false); setLoadingMeta(false); }
       }
     }
     load();
@@ -97,7 +122,8 @@ export default function SchemeDetailPage() {
     setSaving(true);
     setSaveError("");
     try {
-      const res = await updateScheme(params.id, {
+      const ec = scheme.eligibility_criteria || {};
+      const body = {
         name:                   form.name,
         description:            form.description,
         academic_year:          form.academic_year,
@@ -106,7 +132,17 @@ export default function SchemeDetailPage() {
         application_open_date:  form.application_open_date,
         application_close_date: form.application_close_date,
         stacking_policy:        form.stacking_policy,
-      });
+        provider_id:            form.provider_id || form.provider?.id,
+        cycle_id:               form.cycle_id || form.cycle?.id,
+        min_cgpa:               form._min_cgpa ?? ec.min_cgpa,
+        allowed_levels:         form._allowed_levels ?? (ec.allowed_levels || []).join(","),
+        min_age:                form._min_age ?? ec.min_age,
+        max_age:                form._max_age ?? ec.max_age,
+        allowed_trades:         form._allowed_trades ?? (ec.allowed_trades || []).join(","),
+        ward_restriction:       form._ward_restriction ?? (ec.ward_restriction || []).join(","),
+        max_prior_awards:       form._max_prior_awards ?? ec.max_prior_awards,
+      };
+      const res = await updateScheme(params.id, body);
       setScheme(res.data);
       setEditing(false);
     } catch (err) {
@@ -288,6 +324,28 @@ async function handleReopen() {
                 </div>
                 <div className={styles.twoCol}>
                   <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Provider</label>
+                    <select className={styles.input} value={form.provider?.id || form.provider_id || ""}
+                      onChange={(e) => setForm((f) => ({ ...f, provider_id: e.target.value }))}>
+                      <option value="">— Select —</option>
+                      {providers.map((p) => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Cycle</label>
+                    <select className={styles.input} value={form.cycle?.id || form.cycle_id || ""}
+                      onChange={(e) => setForm((f) => ({ ...f, cycle_id: e.target.value }))}>
+                      <option value="">— Select —</option>
+                      {cycles.map((c) => (
+                        <option key={c.id} value={c.id}>{c.name} ({c.start_year}/{c.end_year}){c.is_active ? " — Active" : ""}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className={styles.twoCol}>
+                  <div className={styles.field}>
                     <label className={styles.fieldLabel}>Academic Year</label>
                     <input className={styles.input} value={form.academic_year} onChange={(e) => setForm((f) => ({ ...f, academic_year: e.target.value }))} />
                   </div>
@@ -320,10 +378,86 @@ async function handleReopen() {
                     <input type="date" className={styles.input} value={form.application_close_date?.slice(0,10) || ""} onChange={(e) => setForm((f) => ({ ...f, application_close_date: e.target.value }))} />
                   </div>
                 </div>
+                {/* Eligibility criteria — read from scheme.eligibility_criteria */}
+                {scheme.award_type === "scholarship" && (
+                  <>
+                    <div className={styles.field}>
+                      <label className={styles.fieldLabel}>Min CGPA</label>
+                      <input type="number" step="0.01" className={styles.input}
+                        placeholder="e.g. 2.20"
+                        value={form._min_cgpa ?? scheme.eligibility_criteria?.min_cgpa ?? ""}
+                        onChange={(e) => setForm((f) => ({ ...f, _min_cgpa: e.target.value }))} />
+                    </div>
+                    <div className={styles.field}>
+                      <label className={styles.fieldLabel}>Allowed Levels</label>
+                      <input className={styles.input}
+                        placeholder="e.g. 100, 200, 300 (comma-separated)"
+                        value={form._allowed_levels ?? (scheme.eligibility_criteria?.allowed_levels || []).join(", ")}
+                        onChange={(e) => setForm((f) => ({ ...f, _allowed_levels: e.target.value }))} />
+                    </div>
+                    <div className={styles.field}>
+                      <label className={styles.fieldLabel}>Ward Restriction</label>
+                      <input className={styles.input}
+                        placeholder="comma-separated ward names (leave empty for all)"
+                        value={form._ward_restriction ?? (scheme.eligibility_criteria?.ward_restriction || []).join(", ")}
+                        onChange={(e) => setForm((f) => ({ ...f, _ward_restriction: e.target.value }))} />
+                    </div>
+                    <div className={styles.field}>
+                      <label className={styles.fieldLabel}>Max Prior Awards</label>
+                      <input type="number" className={styles.input}
+                        placeholder="e.g. 1"
+                        value={form._max_prior_awards ?? scheme.eligibility_criteria?.max_prior_awards ?? ""}
+                        onChange={(e) => setForm((f) => ({ ...f, _max_prior_awards: e.target.value }))} />
+                    </div>
+                  </>
+                )}
+                {(scheme.award_type === "empowerment" || scheme.award_type === "grant") && (
+                  <>
+                    <div className={styles.twoCol}>
+                      <div className={styles.field}>
+                        <label className={styles.fieldLabel}>Min Age</label>
+                        <input type="number" className={styles.input}
+                          value={form._min_age ?? scheme.eligibility_criteria?.min_age ?? ""}
+                          onChange={(e) => setForm((f) => ({ ...f, _min_age: e.target.value }))} />
+                      </div>
+                      <div className={styles.field}>
+                        <label className={styles.fieldLabel}>Max Age</label>
+                        <input type="number" className={styles.input}
+                          value={form._max_age ?? scheme.eligibility_criteria?.max_age ?? ""}
+                          onChange={(e) => setForm((f) => ({ ...f, _max_age: e.target.value }))} />
+                      </div>
+                    </div>
+                    <div className={styles.field}>
+                      <label className={styles.fieldLabel}>Ward Restriction</label>
+                      <input className={styles.input}
+                        placeholder="comma-separated ward names (leave empty for all)"
+                        value={form._ward_restriction ?? (scheme.eligibility_criteria?.ward_restriction || []).join(", ")}
+                        onChange={(e) => setForm((f) => ({ ...f, _ward_restriction: e.target.value }))} />
+                    </div>
+                    <div className={styles.field}>
+                      <label className={styles.fieldLabel}>Max Prior Awards</label>
+                      <input type="number" className={styles.input}
+                        placeholder="e.g. 1"
+                        value={form._max_prior_awards ?? scheme.eligibility_criteria?.max_prior_awards ?? ""}
+                        onChange={(e) => setForm((f) => ({ ...f, _max_prior_awards: e.target.value }))} />
+                    </div>
+                  </>
+                )}
+                {scheme.award_type === "empowerment" && (
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Allowed Trades</label>
+                    <input className={styles.input}
+                      placeholder="e.g. Welding, Tailoring, ICT"
+                      value={form._allowed_trades ?? (scheme.eligibility_criteria?.allowed_trades || []).join(", ")}
+                      onChange={(e) => setForm((f) => ({ ...f, _allowed_trades: e.target.value }))} />
+                  </div>
+                )}
               </div>
             ) : (
               <div className={styles.infoGrid}>
                 <InfoRow icon={BookOpen}     label="Description"      value={scheme.description} />
+                <InfoRow icon={Building2}    label="Provider"         value={scheme.provider?.name || "—"} />
+                <InfoRow icon={CalendarRange} label="Cycle"           value={scheme.cycle?.name ? `${scheme.cycle.name} (${scheme.cycle.start_year}/${scheme.cycle.end_year})` : "—"} />
                 <InfoRow icon={Calendar}     label="Academic Year"    value={scheme.academic_year} />
                 <InfoRow icon={DollarSign}   label="Award Amount"     value={formatCurrency(scheme.award_amount)} />
                 <InfoRow icon={Users}        label="Total Slots"      value={`${scheme.remaining_slots ?? scheme.total_slots ?? "—"} remaining of ${scheme.total_slots ?? "—"}`} />
@@ -333,6 +467,11 @@ async function handleReopen() {
                   scheme.stacking_policy === "exclusive" ? "Exclusive" :
                   scheme.stacking_policy === "major_only" ? "Major Only" :
                   "Open"
+                } />
+                <InfoRow icon={CheckCircle2} label="Eligibility"      value={
+                  scheme.eligibility_criteria && Object.keys(scheme.eligibility_criteria).length > 0
+                    ? JSON.stringify(scheme.eligibility_criteria, null, 1)
+                    : "None set"
                 } />
               </div>
             )}

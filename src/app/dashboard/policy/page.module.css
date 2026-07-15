@@ -21,7 +21,7 @@
 .pageHeaderIcon {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
   display: flex;
@@ -80,7 +80,7 @@
 .summaryCardIcon {
   width: 34px;
   height: 34px;
-  border-radius: 9px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -163,7 +163,7 @@
 }
 
 .catCard:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.04);
   transform: translateY(-2px);
 }
 
@@ -176,7 +176,7 @@
 .catCardIcon {
   width: 34px;
   height: 34px;
-  border-radius: 9px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -264,7 +264,7 @@
 .policyGroupNum {
   width: 26px;
   height: 26px;
-  border-radius: 7px;
+  border-radius: 8px;
   background: #f0fdf4;
   border: 1px solid #bbf7d0;
   display: flex;

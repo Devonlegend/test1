@@ -1,40 +1,52 @@
 "use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, ClipboardList, Users, BookOpen,
-  BadgeCheck, ShieldAlert, ScrollText, Settings,
-  LogOut, X,
+  LayoutDashboard,
+  ClipboardList,
+  Users,
+  BookOpen,
+  BadgeCheck,
+  ShieldAlert,
+  ScrollText,
+  Settings,
+  LogOut,
+  X,
+  CalendarRange,
+  Building2,
 } from "lucide-react";
 import styles from "./Sidebar.module.css";
 import { logout } from "@/services";
 
 // ── NAV STRUCTURE ─────────────────────────────────────────────────────────────
 const navMain = [
-  { label: "Overview",      href: "/admin",              icon: LayoutDashboard, roles: ["admin", "superadmin"] },
-  { label: "Applications",  href: "/admin/applications", icon: ClipboardList,   roles: ["admin", "superadmin"] },
-  { label: "Students",      href: "/admin/students",     icon: Users,           roles: ["admin", "superadmin"] },
+  { label: "Overview",      href: "/admin",              icon: LayoutDashboard, roles: ["admin", "superadmin", "verifier"] },
+  { label: "Applications",  href: "/admin/applications", icon: ClipboardList,   roles: ["admin", "superadmin", "verifier"] },
+  { label: "Students",      href: "/admin/students",     icon: Users,           roles: ["admin", "superadmin", "verifier"] },
   { label: "Schemes",       href: "/admin/schemes",      icon: BookOpen,        roles: ["admin", "superadmin"] },
+  { label: "Cycles",        href: "/admin/cycles",       icon: CalendarRange,   roles: ["admin", "superadmin"] },
+  { label: "Providers",     href: "/admin/providers",    icon: Building2,       roles: ["admin", "superadmin"] },
 ];
 
 const navRecords = [
-  { label: "Beneficiaries",     href: "/admin/beneficiaries",     icon: BadgeCheck,  roles: ["admin", "superadmin"] },
-  { label: "Disqualifications", href: "/admin/disqualifications", icon: ShieldAlert, roles: ["admin", "superadmin"] },
+  { label: "Beneficiaries",     href: "/admin/beneficiaries",     icon: BadgeCheck,  roles: ["admin", "superadmin", "verifier"] },
+  { label: "Disqualifications", href: "/admin/disqualifications", icon: ShieldAlert, roles: ["admin", "superadmin", "verifier"] },
   { label: "Audit Log",         href: "/admin/audit-log",         icon: ScrollText,  roles: ["superadmin"] },
 ];
 
-  async function handleLogout() {
-    try {
-      await logout();
-    } catch {}
-    finally {
-      window.location.href = "/login";
-    }
+async function handleLogout() {
+  try {
+    await logout();
+  } catch (error) {
+    console.error("Logout failed:", error);
   }
+}
 
 // ── NAV ITEM ──────────────────────────────────────────────────────────────────
 function NavItem({ item, active, onClick }) {
   const Icon = item.icon;
+
   return (
     <Link
       href={item.href}
@@ -96,23 +108,27 @@ export default function AdminSidebar({ isOpen, onClose, user }) {
         </div>
 
         {/* ── NAV ── */}
-          <nav className={styles.nav}>
+        <nav className={styles.nav}>
 
-            <span className={styles.sectionLabel}>Main</span>
+          <span className={styles.sectionLabel}>Main</span>
 
-            {navMain.filter(item => item.roles.includes(user?.role)).map((item) => (
+          {navMain
+            .filter((item) => item.roles.includes(user?.role))
+            .map((item) => (
               <NavItem key={item.href} item={item} active={isActive(item.href)} onClick={onClose} />
             ))}
 
-            <div className={styles.divider} />
+          <div className={styles.divider} />
 
-            <span className={styles.sectionLabel}>Records</span>
+          <span className={styles.sectionLabel}>Records</span>
 
-            {navRecords.filter(item => item.roles.includes(user?.role)).map((item) => (
+          {navRecords
+            .filter((item) => item.roles.includes(user?.role))
+            .map((item) => (
               <NavItem key={item.href} item={item} active={isActive(item.href)} onClick={onClose} />
             ))}
 
-          </nav>
+        </nav>
 
         {/* ── BOTTOM ── */}
         <div className={styles.bottom}>

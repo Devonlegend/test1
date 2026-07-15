@@ -18,7 +18,7 @@
 }
 
 .title {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 21px;
   font-weight: 800;
   color: #0f172a;
@@ -61,7 +61,7 @@
 .summaryItemActive { background: #f0fdf4; }
 
 .summaryValue {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.03em;
@@ -100,7 +100,7 @@
   cursor: pointer;
   text-align: left;
   transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-inter), 'DM Sans', sans-serif;
 }
 
 .schemeCard:hover {
@@ -110,8 +110,8 @@
 }
 
 .schemeCardActive {
-  border-color: #fcd34d;
-  background: #fffdf7;
+  border-color: #fde68a;
+  background: #fffbeb;
 }
 
 .schemeCardActive:hover {
@@ -128,7 +128,7 @@
 .cardIcon {
   width: 42px;
   height: 42px;
-  border-radius: 11px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -143,7 +143,7 @@
 }
 
 .cardName {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 14.5px;
   font-weight: 700;
   color: #0f172a;
@@ -159,7 +159,7 @@
   display: inline-flex;
   align-items: center;
   padding: 2px 8px;
-  border-radius: 5px;
+  border-radius: 4px;
   font-size: 10.5px;
   font-weight: 600;
   width: fit-content;
@@ -180,7 +180,7 @@
 }
 
 .cardStatValue {
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -0.03em;
@@ -226,7 +226,7 @@
 .skeletonCircle {
   width: 42px;
   height: 42px;
-  border-radius: 11px;
+  border-radius: 10px;
   background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
@@ -295,7 +295,7 @@
   justify-content: center;
   min-width: 18px;
   height: 18px;
-  border-radius: 9px;
+  border-radius: 10px;
   background: #ef4444;
   color: #ffffff;
   font-size: 10px;
@@ -327,14 +327,14 @@
   height: 36px;
   padding: 0 12px 0 34px;
   border: 1px solid #e2e8f0;
-  border-radius: 9px;
+  border-radius: 10px;
   font-size: 13px;
   color: #0f172a;
   background: #f8fafc;
   outline: none;
   width: 240px;
   transition: border-color 0.15s, background 0.15s;
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-inter), 'DM Sans', sans-serif;
 }
 
 .searchInput:focus {
@@ -379,11 +379,11 @@
 }
 
 .tableRowData:last-child { border-bottom: none; }
-.tableRowData:hover { background: #fafafa; }
+.tableRowData:hover { background: #f8fafc; }
 
 /* Flagged row highlight */
 .tableRowFlagged {
-  background: #fff8f8;
+  background: #fef2f2;
 }
 
 .tableRowFlagged:hover { background: #fef2f2; }
@@ -399,13 +399,13 @@
 .studentAvatar {
   width: 34px;
   height: 34px;
-  border-radius: 9px;
+  border-radius: 10px;
   background: #f0fdf4;
   border: 1.5px solid #bbf7d0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-jakarta), 'Plus Jakarta Sans', sans-serif;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
   font-size: 11px;
   font-weight: 800;
   color: #15803d;

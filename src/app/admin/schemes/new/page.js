@@ -1,190 +1,22 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft, BookOpen, GraduationCap, Briefcase,
   Wrench, Banknote, AlertCircle, CheckCircle2,
-  Loader2, Plus, Trash2, GripVertical, ChevronDown,
-  ChevronUp, Settings2,
+  Loader2, Plus, Building2, CalendarRange,
 } from "lucide-react";
 import styles from "./page.module.css";
-import { createScheme } from "@/services";
+import { createScheme, getCycles, getProviders } from "@/services";
 
-// ── CATEGORY CONFIG ───────────────────────────────────────────────────────────
 const categoryConfig = {
   scholarship: { label: "Scholarship", color: "#15803d", bg: "#f0fdf4", icon: GraduationCap },
   empowerment: { label: "Empowerment", color: "#b45309", bg: "#fffbeb", icon: Briefcase     },
   grant:       { label: "Grant",       color: "#7e22ce", bg: "#faf5ff", icon: Banknote      },
 };
 
-/* ─────────────────────────────────────────────────────────────────────────
- * FORM BUILDER — DISABLED (commented out, not deleted)
- *
- * Why: The apply form (student-facing) does NOT read these saved fields.
- * It calls GET /schemes/{id}/fields/, which regenerates the field list
- * directly from the backend's PROGRAMME_ANSWER_SERIALIZERS — completely
- * ignoring whatever is configured here. So this builder currently has
- * zero effect on what students see or submit; it's a no-op UI.
- *
- * Leaving the code here (commented) in case the backend is later updated
- * to read custom SchemeFormField records instead of the fixed serializers,
- * at which point this can be re-enabled.
- * ───────────────────────────────────────────────────────────────────────── */
+const LEVEL_OPTIONS = ["100", "200", "300", "400", "500", "600", "Postgraduate"];
 
-// const defaultFields = {
-//   scholarship: [
-//     { field_name: "institution",    field_label: "Institution Name",       field_type: "text",     placeholder: "e.g. University of Uyo",         is_required: true,  options: [], section: "Academic Information" },
-//     { field_name: "level",          field_label: "Level of Study",         field_type: "select",   placeholder: "",                               is_required: true,  options: ["Secondary", "Undergraduate", "Postgraduate", "Vocational", "Professional"], section: "Academic Information" },
-//     { field_name: "department",     field_label: "Department / Course",    field_type: "text",     placeholder: "e.g. Computer Science",           is_required: true,  options: [], section: "Academic Information" },
-//     { field_name: "current_level",  field_label: "Current Level / Year",   field_type: "select",   placeholder: "",                               is_required: true,  options: ["100", "200", "300", "400", "500", "Postgraduate"], section: "Academic Information" },
-//     { field_name: "matric_number",  field_label: "Matriculation Number",   field_type: "text",     placeholder: "e.g. UU/2022/001234",             is_required: true,  options: [], section: "Academic Information" },
-//     { field_name: "cgpa",           field_label: "CGPA / Last Score",      field_type: "text",     placeholder: "e.g. 4.21 / 5.0",                is_required: true,  options: [], section: "Academic Information" },
-//     { field_name: "result",         field_label: "Last Academic Result",   field_type: "file",     placeholder: "",                               is_required: true,  options: [], section: "Supporting Documents" },
-//     { field_name: "admission",      field_label: "Admission Letter",       field_type: "file",     placeholder: "",                               is_required: true,  options: [], section: "Supporting Documents" },
-//     { field_name: "bank_name",      field_label: "Bank Name",              field_type: "select",   placeholder: "",                               is_required: true,  options: ["Access Bank", "First Bank of Nigeria", "Guaranty Trust Bank (GTBank)", "United Bank for Africa (UBA)", "Zenith Bank", "Others"], section: "Bank Details" },
-//     { field_name: "account_number", field_label: "Account Number",         field_type: "text",     placeholder: "10-digit account number",         is_required: true,  options: [], section: "Bank Details" },
-//     { field_name: "account_name",   field_label: "Account Name",           field_type: "text",     placeholder: "Name as on bank account",         is_required: true,  options: [], section: "Bank Details" },
-//   ],
-//   empowerment: [
-//     { field_name: "trade",             field_label: "Trade / Skill",          field_type: "text",     placeholder: "e.g. Tailoring, Welding",       is_required: true,  options: [], section: "Business / Trade Information" },
-//     { field_name: "current_status",    field_label: "Current Status",         field_type: "select",   placeholder: "",                              is_required: true,  options: ["Starting", "Existing", "Cooperative"], section: "Business / Trade Information" },
-//     { field_name: "support_needed",    field_label: "Support Needed",         field_type: "textarea", placeholder: "Describe the support needed...", is_required: true,  options: [], section: "Business / Trade Information" },
-//     { field_name: "equipment",         field_label: "Equipment List",         field_type: "text",     placeholder: "e.g. Sewing machine",           is_required: false, options: [], section: "Business / Trade Information" },
-//     { field_name: "business_location", field_label: "Business Location",      field_type: "text",     placeholder: "e.g. Eket Market, Mbo LGA",     is_required: true,  options: [], section: "Business / Trade Information" },
-//   ],
-//   grant: [
-//     { field_name: "grant_purpose",          field_label: "Grant Purpose",          field_type: "textarea", placeholder: "Describe the purpose of the grant...",   is_required: true,  options: [], section: "Grant Details" },
-//     { field_name: "business_plan_desc",     field_label: "Business Plan Summary",  field_type: "textarea", placeholder: "Brief summary of your business plan...", is_required: true,  options: [], section: "Grant Details" },
-//     { field_name: "amount_requested",       field_label: "Amount Requested (₦)",   field_type: "text",     placeholder: "e.g. 500,000",                          is_required: true,  options: [], section: "Grant Details" },
-//     { field_name: "expected_beneficiaries", field_label: "Expected Beneficiaries", field_type: "text",     placeholder: "e.g. 10 community members",              is_required: true,  options: [], section: "Grant Details" },
-//     { field_name: "business_plan",          field_label: "Business Plan Document", field_type: "file",     placeholder: "",                                      is_required: true,  options: [], section: "Grant Details" },
-//     { field_name: "bank_name",              field_label: "Bank Name",              field_type: "select",   placeholder: "",                                      is_required: true,  options: ["Access Bank", "First Bank of Nigeria", "Guaranty Trust Bank (GTBank)", "United Bank for Africa (UBA)", "Zenith Bank", "Others"], section: "Bank Details" },
-//     { field_name: "account_number",         field_label: "Account Number",         field_type: "text",     placeholder: "10-digit account number",                is_required: true,  options: [], section: "Bank Details" },
-//     { field_name: "account_name",           field_label: "Account Name",           field_type: "text",     placeholder: "Name as on bank account",                is_required: true,  options: [], section: "Bank Details" },
-//   ],
-// };
-
-
-// // ── FIELD TYPE OPTIONS ────────────────────────────────────────────────────────
-// const fieldTypes = [
-//   { value: "text",     label: "Text Input" },
-//   { value: "textarea", label: "Text Area" },
-//   { value: "select",   label: "Dropdown" },
-//   { value: "radio",    label: "Radio Buttons" },
-//   { value: "file",     label: "File Upload" },
-//   { value: "number",   label: "Number" },
-//   { value: "checkbox", label: "Checkbox" },
-// ];
-
-// // ── FIELD ROW COMPONENT ───────────────────────────────────────────────────────
-// function FieldRow({ field, index, onChange, onRemove }) {
-//   const [expanded, setExpanded] = useState(false);
-//
-//   return (
-//     <div className={styles.fieldRow}>
-//       <div className={styles.fieldRowTop}>
-//         <div className={styles.fieldRowDrag}>
-//           <GripVertical size={14} color="#cbd5e1" strokeWidth={2} />
-//           <span className={styles.fieldRowNum}>{index + 1}</span>
-//         </div>
-//
-//         <div className={styles.fieldRowMain}>
-//           <input
-//             className={styles.fieldInput}
-//             placeholder="Field label (e.g. Institution Name)"
-//             value={field.field_label}
-//             onChange={(e) => onChange(index, "field_label", e.target.value)}
-//           />
-//           <select
-//             className={styles.fieldSelect}
-//             value={field.field_type}
-//             onChange={(e) => onChange(index, "field_type", e.target.value)}
-//           >
-//             {fieldTypes.map((t) => (
-//               <option key={t.value} value={t.value}>{t.label}</option>
-//             ))}
-//           </select>
-//           <label className={styles.fieldRequired}>
-//             <input
-//               type="checkbox"
-//               checked={field.is_required}
-//               onChange={(e) => onChange(index, "is_required", e.target.checked)}
-//               style={{ accentColor: "#15803d" }}
-//             />
-//             Required
-//           </label>
-//         </div>
-//
-//         <div className={styles.fieldRowActions}>
-//           <button
-//             type="button"
-//             className={styles.fieldExpandBtn}
-//             onClick={() => setExpanded((v) => !v)}
-//             title="More options"
-//           >
-//             {expanded ? <ChevronUp size={13} strokeWidth={2} /> : <ChevronDown size={13} strokeWidth={2} />}
-//           </button>
-//           <button
-//             type="button"
-//             className={styles.fieldRemoveBtn}
-//             onClick={() => onRemove(index)}
-//             title="Remove field"
-//           >
-//             <Trash2 size={13} strokeWidth={2} />
-//           </button>
-//         </div>
-//       </div>
-//
-//       {expanded && (
-//         <div className={styles.fieldRowExtra}>
-//           <div className={styles.fieldExtraRow}>
-//             <div className={styles.fieldExtraItem}>
-//               <label className={styles.fieldExtraLabel}>Field Name (key)</label>
-//               <input
-//                 className={styles.fieldInput}
-//                 placeholder="e.g. institution_name"
-//                 value={field.field_name}
-//                 onChange={(e) => onChange(index, "field_name", e.target.value)}
-//               />
-//             </div>
-//             <div className={styles.fieldExtraItem}>
-//               <label className={styles.fieldExtraLabel}>Section</label>
-//               <input
-//                 className={styles.fieldInput}
-//                 placeholder="e.g. Academic Information"
-//                 value={field.section}
-//                 onChange={(e) => onChange(index, "section", e.target.value)}
-//               />
-//             </div>
-//             <div className={styles.fieldExtraItem}>
-//               <label className={styles.fieldExtraLabel}>Placeholder</label>
-//               <input
-//                 className={styles.fieldInput}
-//                 placeholder="Input hint text..."
-//                 value={field.placeholder}
-//                 onChange={(e) => onChange(index, "placeholder", e.target.value)}
-//               />
-//             </div>
-//           </div>
-//           {(field.field_type === "select" || field.field_type === "radio") && (
-//             <div className={styles.fieldExtraItem} style={{ marginTop: 8 }}>
-//               <label className={styles.fieldExtraLabel}>Options (one per line)</label>
-//               <textarea
-//                 className={styles.fieldTextarea}
-//                 rows={3}
-//                 placeholder={"Option 1\nOption 2\nOption 3"}
-//                 value={(field.options || []).join("\n")}
-//                 onChange={(e) => onChange(index, "options", e.target.value.split("\n").filter(Boolean))}
-//               />
-//             </div>
-//           )}
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// ── PAGE ──────────────────────────────────────────────────────────────────────
 export default function NewSchemePage() {
   const router = useRouter();
 
@@ -198,13 +30,53 @@ export default function NewSchemePage() {
     application_open_date:  "",
     application_close_date: "",
     stacking_policy:        "major_only",
+    provider_id:            "",
+    cycle_id:               "",
   });
 
-  // const [fields,   setFields]   = useState(defaultFields.scholarship.map((f, i) => ({ ...f, order: i })));
-  const [errors,   setErrors]   = useState({});
-  const [loading,  setLoading]  = useState(false);
-  const [apiError, setApiError] = useState("");
-  const [success,  setSuccess]  = useState(false);
+  const [eligibility, setEligibility] = useState({
+    min_cgpa:         "",
+    allowed_levels:   [],
+    min_age:          "",
+    max_age:          "",
+    allowed_trades:   "",
+    ward_restriction: "",
+    max_prior_awards: "",
+  });
+
+  const [providers, setProviders] = useState([]);
+  const [cycles,    setCycles]    = useState([]);
+  const [errors,    setErrors]    = useState({});
+  const [loading,   setLoading]   = useState(false);
+  const [apiError,  setApiError]  = useState("");
+  const [success,   setSuccess]   = useState(false);
+  const [loadingMeta, setLoadingMeta] = useState(true);
+
+  useEffect(() => {
+    async function loadMeta() {
+      try {
+        const [provRes, cycRes] = await Promise.allSettled([
+          getProviders(),
+          getCycles(),
+        ]);
+        if (provRes.status === "fulfilled") {
+          const data = Array.isArray(provRes.value.data?.results) ? provRes.value.data.results :
+                       Array.isArray(provRes.value.data) ? provRes.value.data : [];
+          setProviders(data);
+        }
+        if (cycRes.status === "fulfilled") {
+          const data = Array.isArray(cycRes.value.data?.results) ? cycRes.value.data.results :
+                       Array.isArray(cycRes.value.data) ? cycRes.value.data : [];
+          setCycles(data);
+          const active = data.find((c) => c.is_active);
+          if (active) setForm((f) => ({ ...f, cycle_id: active.id }));
+        }
+      } catch {} finally {
+        setLoadingMeta(false);
+      }
+    }
+    loadMeta();
+  }, []);
 
   const category = categoryConfig[form.award_type] || categoryConfig.scholarship;
   const CatIcon  = category.icon;
@@ -213,36 +85,21 @@ export default function NewSchemePage() {
     setForm((f) => ({ ...f, [key]: value }));
     setErrors((e) => ({ ...e, [key]: "" }));
     setApiError("");
-
-    // When category changes — swap to default fields for that category
-    // if (key === "award_type") {
-    //   setFields((defaultFields[value] || []).map((f, i) => ({ ...f, order: i })));
-    // }
   }
 
-  // ── FIELD OPERATIONS ──────────────────────────────────────────────────────
-  // function handleFieldChange(index, key, value) {
-  //   setFields((prev) => prev.map((f, i) => i === index ? { ...f, [key]: value } : f));
-  // }
+  function setElig(key, value) {
+    setEligibility((e) => ({ ...e, [key]: value }));
+  }
 
-  // function handleFieldRemove(index) {
-  //   setFields((prev) => prev.filter((_, i) => i !== index));
-  // }
+  function toggleLevel(level) {
+    setEligibility((e) => ({
+      ...e,
+      allowed_levels: e.allowed_levels.includes(level)
+        ? e.allowed_levels.filter((l) => l !== level)
+        : [...e.allowed_levels, level],
+    }));
+  }
 
-  // function handleAddField() {
-  //   setFields((prev) => [...prev, {
-  //     field_name:  "",
-  //     field_label: "",
-  //     field_type:  "text",
-  //     placeholder: "",
-  //     is_required: true,
-  //     options:     [],
-  //     section:     "",
-  //     order:       prev.length,
-  //   }]);
-  // }
-
-  // ── VALIDATION ────────────────────────────────────────────────────────────
   function validate() {
     const e = {};
     if (!form.name.trim())               e.name = "Scheme name is required.";
@@ -254,10 +111,11 @@ export default function NewSchemePage() {
     if (form.application_open_date && form.application_close_date &&
         form.application_close_date <= form.application_open_date)
       e.application_close_date = "Close date must be after open date.";
+    if (!form.provider_id)               e.provider_id = "Provider is required.";
+    if (!form.cycle_id)                  e.cycle_id = "Cycle is required.";
     return e;
   }
 
-  // ── SUBMIT ────────────────────────────────────────────────────────────────
   async function handleSubmit() {
     const e = validate();
     if (Object.keys(e).length > 0) { setErrors(e); return; }
@@ -266,51 +124,54 @@ export default function NewSchemePage() {
     setApiError("");
 
     try {
-      // Step 1 — create the scheme
-      const res = await createScheme({
-        ...form,
-        award_amount:    parseFloat(form.award_amount),
-        total_slots:     parseInt(form.total_slots),
-        remaining_slots: parseInt(form.total_slots),
-        is_published:    false,
-        is_active:       true,
-      });
+      const body = {
+        name:                   form.name,
+        award_type:             form.award_type,
+        description:            form.description,
+        academic_year:          form.academic_year,
+        award_amount:           parseFloat(form.award_amount),
+        total_slots:            parseInt(form.total_slots),
+        remaining_slots:        parseInt(form.total_slots),
+        stacking_policy:        form.stacking_policy,
+        application_open_date:  form.application_open_date,
+        application_close_date: form.application_close_date,
+        is_published:           false,
+        is_active:              true,
+        provider_id:            form.provider_id,
+        cycle_id:               form.cycle_id,
+        min_cgpa:               eligibility.min_cgpa,
+        allowed_levels:         eligibility.allowed_levels.join(","),
+        min_age:                eligibility.min_age,
+        max_age:                eligibility.max_age,
+        allowed_trades:         eligibility.allowed_trades,
+        ward_restriction:       eligibility.ward_restriction,
+        max_prior_awards:       eligibility.max_prior_awards,
+      };
 
-      const schemeId = res.data.id;
-
-      // Step 2 — save the form fields
-      // DISABLED: the apply form sources its fields from GET /schemes/{id}/fields/,
-      // which is generated server-side from PROGRAMME_ANSWER_SERIALIZERS and does
-      // NOT read whatever gets POSTed here. Re-enable only if/when the backend is
-      // changed to honor custom SchemeFormField records.
-      // if (fields.length > 0) {
-      //   const { default: api } = await import("@/services/axiosInstance");
-      //   await api.post(`/schemes/${schemeId}/fields/`, fields.map((f, i) => ({ ...f, order: i })));
-      // }
-
+      const res = await createScheme(body);
       setSuccess(true);
       setTimeout(() => router.push("/admin/schemes"), 1200);
     } catch (err) {
-  console.log("Scheme error:", err?.response?.data);
-  setApiError(
-    err?.response?.data?.error ||
-    err?.response?.data?.message ||
-    "Failed to create scheme. Please try again."
-  );
-} finally {
+      setApiError(
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        "Failed to create scheme. Please try again."
+      );
+    } finally {
       setLoading(false);
     }
   }
 
+  const isScholarship = form.award_type === "scholarship";
+  const isEmpowerment = form.award_type === "empowerment";
+  const isGrant       = form.award_type === "grant";
+
   return (
     <div className={styles.page}>
-
-      {/* BACK */}
       <button className={styles.backBtn} onClick={() => router.push("/admin/schemes")}>
         <ArrowLeft size={14} strokeWidth={2} /> Back to Schemes
       </button>
 
-      {/* PAGE HEADER */}
       <div className={styles.pageHeader}>
         <div className={styles.headerLeft}>
           <div className={styles.headerIcon} style={{ background: category.bg, border: `1.5px solid ${category.color}30` }}>
@@ -323,7 +184,6 @@ export default function NewSchemePage() {
         </div>
       </div>
 
-      {/* SUCCESS */}
       {success && (
         <div className={styles.successBanner}>
           <CheckCircle2 size={16} color="#15803d" strokeWidth={2} />
@@ -331,7 +191,6 @@ export default function NewSchemePage() {
         </div>
       )}
 
-      {/* API ERROR */}
       {apiError && (
         <div className={styles.errorBanner}>
           <AlertCircle size={14} color="#dc2626" strokeWidth={2} />
@@ -339,24 +198,20 @@ export default function NewSchemePage() {
         </div>
       )}
 
-      {/* FORM BODY */}
       <div className={styles.body}>
 
-        {/* LEFT — scheme info + form builder */}
+        {/* LEFT COLUMN */}
         <div className={styles.leftCol}>
 
-          {/* Basic Info */}
+          {/* Basic Information */}
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>Basic Information</h2>
 
             <div className={styles.field}>
               <label className={styles.fieldLabel}>Scheme Name {errors.name && <span className={styles.fieldError}>{errors.name}</span>}</label>
-              <input
-                className={`${styles.input} ${errors.name ? styles.inputError : ""}`}
+              <input className={`${styles.input} ${errors.name ? styles.inputError : ""}`}
                 placeholder="e.g. 2026/2027 University Scholarship Award"
-                value={form.name}
-                onChange={(e) => set("name", e.target.value)}
-              />
+                value={form.name} onChange={(e) => set("name", e.target.value)} />
             </div>
 
             <div className={styles.field}>
@@ -365,13 +220,10 @@ export default function NewSchemePage() {
                 {Object.entries(categoryConfig).map(([key, cat]) => {
                   const Icon = cat.icon;
                   return (
-                    <button
-                      key={key}
-                      type="button"
+                    <button key={key} type="button"
                       className={`${styles.categoryOption} ${form.award_type === key ? styles.categoryOptionActive : ""}`}
                       style={form.award_type === key ? { borderColor: cat.color, background: cat.bg } : {}}
-                      onClick={() => set("award_type", key)}
-                    >
+                      onClick={() => set("award_type", key)}>
                       <Icon size={16} color={form.award_type === key ? cat.color : "#94a3b8"} strokeWidth={1.8} />
                       <span style={{ color: form.award_type === key ? cat.color : "#374151" }}>{cat.label}</span>
                     </button>
@@ -382,17 +234,54 @@ export default function NewSchemePage() {
 
             <div className={styles.field}>
               <label className={styles.fieldLabel}>Description {errors.description && <span className={styles.fieldError}>{errors.description}</span>}</label>
-              <textarea
-                className={`${styles.textarea} ${errors.description ? styles.inputError : ""}`}
-                rows={4}
+              <textarea className={`${styles.textarea} ${errors.description ? styles.inputError : ""}`} rows={4}
                 placeholder="Describe the purpose and scope of this scheme..."
-                value={form.description}
-                onChange={(e) => set("description", e.target.value)}
-              />
+                value={form.description} onChange={(e) => set("description", e.target.value)} />
             </div>
           </div>
 
-          {/* Dates */}
+          {/* Provider & Cycle */}
+          <div className={styles.card}>
+            <h2 className={styles.cardTitle}>Provider & Cycle</h2>
+            <div className={styles.twoCol}>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>
+                  <Building2 size={12} strokeWidth={2} style={{ marginRight: 4, verticalAlign: -1 }} />
+                  Provider {errors.provider_id && <span className={styles.fieldError}>{errors.provider_id}</span>}
+                </label>
+                {loadingMeta ? (
+                  <div className={styles.selectSkeleton} />
+                ) : (
+                  <select className={`${styles.input} ${errors.provider_id ? styles.inputError : ""}`}
+                    value={form.provider_id} onChange={(e) => set("provider_id", e.target.value)}>
+                    <option value="">— Select Provider —</option>
+                    {providers.map((p) => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>
+                  <CalendarRange size={12} strokeWidth={2} style={{ marginRight: 4, verticalAlign: -1 }} />
+                  Cycle {errors.cycle_id && <span className={styles.fieldError}>{errors.cycle_id}</span>}
+                </label>
+                {loadingMeta ? (
+                  <div className={styles.selectSkeleton} />
+                ) : (
+                  <select className={`${styles.input} ${errors.cycle_id ? styles.inputError : ""}`}
+                    value={form.cycle_id} onChange={(e) => set("cycle_id", e.target.value)}>
+                    <option value="">— Select Cycle —</option>
+                    {cycles.map((c) => (
+                      <option key={c.id} value={c.id}>{c.name} ({c.start_year}/{c.end_year}){c.is_active ? " — Active" : ""}</option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Application Period */}
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>Application Period</h2>
             <div className={styles.twoCol}>
@@ -414,42 +303,103 @@ export default function NewSchemePage() {
             </div>
           </div>
 
-          {/* Form Builder — DISABLED, see comment block near top of file for why */}
-          {/*
+          {/* Eligibility Criteria — award-type-dependent */}
           <div className={styles.card}>
-            <div className={styles.cardHeadRow}>
-              <div>
-                <h2 className={styles.cardTitle}>Application Form Fields</h2>
-                <p className={styles.cardSub}>These fields will appear on the student application form. Pre-filled based on category.</p>
-              </div>
-              <div className={styles.formBuilderIcon}>
-                <Settings2 size={16} color="#15803d" strokeWidth={1.8} />
-              </div>
-            </div>
+            <h2 className={styles.cardTitle}>Eligibility Criteria</h2>
+            <p className={styles.cardSub}>Set the conditions students must meet to qualify.</p>
 
-            <div className={styles.fieldsList}>
-              {fields.map((field, index) => (
-                <FieldRow
-                  key={index}
-                  field={field}
-                  index={index}
-                  onChange={handleFieldChange}
-                  onRemove={handleFieldRemove}
-                />
-              ))}
-            </div>
+            {isScholarship && (
+              <>
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel}>Minimum CGPA</label>
+                  <input type="number" step="0.01" className={styles.input}
+                    placeholder="e.g. 2.20" value={eligibility.min_cgpa}
+                    onChange={(e) => setElig("min_cgpa", e.target.value)} />
+                  <span className={styles.fieldHint}>Minimum CGPA required on a 5.0 scale.</span>
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel}>Allowed Levels of Study</label>
+                  <div className={styles.checkboxGroup}>
+                    {LEVEL_OPTIONS.map((level) => (
+                      <label key={level} className={styles.checkboxLabel}>
+                        <input type="checkbox" checked={eligibility.allowed_levels.includes(level)}
+                          onChange={() => toggleLevel(level)} style={{ accentColor: "#15803d" }} />
+                        {level}
+                      </label>
+                    ))}
+                  </div>
+                  <span className={styles.fieldHint}>Select all academic levels that are eligible. Leave empty for all levels.</span>
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel}>Ward Restriction</label>
+                  <input className={styles.input}
+                    placeholder="e.g. Effiat, Ewang (comma-separated, leave empty for all wards)"
+                    value={eligibility.ward_restriction}
+                    onChange={(e) => setElig("ward_restriction", e.target.value)} />
+                  <span className={styles.fieldHint}>Restrict to specific wards. Comma-separated. Leave empty for open access.</span>
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel}>Max Prior Awards</label>
+                  <input type="number" className={styles.input}
+                    placeholder="e.g. 1" value={eligibility.max_prior_awards}
+                    onChange={(e) => setElig("max_prior_awards", e.target.value)} />
+                  <span className={styles.fieldHint}>Maximum number of prior awards a student can have.</span>
+                </div>
+              </>
+            )}
 
-            <button type="button" className={styles.addFieldBtn} onClick={handleAddField}>
-              <Plus size={14} strokeWidth={2} /> Add Field
-            </button>
+            {(isEmpowerment || isGrant) && (
+              <>
+                <div className={styles.twoCol}>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Minimum Age</label>
+                    <input type="number" className={styles.input}
+                      placeholder="e.g. 16" value={eligibility.min_age}
+                      onChange={(e) => setElig("min_age", e.target.value)} />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.fieldLabel}>Maximum Age</label>
+                    <input type="number" className={styles.input}
+                      placeholder="e.g. 35" value={eligibility.max_age}
+                      onChange={(e) => setElig("max_age", e.target.value)} />
+                  </div>
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel}>Ward Restriction</label>
+                  <input className={styles.input}
+                    placeholder="e.g. Effiat, Ewang (comma-separated, leave empty for all wards)"
+                    value={eligibility.ward_restriction}
+                    onChange={(e) => setElig("ward_restriction", e.target.value)} />
+                  <span className={styles.fieldHint}>Restrict to specific wards. Comma-separated. Leave empty for open access.</span>
+                </div>
+                <div className={styles.field}>
+                  <label className={styles.fieldLabel}>Max Prior Awards</label>
+                  <input type="number" className={styles.input}
+                    placeholder="e.g. 1" value={eligibility.max_prior_awards}
+                    onChange={(e) => setElig("max_prior_awards", e.target.value)} />
+                  <span className={styles.fieldHint}>Maximum number of prior awards a student can have.</span>
+                </div>
+              </>
+            )}
+
+            {isEmpowerment && (
+              <div className={styles.field}>
+                <label className={styles.fieldLabel}>Allowed Trades / Skills</label>
+                <input className={styles.input}
+                  placeholder="e.g. Welding, Tailoring, ICT (comma-separated)"
+                  value={eligibility.allowed_trades}
+                  onChange={(e) => setElig("allowed_trades", e.target.value)} />
+                <span className={styles.fieldHint}>Comma-separated list of trades eligible under this scheme.</span>
+              </div>
+            )}
           </div>
-          */}
 
         </div>
 
-        {/* RIGHT — award details + preview + submit */}
+        {/* RIGHT COLUMN */}
         <div className={styles.rightCol}>
 
+          {/* Award Details */}
           <div className={styles.card}>
             <h2 className={styles.cardTitle}>Award Details</h2>
 
@@ -494,8 +444,6 @@ export default function NewSchemePage() {
               <span>₦{form.award_amount ? Number(form.award_amount).toLocaleString() : "—"}</span>
               <span>·</span>
               <span>{form.total_slots || "—"} slots</span>
-              {/* <span>·</span>
-              <span>{fields.length} fields</span> */}
             </div>
           </div>
 
@@ -515,7 +463,6 @@ export default function NewSchemePage() {
         </div>
 
       </div>
-
     </div>
   );
 }

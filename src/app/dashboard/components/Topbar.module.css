@@ -39,7 +39,7 @@
 .menuBtn {
   display: none;
   width: 36px; height: 36px;
-  border-radius: 9px;
+  border-radius: 10px;
   border: 1.5px solid #e2e8f0;
   background: transparent;
   align-items: center;
@@ -112,7 +112,7 @@
 
 .iconBtn {
   width: 36px; height: 36px;
-  border-radius: 9px;
+  border-radius: 10px;
   border: 1.5px solid #e2e8f0;
   background: transparent;
   display: flex;
@@ -374,7 +374,7 @@
 .bellItemIcon {
   width: 32px;
   height: 32px;
-  border-radius: 9px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;

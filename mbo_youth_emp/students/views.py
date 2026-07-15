@@ -2,7 +2,8 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse
+from rest_framework import serializers
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse, inline_serializer
 
 from .models import Student, AcademicRecord
 from .serializers import StudentSerializer, StudentCreateSerializer, AcademicRecordSerializer
@@ -111,3 +112,75 @@ class StudentViewSet(viewsets.ModelViewSet):
             return Response({"error": "No student profile found"}, status=status.HTTP_404_NOT_FOUND)
         serializer = self.get_serializer(student)
         return Response(serializer.data)
+
+    @action(detail=False, methods=['get', 'patch'], url_path='bank')
+    def bank(self, request):
+        """GET /students/bank/ or PATCH /students/bank/ — get/update bank details."""
+        student = getattr(request.user, 'student_profile', None)
+        if student is None:
+            return Response({"error": "No student profile found"}, status=404)
+        
+        if request.method == 'GET':
+            return Response({
+                "bank_name": student.bank_name,
+                "bank_code": student.bank_code,
+                "account_number": student.bank_account_number,
+                "account_name": student.bank_account_name,
+            })
+        
+        # PATCH
+        student.bank_name = request.data.get('bank_name', student.bank_name)
+        student.bank_code = request.data.get('bank_code', student.bank_code)
+        student.bank_account_number = request.data.get('account_number', student.bank_account_number)
+        student.bank_account_name = request.data.get('account_name', student.bank_account_name)
+        student.save()
+        return Response({
+            "bank_name": student.bank_name,
+            "bank_code": student.bank_code,
+            "account_number": student.bank_account_number,
+            "account_name": student.bank_account_name,
+        })
+
+    @extend_schema(
+        summary="Approve or reject a student's verification",
+        request=inline_serializer(
+            name='StudentVerifyRequest',
+            fields={
+                'decision': serializers.ChoiceField(choices=['approved', 'rejected']),
+                'notes': serializers.CharField(required=False, allow_blank=True, default=''),
+            },
+        ),
+        responses=OpenApiResponse(description='{ is_verified, verification_rejection_reason }'),
+    )
+    @action(detail=True, methods=['patch'], url_path='verify', permission_classes=[IsAdmin])
+    def verify(self, request, pk=None):
+        """PATCH /students/{id}/verify/ — Body: { decision, notes? }"""
+        from django.utils import timezone
+        student = self.get_object()
+        decision = request.data.get('decision')
+        notes = (request.data.get('notes') or '').strip()
+
+        if decision not in ('approved', 'rejected'):
+            return Response({"error": "decision must be 'approved' or 'rejected'"},
+                             status=status.HTTP_400_BAD_REQUEST)
+        if decision == 'rejected' and not notes:
+            return Response({"error": "notes is required when rejecting"},
+                             status=status.HTTP_400_BAD_REQUEST)
+
+        student.verification_reviewed_at = timezone.now()
+
+        if decision == 'approved':
+            student.is_verified = True
+            student.verification_rejection_reason = ''
+        else:
+            student.is_verified = False
+            student.verification_rejection_reason = notes
+
+        student.save(update_fields=[
+            'is_verified', 'verification_rejection_reason', 'verification_reviewed_at'
+        ])
+
+        return Response({
+            "is_verified": student.is_verified,
+            "verification_rejection_reason": student.verification_rejection_reason,
+        })

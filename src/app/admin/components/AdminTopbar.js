@@ -1,9 +1,10 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, Settings, LogOut, ChevronDown, Search } from "lucide-react";
+import { Menu, Settings, LogOut, ChevronDown, Search, Sun, Moon, Monitor } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import styles from "./Topbar.module.css";
 import { logout } from "@/services";
+import { useTheme } from "next-themes";
 
 export default function AdminTopbar({ user, onMenuOpen }) {
   const currentPath = usePathname();
@@ -13,6 +14,8 @@ export default function AdminTopbar({ user, onMenuOpen }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const dropRef = useRef(null);
   const searchRef = useRef(null);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   const initials =
     (user?.firstname?.[0]?.toUpperCase() || "") +
@@ -49,6 +52,19 @@ export default function AdminTopbar({ user, onMenuOpen }) {
     finally {
       window.location.href = "/login";
     }
+  }
+
+  const themes = ["system", "light", "dark"];
+  const themeIcons = {
+    system: <Monitor size={15} strokeWidth={1.8} />,
+    light:  <Sun     size={15} strokeWidth={1.8} />,
+    dark:   <Moon    size={15} strokeWidth={1.8} />,
+  };
+
+  function cycleTheme() {
+    const current = themes.indexOf(theme);
+    const next = themes[(current + 1) % themes.length];
+    setTheme(next);
   }
 
   return (
@@ -127,6 +143,17 @@ export default function AdminTopbar({ user, onMenuOpen }) {
             </div>
           )}
         </div>
+
+        {mounted && (
+          <button
+            className={styles.themeBtn}
+            onClick={cycleTheme}
+            aria-label={`Switch theme (current: ${theme})`}
+            title={`Theme: ${theme}`}
+          >
+            {themeIcons[theme] || themeIcons.system}
+          </button>
+        )}
 
       </div>
     </header>
