@@ -1,25 +1,24 @@
 import { NextResponse } from "next/server";
 
-// ── PROTECTED ROUTES ────────────────────────────────────────────────────────
-
 const PROTECTED = ["/dashboard", "/admin", "/verifier"];
-const PUBLIC    = ["/login", "/register", "/forgot-password", "/"];
 
 export function middleware(request) {
   const { pathname } = request.nextUrl;
-
-  // Check if this is a protected route
   const isProtected = PROTECTED.some((route) => pathname.startsWith(route));
 
   if (!isProtected) {
     return NextResponse.next();
   }
 
-  // Look for the access token cookie (set by backend as httpOnly)
   const accessToken = request.cookies.get("access_token");
+  const refreshToken = request.cookies.get("refresh_token");
 
-  if (!accessToken) {
-    // No token — redirect to login, preserve the intended destination
+  // After OTP verify, the backend sets both cookies in one response. The browser
+  // may not have flushed access_token to the cookie jar yet when the client-side
+  // router.replace fires, but refresh_token arrives in the same Set-Cookie header.
+  // Checking for either cookie prevents the 307 loop — the layout's own auth
+  // guard (with retries) handles the case where only refresh_token is readable.
+  if (!accessToken && !refreshToken) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);

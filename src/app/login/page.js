@@ -171,12 +171,14 @@ export default function LoginPage() {
 
       const role = meRes.data.role;
 
+      await new Promise((r) => setTimeout(r, 300));
+
       if (role === "admin" || role === "superadmin") {
-        window.location.href = "/admin";
+        router.replace("/admin");
       } else if (role === "verifier") {
-        window.location.href = "/verifier";
+        router.replace("/verifier");
       } else {
-        window.location.href = "/dashboard";
+        router.replace("/dashboard");
       }
     } catch (err) {
       setOtpError(
