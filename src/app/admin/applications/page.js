@@ -104,7 +104,7 @@ export default function AdminApplicationsPage() {
 
   const fetchAll = useCallback(async (silent) => {
     try {
-      const res = await getApplications();
+      const res = await getApplications(1, { page_size: 9999 });
       const data = Array.isArray(res.data?.results) ? res.data.results : [];
       setApplications(data);
       if (silent !== true) setLoading(false);

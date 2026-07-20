@@ -42,7 +42,7 @@ export default function AdminLayout({ children }) {
     }
     loadUser();
     return () => { cancelled = true; };
-  }, []);
+  }, [router]);
 
   // Close sidebar when screen goes desktop width
   useEffect(() => {

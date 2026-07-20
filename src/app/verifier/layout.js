@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import VerifierSidebar from "./components/VerifierSidebar";
 import VerifierTopbar from "./components/VerifierTopbar";
 import styles from "./verifier.module.css";
-import { getMe } from "@/services/auth";
+import { getMe } from "@/services";
 
 export default function VerifierLayout({ children }) {
   const router = useRouter();

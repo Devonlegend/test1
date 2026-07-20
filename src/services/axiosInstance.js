@@ -5,15 +5,17 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// These paths must match error.config.url — which is relative to baseURL ("/api"),
+// so they do NOT include the /api prefix.
 const PUBLIC_AUTH_PATHS = [
-  "/api/auth/login/",
-  "/api/auth/register/",
-  "/api/auth/otp/send/",
-  "/api/auth/otp/resend/",
-  "/api/auth/otp/verify/",
-  "/api/auth/password/reset/request/",
-  "/api/auth/password/reset/verify/",
-  "/api/auth/password/reset/confirm/",
+  "/auth/login/",
+  "/auth/register/",
+  "/auth/otp/send/",
+  "/auth/otp/resend/",
+  "/auth/otp/verify/",
+  "/auth/password/reset/request/",
+  "/auth/password/reset/verify/",
+  "/auth/password/reset/confirm/",
 ];
 
 function isPublicAuthRequest(url) {
@@ -51,16 +53,15 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     // Only handle 401 and only if we haven't already retried this request
-   // Only handle 401 and only if we haven't already retried this request
-if (
-  error.response?.status !== 401 ||
-  originalRequest._isRetry ||
-  isPublicAuthRequest(originalRequest.url) ||
-      originalRequest.url === "/api/auth/token/refresh/" ||
-      originalRequest.url === "/api/auth/me/"
-) {
-  return Promise.reject(error);
-}
+    if (
+      error.response?.status !== 401 ||
+      originalRequest._isRetry ||
+      isPublicAuthRequest(originalRequest.url) ||
+      originalRequest.url === "/auth/token/refresh/" ||
+      originalRequest.url === "/auth/me/"
+    ) {
+      return Promise.reject(error);
+    }
 
     // If a refresh is already in progress, queue this request until done
     if (isRefreshing) {

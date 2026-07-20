@@ -78,7 +78,11 @@ export default function Topbar({ user, activeCycle, onMenuOpen }) {
       setLoading(true);
       try {
         const res = await getNotifications();
-        setNotifs(Array.isArray(res.data) ? res.data : []);
+        // Handle both flat array and paginated { results, count } response shapes
+        const data = Array.isArray(res.data)
+          ? res.data
+          : (Array.isArray(res.data?.results) ? res.data.results : []);
+        setNotifs(data);
       } catch {}
       finally { setLoading(false); }
     }

@@ -17,6 +17,9 @@ export default function AdminTopbar({ user, onMenuOpen }) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  // Required so the theme button only renders client-side (avoids hydration mismatch)
+  useEffect(() => { setMounted(true); }, []);
+
   const initials =
     (user?.firstname?.[0]?.toUpperCase() || "") +
     (user?.lastname?.[0]?.toUpperCase()  || "");

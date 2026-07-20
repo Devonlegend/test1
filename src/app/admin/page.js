@@ -86,7 +86,7 @@ export default function AdminOverviewPage() {
     async function load() {
       try {
         const [appsRes, schemesRes, meRes] = await Promise.allSettled([
-          getApplications(),
+          getApplications(1, { page_size: 9999 }),
           getSchemes(),
           getMe(),
         ]);

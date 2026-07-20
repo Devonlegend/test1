@@ -100,7 +100,7 @@ export default function DashboardLayout({ children }) {
     }
 
     loadUser();
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     function onResize() {

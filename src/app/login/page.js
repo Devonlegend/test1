@@ -40,9 +40,8 @@ export default function LoginPage() {
         router.replace("/dashboard");
       }
     })
-    .catch(() => {
-      setCheckingAuth(false);
-    });
+    .catch(() => {})
+    .finally(() => setCheckingAuth(false));
 }, []);
 
   // Don't render the form until we've confirmed they're not already logged in
