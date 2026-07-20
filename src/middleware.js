@@ -29,7 +29,9 @@ export async function middleware(request) {
 
 async function proxyApi(request) {
   const { pathname, search } = request.nextUrl;
-  const target = new URL(pathname.replace(/^\/api/, ''), `${BACKEND_URL}/`);
+  // Strip the leading /api prefix; keep the rest of the path.
+  const backendPath = pathname.replace(/^\/api/, '') || '/';
+  const target = new URL(`${BACKEND_URL}${backendPath}`);
   target.search = search;
 
   const headers = new Headers();
