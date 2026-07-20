@@ -1,22 +1,19 @@
 import axios from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000";
-
 const api = axios.create({
-  baseURL: BASE_URL,
+  baseURL: "/api",
   headers: { "Content-Type": "application/json" },
-  withCredentials: true, // sends httpOnly cookies with every request
 });
 
 const PUBLIC_AUTH_PATHS = [
-  "/auth/login/",
-  "/auth/register/",
-  "/auth/otp/send/",
-  "/auth/otp/resend/",
-  "/auth/otp/verify/",
-  "/auth/password/reset/request/",
-  "/auth/password/reset/verify/",
-  "/auth/password/reset/confirm/",
+  "/api/auth/login/",
+  "/api/auth/register/",
+  "/api/auth/otp/send/",
+  "/api/auth/otp/resend/",
+  "/api/auth/otp/verify/",
+  "/api/auth/password/reset/request/",
+  "/api/auth/password/reset/verify/",
+  "/api/auth/password/reset/confirm/",
 ];
 
 function isPublicAuthRequest(url) {
@@ -59,8 +56,8 @@ if (
   error.response?.status !== 401 ||
   originalRequest._isRetry ||
   isPublicAuthRequest(originalRequest.url) ||
-  originalRequest.url === "/auth/token/refresh/" ||
-  originalRequest.url === "/auth/me/"
+      originalRequest.url === "/api/auth/token/refresh/" ||
+      originalRequest.url === "/api/auth/me/"
 ) {
   return Promise.reject(error);
 }
