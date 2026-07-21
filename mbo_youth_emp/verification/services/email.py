@@ -30,8 +30,9 @@ class EmailService:
         """
         # Add global context available in every template
         context.update({
-            'subject':    subject,
-            'portal_url': getattr(settings, 'PORTAL_URL', 'http://localhost:3000'),
+            'subject':       subject,
+            'portal_url':    getattr(settings, 'PORTAL_URL', 'http://localhost:3000'),
+            'support_email': getattr(settings, 'SUPPORT_EMAIL', 'support@mboempowerment.com'),
         })
 
         try:

@@ -147,12 +147,14 @@ def notify_profile_verified(user) -> Notification:
 
 def notify_password_changed(user) -> Notification:
     """Security notification after the user resets or changes their password."""
+    from django.conf import settings
+    support_email = getattr(settings, 'SUPPORT_EMAIL', 'support@mboempowerment.com')
     return Notification.objects.create(
         user=user,
         type='system',
         title='Password Changed',
         message=(
-            'Your password was recently changed. If you did not make this '
-            'change, please contact support immediately.'
+            f'Your password was recently changed. If you did not make this '
+            f'change, please contact support immediately at {support_email}.'
         ),
     )

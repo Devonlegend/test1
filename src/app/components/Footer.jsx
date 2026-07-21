@@ -21,6 +21,8 @@ export default function Footer() {
           {/* RIGHT: Legal links + Copyright stacked */}
           <div className={styles.rightGroup}>
             <div className={styles.legal}>
+              <a href="mailto:support@mboempowerment.com" className={styles.legalLink}>support@mboempowerment.com</a>
+              <span className={styles.dot}>·</span>
               <Link href="#" className={styles.legalLink}>Privacy Policy</Link>
               <span className={styles.dot}>·</span>
               <Link href="#" className={styles.legalLink}>Terms of Use</Link>

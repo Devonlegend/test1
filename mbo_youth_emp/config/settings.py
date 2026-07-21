@@ -254,6 +254,7 @@ BREVO_MOCK_MODE  = _env_bool('BREVO_MOCK_MODE', str(DEBUG))
 BREVO_API_KEY    = os.getenv('BREVO_API_KEY', '')
 BREVO_SENDER_EMAIL = os.getenv('BREVO_SENDER_EMAIL', 'no-reply@mboempowerment.com')
 BREVO_SENDER_NAME  = os.getenv('BREVO_SENDER_NAME', 'Mbo Youth Empowerment')
+SUPPORT_EMAIL      = os.getenv('SUPPORT_EMAIL', 'support@mboempowerment.com')
 
 
 # Eager mode runs tasks in-process (no broker). Defaults on in DEBUG, off in

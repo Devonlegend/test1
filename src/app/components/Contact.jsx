@@ -15,11 +15,12 @@ const contactInfo = [
   },
   {
     icon: Mail,
-    label: "Email",
-    value: "info@rmhcdt.org",
+    label: "Support Email",
+    value: "support@mboempowerment.com",
     color: "#1d4ed8",
     bg: "#eff6ff",
     border: "#bfdbfe",
+    href: "mailto:support@mboempowerment.com",
   },
   {
     icon: Phone,
@@ -28,6 +29,7 @@ const contactInfo = [
     color: "#b45309",
     bg: "#fffbeb",
     border: "#fde68a",
+    href: "tel:+23407012345678",
   },
 ];
 
@@ -53,7 +55,7 @@ export default function Contact() {
     } catch (err) {
       setSubmitError(
         err?.response?.data?.detail ||
-          "Could not send your message. Please try again or email support directly."
+          "Could not send your message. Please try again or email support@mboempowerment.com directly."
       );
     } finally {
       setSending(false);
@@ -88,13 +90,17 @@ export default function Contact() {
             <div className={styles.infoList}>
               {contactInfo.map((c, i) => {
                 const Icon = c.icon;
+                const isLinked = !!c.href;
                 return (
-                  <div
+                  <a
                     key={i}
+                    href={c.href}
                     className={styles.infoCard}
                     style={{
                       background: c.bg,
                       borderColor: c.border,
+                      textDecoration: isLinked ? "none" : "inherit",
+                      cursor: isLinked ? "pointer" : "default",
                     }}
                   >
                     <div
@@ -105,9 +111,14 @@ export default function Contact() {
                     </div>
                     <div className={styles.infoContent}>
                       <span className={styles.infoLabel}>{c.label}</span>
-                      <span className={styles.infoValue}>{c.value}</span>
+                      <span
+                        className={styles.infoValue}
+                        style={isLinked ? { color: "#1d4ed8" } : undefined}
+                      >
+                        {c.value}
+                      </span>
                     </div>
-                  </div>
+                  </a>
                 );
               })}
             </div>
