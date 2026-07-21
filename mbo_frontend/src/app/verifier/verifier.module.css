@@ -1,0 +1,79 @@
+/* ══════════════════════════════════════════════
+   VERIFIER LAYOUT — RMHCDT Verifier Portal
+   Mirrors the admin shell: icon-rail sidebar (64px)
+   + content column offset to clear it.
+══════════════════════════════════════════════ */
+
+/* ── LOADING SHELL ── */
+.loadingShell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: var(--surface-input);
+}
+
+.loadingSpinner {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid var(--border-default);
+  border-top-color: var(--mbo-forest);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── SHELL ── */
+.shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--surface-input);
+}
+
+/* ── MAIN WRAP ── */
+/* Sits to the right of the collapsed sidebar (64px). */
+.mainWrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: 64px;
+  transition: margin-left var(--admin-transition, 0.22s cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+/* ── CONTENT AREA ── */
+.content {
+  flex: 1;
+  padding: 28px 24px;
+  width: 100%;
+}
+
+/* ══════════════════════════════════════════════
+   MOBILE — 768px and below
+══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* On mobile the sidebar is off-canvas — no left margin. */
+  .mainWrap {
+    margin-left: 0;
+  }
+
+  .content {
+    padding: 20px 16px;
+  }
+
+}
+
+/* ══════════════════════════════════════════════
+   TABLET — 769px to 1024px
+══════════════════════════════════════════════ */
+@media (min-width: 769px) and (max-width: 1024px) {
+
+  .content {
+    padding: var(--space-xl) 20px;
+  }
+
+}

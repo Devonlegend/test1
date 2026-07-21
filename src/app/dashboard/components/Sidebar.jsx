@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, FileText, ClipboardList,
-  Files, UserCircle, Bell, BookOpen,
+  UserCircle, Bell, BookOpen,
   HelpCircle, Settings, LogOut, X,
 } from "lucide-react";
 import styles from "./Sidebar.module.css";
@@ -53,14 +53,17 @@ export default function Sidebar({ isOpen, onClose }) {
   const [unread, setUnread] = useState(0);
 
   useEffect(() => {
+    let cancelled = false;
     async function loadUnread() {
       try {
         const res = await getNotifications();
+        if (cancelled) return;
         const notifs = Array.isArray(res.data) ? res.data : [];
         setUnread(notifs.filter((n) => !n.read).length);
       } catch {}
     }
     loadUnread();
+    return () => { cancelled = true; };
   }, []);
 
   function isActive(href) {

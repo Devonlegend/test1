@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import axiosInstance from "@/services/axiosInstance";
 import { MapPin, Mail, Phone, Send, CheckCircle } from "lucide-react";
 import styles from "./Contact.module.css";
 
@@ -32,15 +33,31 @@ const contactInfo = [
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [sending, setSending] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    setSubmitted(true);
+    setSending(true);
+    setSubmitError("");
+    try {
+      // TODO: Wire to backend contact endpoint when available.
+      // await axiosInstance.post("/support/contact/", form);
+      await new Promise((r) => setTimeout(r, 600));
+      setSubmitted(true);
+    } catch (err) {
+      setSubmitError(
+        err?.response?.data?.detail ||
+          "Could not send your message. Please try again or email support directly."
+      );
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -147,10 +164,13 @@ export default function Contact() {
                     required
                   />
                 </div>
-                <button type="submit" className={styles.submitBtn}>
+                <button type="submit" className={styles.submitBtn} disabled={sending}>
                   <Send size={16} strokeWidth={2} />
-                  Send Message
+                  {sending ? "Sending..." : "Send Message"}
                 </button>
+                {submitError && (
+                  <p className={styles.errorMsg} role="alert">{submitError}</p>
+                )}
               </form>
             )}
           </div>

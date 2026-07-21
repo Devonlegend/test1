@@ -1,0 +1,446 @@
+/* ══════════════════════════════════════════════
+   ADMIN STUDENT DETAIL — RMHCDT Admin Portal
+══════════════════════════════════════════════ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* ── CENTER STATE ── */
+.centerState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  min-height: 50vh;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid var(--border-default);
+  border-top-color: var(--mbo-forest);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── BACK BUTTON ── */
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-tertiary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.backBtn:hover { color: var(--ink-primary); }
+
+/* ── PAGE HEADER ── */
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.bigAvatar {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-lg);
+  background: var(--green-tint-bg);
+  border: 2px solid var(--green-tint-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--mbo-forest);
+  flex-shrink: 0;
+}
+
+.title {
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink-primary);
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.sub {
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin: -2px 0 0;
+}
+/* Document Link */
+.docLink {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mbo-forest);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.docLink:hover {
+  color: var(--mbo-forest-deep);
+  text-decoration: underline;
+}
+/* ── VERIFY BUTTON ── */
+.verifyWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-xs);
+}
+
+.verifyError {
+  font-size: 11.5px;
+  color: var(--red-error);
+}
+
+.verifyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+
+.verifyBtnVerified {
+  background: var(--green-tint-bg);
+  color: var(--mbo-forest);
+  border: 1px solid var(--green-tint-border);
+}
+
+.verifyBtnVerified:hover:not(:disabled) {
+  background: var(--green-tint-hover);
+}
+
+.verifyBtnUnverified {
+  background: var(--amber-tint-bg);
+  color: var(--amber-earth);
+  border: 1px solid var(--amber-tint-border);
+}
+
+.verifyBtnUnverified:hover:not(:disabled) {
+  background: var(--amber-tint-bg);
+}
+
+.verifyBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.spin { animation: spin 0.7s linear infinite; }
+
+/* ── BODY ── */
+.body {
+  display: grid;
+  grid-template-columns: 1fr 480px;
+  gap: 20px;
+  align-items: start;
+}
+
+.leftCol {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.rightCol { position: sticky; top: 76px; }
+
+/* ── CARD ── */
+.card {
+  background: var(--surface-white);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.cardTitle {
+  font-family: var(--font-jakarta), 'Sora', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.cardSub {
+  font-size: 12px;
+  color: var(--ink-muted);
+  margin: 3px 0 0;
+}
+
+/* ── INFO GRID ── */
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.infoRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.infoIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-input);
+  border: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-muted);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.infoContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.infoLabel {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.infoValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-primary);
+}
+
+/* ── APPLICATION LIST ── */
+.emptyApps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--space-2xl) 0;
+  color: var(--ink-muted);
+  font-size: 13px;
+}
+
+.appList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.appItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.appItem:last-child { border-bottom: none; }
+
+.appItemLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.appIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-input);
+  border: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.appInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.appName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.appDate {
+  font-size: 11.5px;
+  color: var(--ink-muted);
+}
+
+.appItemRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--radius-2xl);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.appViewBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-input);
+  border: 1px solid var(--border-default);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ink-tertiary);
+  transition: all 0.15s;
+}
+
+.appViewBtn:hover {
+  background: var(--green-tint-bg);
+  border-color: var(--green-tint-border);
+  color: var(--mbo-forest);
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE — 1024px
+══════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .body {
+    grid-template-columns: 1fr;
+  }
+
+  .rightCol {
+    position: static;
+    order: -1;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ══════════════════════════════════════════════
+   RESPONSIVE — 768px
+══════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .verifyWrap { align-items: flex-start; }
+
+  .card { padding: 18px 16px; }
+
+  .title { font-size: 18px; }
+}
+/* ══════════════════════════════════════════════
+   RESPONSIVE — 480px (phones)
+══════════════════════════════════════════════ */
+@media (max-width: 480px) {
+
+  .page {
+    gap: 14px;
+  }
+
+  /* Keep header info + verify button together */
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+
+  /* Verify button full width on mobile */
+  .verifyWrap {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .verifyBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Tighter cards */
+  .card {
+    padding: 14px 12px;
+    border-radius: var(--radius-lg);
+  }
+
+  /* Smaller title */
+  .title {
+    font-size: 16px;
+  }
+
+  .sub {
+    font-size: 11px;
+  }
+
+  /* App items — stack status badge below name on very tight screens */
+  .appItem {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .appItemRight {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

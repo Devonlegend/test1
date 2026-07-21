@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState, useEffect } from "react";
 import {
   User, Mail, Phone, Lock, Eye, EyeOff,
@@ -8,7 +8,7 @@ import styles from "./page.module.css";
 import { getMe } from "@/services/auth";
 import { getSchemes, getStudents, getApplications } from "@/services";
 
-// â”€â”€ PASSWORD STRENGTH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── PASSWORD STRENGTH ──────────────────────────────────────────────────────────
 function PasswordStrength({ password }) {
   const checks = [
     { label: "At least 8 characters",      pass: password.length >= 8 },
@@ -35,7 +35,7 @@ function PasswordStrength({ password }) {
   );
 }
 
-// â”€â”€ SECTION WRAPPER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── SECTION WRAPPER ────────────────────────────────────────────────────────────
 function Section({ title, sub, children }) {
   return (
     <div className={styles.section}>
@@ -48,7 +48,7 @@ function Section({ title, sub, children }) {
   );
 }
 
-// â”€â”€ ROLE BADGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── ROLE BADGE ─────────────────────────────────────────────────────────────────
 function RoleBadge({ role }) {
   const config = {
     superadmin: { label: "Super Admin", color: "#7e22ce", bg: "#faf5ff", border: "#e9d5ff" },
@@ -63,7 +63,7 @@ function RoleBadge({ role }) {
   );
 }
 
-// â”€â”€ PAGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── PAGE ───────────────────────────────────────────────────────────────────────
 export default function AdminSettingsPage() {
   const [user,         setUser]         = useState(null);
   const [loadingUser,  setLoadingUser]  = useState(true);
@@ -84,7 +84,7 @@ export default function AdminSettingsPage() {
   const [stats, setStats] = useState({ schemes: 0, students: 0, applications: 0 });
   const [loadingStats, setLoadingStats] = useState(true);
 
-  // â”€â”€ LOAD CURRENT USER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── LOAD CURRENT USER ─────────────────────────────────────────────────────────
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -106,15 +106,15 @@ export default function AdminSettingsPage() {
   useEffect(() => {
   async function loadStats() {
     try {
-      const [schemes, students, applications] = await Promise.all([
+      const [schemesRes, studentsRes, appsRes] = await Promise.allSettled([
         getSchemes(),
         getStudents(),
         getApplications(),
       ]);
       setStats({
-        schemes:      schemes.data?.count      ?? 0,
-        students:     students.data?.count     ?? 0,
-        applications: applications.data?.count ?? 0,
+        schemes:      schemesRes.status === "fulfilled" ? (schemesRes.value.data?.count ?? 0) : 0,
+        students:     studentsRes.status === "fulfilled" ? (studentsRes.value.data?.count ?? 0) : 0,
+        applications: appsRes.status === "fulfilled" ? (appsRes.value.data?.count ?? 0) : 0,
       });
     } catch {
       // Fail silently
@@ -125,7 +125,7 @@ export default function AdminSettingsPage() {
   loadStats();
 }, []);
 
-  // â”€â”€ CHANGE PASSWORD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── CHANGE PASSWORD ───────────────────────────────────────────────────────────
   async function handleChangePassword(e) {
     e.preventDefault();
     if (passwords.newPass.length < 8) { setPwdError("Password must be at least 8 characters."); return; }
@@ -137,20 +137,15 @@ export default function AdminSettingsPage() {
     try {
       // NOTE: Wire to change password endpoint when backend adds it
       // await changePassword({ current_password: passwords.current, new_password: passwords.newPass });
-      await new Promise((r) => setTimeout(r, 1000)); // placeholder
-      setPwdSuccess(true);
-      setPasswords({ current: "", newPass: "", confirm: "" });
+      setPwdError("Password change is not yet available. Please contact an administrator.");
     } catch (err) {
-      setPwdError(
-        err?.response?.data?.error ||
-        err?.response?.data?.message ||
-        "Failed to change password."
-      );
+      setPwdError(err?.response?.data?.detail || "Failed to change password.");
     } finally {
       setSavingPwd(false);
     }
   }
 
+  // ── RENDER ───────────────────────────────────────────────────────────────
   if (loadingUser) {
     return (
       <div className={styles.centerState}>
@@ -181,14 +176,14 @@ export default function AdminSettingsPage() {
         ].map((s) => (
           <div key={s.label} className={styles.statusItem}>
             <span className={styles.statusValue} style={{ color: s.color }}>
-              {loadingStats ? "â€”" : s.value}
+              {loadingStats ? "—" : s.value}
             </span>
             <span className={styles.statusLabel}>{s.label}</span>
           </div>
         ))}
       </div>
 
-      {/* â”€â”€ SECTION 1: MY PROFILE â”€â”€ */}
+      {/* ── SECTION 1: MY PROFILE ── */}
       <Section title="My Profile" sub="Update your contact information.">
         <div className={styles.profileCard}>
           <div className={styles.profileAvatar}>
@@ -205,7 +200,7 @@ export default function AdminSettingsPage() {
                     day: "numeric", month: "short", year: "numeric",
                     hour: "2-digit", minute: "2-digit",
                   })
-                : "â€”"
+                : "—"
               }
             </p>
             <RoleBadge role={user?.role} />
@@ -261,7 +256,7 @@ export default function AdminSettingsPage() {
         </div>
       </Section>
 
-      {/* â”€â”€ SECTION 2: CHANGE PASSWORD â”€â”€ */}
+      {/* ── SECTION 2: CHANGE PASSWORD ── */}
         <Section title="Password & Security" sub="Keep your account secure with a strong password.">
            {!editingPwd ? (
             <div className={styles.pwdEmptyState}>

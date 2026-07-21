@@ -1,10 +1,10 @@
 "use client";
 import { useRouter, useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   GraduationCap, Briefcase, Banknote,
   ArrowLeft, CheckCircle2, Clock,
-  XCircle, AlertCircle, FileText,
+  XCircle, AlertCircle, FileText, Loader2,
 } from "lucide-react";
 import styles from "./page.module.css";
 import LoadingSpinner from "../../components/LoadingSpinner";
@@ -177,16 +177,14 @@ export default function ApplicationDetailPage() {
   const [waiving, setWaiving] = useState(false);
   const [waiveError, setWaiveError] = useState("");
 
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      try {
-        const res  = await getApplication(params.id);
-        if (cancelled) return;
-        const data = res.data;
-        if (!data) throw new Error("No data returned");
+  const cancelledRef = useRef(false);
 
-        const catKey   = (data.scheme?.award_type || "scholarship").toLowerCase();
+  const loadApplication = useCallback(async () => {
+    try {
+      const res  = await getApplication(params.id);
+      if (cancelledRef.current) return;
+      const data = res.data;
+        const catKey     = data.scheme?.award_type || "scholarship";
         const config   = categoryConfig[catKey] || categoryConfig.scholarship;
         const uiStatus = statusMap[data.status] || "pending";
 
@@ -229,23 +227,27 @@ export default function ApplicationDetailPage() {
 
       } catch (err) {
         console.error("Application load error:", err);
-        if (!cancelled) setError("Failed to load application. Please try again.");
+        if (!cancelledRef.current) setError("Failed to load application. Please try again.");
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!cancelledRef.current) setLoading(false);
       }
-    }
-    load();
-    return () => { cancelled = true; };
   }, [params.id]);
+
+  useEffect(() => {
+    cancelledRef.current = false;
+    loadApplication();
+    return () => { cancelledRef.current = true; };
+  }, [loadApplication]);
 
   async function handleWaive() {
     setWaiving(true);
     setWaiveError("");
     try {
       await submitWaiver(params.id);
-      window.location.reload();
+      await loadApplication();
     } catch (err) {
       setWaiveError(err?.response?.data?.error || "Failed to submit waiver.");
+    } finally {
       setWaiving(false);
     }
   }

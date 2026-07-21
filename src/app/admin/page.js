@@ -160,8 +160,8 @@ export default function AdminOverviewPage() {
       {/* PAGE HEADER */}
       <div className={styles.header}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: "var(--color-primary-light)", border: "1.5px solid var(--color-primary-border)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <LayoutDashboard size={20} color="var(--color-primary)" strokeWidth={1.8} />
+          <div style={{ width: 40, height: 40, borderRadius: 10, background: "var(--green-tint-bg)", border: "1.5px solid var(--green-tint-border)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <LayoutDashboard size={20} color="var(--mbo-forest)" strokeWidth={1.8} />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0px" }}>
             <h1 className={styles.title}>Overview</h1>

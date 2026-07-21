@@ -106,6 +106,55 @@
   --focus-ring: 0 0 0 3px rgba(21,128,61,0.08);
 }
 
+/* ── Dark theme overrides ───────────────────────────────────────────────────
+   Triggered by next-themes when attribute="data-theme" and theme="dark".
+   Only semantic surface/ink/border tokens are overridden; brand colors
+   (forest, amber, category) stay the same for consistent identity.
+*/
+[data-theme="dark"] {
+  /* Ink */
+  --ink-primary:     #f1f5f9;
+  --ink-secondary:   #cbd5e1;
+  --ink-tertiary:    #94a3b8;
+  --ink-muted:       #64748b;
+  --ink-disabled:    #475569;
+
+  /* Surface */
+  --surface-white:   #0f172a;
+  --surface-page:    #060f09;
+  --surface-input:   #1e293b;
+  --surface-hover:   #1e293b;
+
+  /* Border */
+  --border-default:  #1e293b;
+  --border-subtle:   #1e293b;
+  --border-card:     #334155;
+
+  /* Tinted backgrounds (dark variants) */
+  --green-tint-bg:     #052e16;
+  --green-tint-border: #14532d;
+  --green-tint-hover:  #14532d;
+  --amber-tint-bg:     #1c1917;
+  --amber-tint-border:#451a03;
+  --blue-tint-bg:      #172554;
+  --blue-tint-border:  #1e3a8a;
+  --purple-tint-bg:    #2e1065;
+  --purple-tint-border:#3b0764;
+  --cyan-tint-bg:      #083344;
+  --cyan-tint-border:  #155e75;
+  --red-tint-bg:       #450a0a;
+  --red-tint-border:   #7f1d1d;
+
+  /* Shadows (subtle on dark) */
+  --shadow-surface-rest:  0 1px 3px rgba(0,0,0,0.3);
+  --shadow-surface-float: 0 2px 8px rgba(0,0,0,0.25);
+  --shadow-surface-lift:  0 8px 32px rgba(0,0,0,0.4);
+  --shadow-modal:         0 8px 40px rgba(0,0,0,0.5);
+
+  /* Focus ring */
+  --focus-ring: 0 0 0 3px rgba(74,222,128,0.15);
+}
+
 @layer base {
   * {
     box-sizing: border-box;

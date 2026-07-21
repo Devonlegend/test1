@@ -1,0 +1,384 @@
+/* PROFILE PAGE — RMHCDT Youth Portal */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+
+/* ── HERO ── */
+.hero {
+  background: var(--surface-white);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-xl) 28px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 12px var(--overlay-subtle);
+}
+
+.heroGlow { display: none; }
+
+.heroInner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ── AVATAR ── */
+.avatarWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.avatarImg,
+.avatarInitials {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 2.5px solid var(--green-tint-border);
+  object-fit: cover;
+}
+
+.avatarInitials {
+  background: var(--green-tint-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--mbo-forest);
+  letter-spacing: -0.02em;
+}
+
+.avatarOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--overlay-dimmer);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--surface-white);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+
+.avatarWrap:hover .avatarOverlay { opacity: 1; }
+
+.photoInput { display: none; }
+
+/* ── HERO META ── */
+.heroMeta { flex: 1; min-width: 0; }
+
+.heroName {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink-primary);
+  margin: 0 0 2px;
+  letter-spacing: -0.03em;
+}
+
+.heroEmail {
+  font-size: 13px;
+  color: var(--ink-tertiary);
+  margin: 0;
+}
+
+/* ── PHOTO NOTE ── */
+.photoNote {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: 10px 14px;
+  background: var(--green-tint-bg);
+  border: 1px solid var(--green-tint-border);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  color: var(--mbo-forest);
+  line-height: 1.5;
+}
+
+.photoNoteIcon { 
+  flex-shrink: 0; margin-top: 1px; 
+}
+
+.btnEdit {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; font-weight: 600; color: var(--mbo-forest);
+  background: var(--green-tint-bg); border: 1px solid var(--green-tint-border);
+  border-radius: var(--radius-sm); padding: 7px 14px; cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btnEdit:hover { background: var(--green-tint-hover); border-color: var(--mbo-forest-pale); }
+
+.btnCancel {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; font-weight: 600; color: var(--ink-tertiary);
+  background: var(--surface-input); border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm); padding: 7px 14px; cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btnCancel:hover { background: var(--surface-hover); }
+
+.input:disabled {
+  background: var(--surface-input);
+  border-color: var(--border-default);
+  color: var(--ink-primary);
+  cursor: default;
+  opacity: 1;
+}
+
+select.input:disabled { appearance: none; }
+
+/* ── CARD ── */
+.card {
+  background: var(--surface-white);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-xl) 28px 28px;
+  box-shadow: 0 2px 16px var(--overlay-subtle);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-md);
+  margin-bottom: 22px;
+}
+
+.cardHeadIcon {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: var(--green-tint-bg);
+  border: 1px solid var(--green-tint-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mbo-forest);
+  flex-shrink: 0;
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  margin: 0 0 3px;
+  letter-spacing: -0.02em;
+  text-align: left;
+}
+
+.cardSub {
+  font-size: 12.5px;
+  color: var(--ink-tertiary);
+  margin: 0;
+  text-align: left;
+}
+
+/* ── FORM ── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.input {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-input);
+  font-size: 13.5px;
+  color: var(--ink-primary);
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: var(--mbo-forest);
+  background: var(--surface-white);
+  box-shadow: 0 0 0 3px rgba(21,128,61,0.08);
+}
+
+.readValue {
+  height: 42px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-input);
+  font-size: 13.5px;
+  color: var(--ink-primary);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+select.input { cursor: pointer; }
+
+/* ── FORM FOOTER ── */
+.formFoot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.savedMsg {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--mbo-forest);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--mbo-forest);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(21,128,61,0.2);
+  transition: all 0.2s ease;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: var(--mbo-forest-deep);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(21,128,61,0.28);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── SPINNER ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 0.7s linear infinite; }
+
+/* ── SECURITY LINK ── */
+.securityLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: var(--space-lg) 20px;
+  background: var(--surface-white);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 2px 12px var(--overlay-subtle);
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.securityLink:hover {
+  border-color: var(--green-tint-border);
+  box-shadow: 0 4px 20px rgba(21,128,61,0.1);
+  transform: translateY(-1px);
+}
+
+.securityLinkLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.securityIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: var(--green-tint-bg);
+  border: 1px solid var(--green-tint-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mbo-forest);
+  flex-shrink: 0;
+}
+
+.securityTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  margin: 0 0 2px;
+}
+
+.securitySub {
+  font-size: 12px;
+  color: var(--ink-tertiary);
+  margin: 0;
+}
+
+.securityChevron {
+  color: var(--ink-muted);
+  flex-shrink: 0;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.securityLink:hover .securityChevron {
+  color: var(--mbo-forest);
+  transform: translateX(3px);
+}
+
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  .hero { padding: 18px 16px; }
+  .heroName { font-size: 18px; }
+  .card { padding: 18px 16px 20px; }
+  .row2 { grid-template-columns: 1fr; }
+}
+
+/* ── ROW DIVIDER (read-only view) ── */
+.rowDivider {
+  border: none;
+  border-top: 1px dashed #e2e8f0;
+  margin: 2px 0;
+}

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
 import {
   Eye, EyeOff, Mail, ArrowRight,
@@ -7,10 +7,47 @@ import {
 } from "lucide-react";
 import styles from "./page.module.css";
 import { login, otpSend, otpVerify, otpResend, getMe } from "@/services/auth";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+
+function Logo() {
+  return (
+    <div className={styles.logoWrap}>
+      <Link href="/" className={styles.logo}>
+        <div className={styles.logoBox}><span className={styles.logoLetter}>R</span></div>
+        <div className={styles.logoText}>
+          <span className={styles.logoName}>RMHCDT</span>
+          <span className={styles.logoSub}>Youth Portal</span>
+        </div>
+      </Link>
+    </div>
+  );
+}
 
 export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div style={{
+          display: "flex", alignItems: "center", justifyContent: "center",
+          height: "100vh", background: "#f8fafc",
+        }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: "50%",
+            border: "2.5px solid #e2e8f0", borderTopColor: "#15803d",
+            animation: "spin 0.7s linear infinite",
+          }} />
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [step, setStep] = useState("login");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
@@ -27,22 +64,37 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
 
+  // Redirect to `next` param if present and safe, otherwise role-based default
+  const redirectAfterLogin = useCallback((role) => {
+    const next = searchParams.get("next");
+    const safeNext =
+      next && next.startsWith("/") && !next.startsWith("//") ? next : null;
+    if (safeNext) {
+      router.replace(safeNext);
+      return;
+    }
+    if (role === "admin" || role === "superadmin") {
+      router.replace("/admin");
+    } else if (role === "verifier") {
+      router.replace("/verifier");
+    } else {
+      router.replace("/dashboard");
+    }
+  }, [searchParams, router]);
+
   // ── IF ALREADY LOGGED IN → GO TO DASHBOARD ────────────────────────────────
  useEffect(() => {
+  let cancelled = false;
   getMe()
     .then((res) => {
-      const role = res.data.role;
-      if (role === "admin" || role === "superadmin") {
-        router.replace("/admin");
-      } else if (role === "verifier") {
-        router.replace("/verifier");
-      } else {
-        router.replace("/dashboard");
-      }
+      if (!cancelled) redirectAfterLogin(res.data.role);
     })
     .catch(() => {})
-    .finally(() => setCheckingAuth(false));
-}, []);
+    .finally(() => {
+      if (!cancelled) setCheckingAuth(false);
+    });
+  return () => { cancelled = true; };
+}, [redirectAfterLogin]);
 
   // Don't render the form until we've confirmed they're not already logged in
   // This prevents a flash of the login form before the redirect fires
@@ -172,13 +224,7 @@ export default function LoginPage() {
 
       await new Promise((r) => setTimeout(r, 300));
 
-      if (role === "admin" || role === "superadmin") {
-        router.replace("/admin");
-      } else if (role === "verifier") {
-        router.replace("/verifier");
-      } else {
-        router.replace("/dashboard");
-      }
+      redirectAfterLogin(role);
     } catch (err) {
       setOtpError(
         err?.response?.data?.error ||
@@ -189,18 +235,6 @@ export default function LoginPage() {
       setLoading(false);
     }
   }
-
-  const Logo = () => (
-    <div className={styles.logoWrap}>
-      <Link href="/" className={styles.logo}>
-        <div className={styles.logoBox}><span className={styles.logoLetter}>R</span></div>
-        <div className={styles.logoText}>
-          <span className={styles.logoName}>RMHCDT</span>
-          <span className={styles.logoSub}>Youth Portal</span>
-        </div>
-      </Link>
-    </div>
-  );
 
   // ── OTP STEP ───────────────────────────────────────────────────────────────
   if (step === "otp") {

@@ -10,7 +10,7 @@ import {
   FileText, Image as ImageIcon,
 } from "lucide-react";
 import styles from "./page.module.css";
-import { getStudentById, getApplications, verifyStudent } from "@/services";
+import { getStudentById, getApplications } from "@/services";
 
 // ── STATUS CONFIG ─────────────────────────────────────────────────────────────
 const statusConfig = {
@@ -36,7 +36,8 @@ const categoryIcons = {
 function getFileUrl(path) {
   if (!path) return null;
   if (path.startsWith("http")) return path;
-  return `${process.env.NEXT_PUBLIC_API_URL}${path}`;
+  const base = process.env.NEXT_PUBLIC_API_URL || "";
+  return `${base}${path}`;
 }
 
 function formatDate(dateStr) {
@@ -81,7 +82,7 @@ export default function StudentDetailPage() {
         // Fetch student and all applications in parallel
         const [studentRes, appsRes] = await Promise.allSettled([
           getStudentById(params.id),
-          getApplications(),
+          getApplications(1, { page_size: 9999 }),
         ]);
 
         if (cancelled) return;
@@ -95,7 +96,7 @@ export default function StudentDetailPage() {
 
         // Filter applications belonging to this student
         if (appsRes.status === "fulfilled") {
-          const allApps = Array.isArray(appsRes.value.data) ? appsRes.value.data : [];
+          const allApps = appsRes.value.data?.results || [];
           const studentApps = allApps.filter((a) =>
           String(a.student?.id) === String(params.id)
           );
@@ -205,7 +206,7 @@ export default function StudentDetailPage() {
                   ? student.gender.charAt(0).toUpperCase() + student.gender.slice(1)
                   : "—"
               } />
-              <InfoRow icon={Fingerprint} label="NIN" value="****-****-****" />
+              <InfoRow icon={Fingerprint} label="NIN" value={student.nin ? `****-****-${student.nin.slice(-4)}` : "—"} />
             </div>
           </div>
 

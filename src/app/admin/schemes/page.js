@@ -3,11 +3,11 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   BookOpen, Plus, Search, AlertCircle, Users,
-  GraduationCap, Briefcase, Wrench, Banknote,
+  GraduationCap, Briefcase, Banknote,
   Calendar, ArrowRight,
 } from "lucide-react";
 import styles from "./page.module.css";
-import { getSchemes, getMe } from "@/services";
+import { getSchemes } from "@/services";
 
 // ── CATEGORY CONFIG ───────────────────────────────────────────────────────────
 const categoryConfig = {
@@ -59,22 +59,25 @@ export default function AdminSchemesPage() {
   }
 
   useEffect(() => {
-  async function checkRole() {
-    try {
-      const { getMe } = await import("@/services/auth");
-      const res = await getMe();
-      if (res.data.role === "verifier") {
-        router.replace("/admin");
-      } else {
+    let cancelled = false;
+    async function init() {
+      try {
+        const { getMe } = await import("@/services/auth");
+        const res = await getMe();
+        if (cancelled) return;
+        if (res.data.role === "verifier") {
+          router.replace("/admin");
+          return;
+        }
         setUser(res.data);
+        await loadSchemes();
+      } catch {
+        if (!cancelled) router.replace("/login");
       }
-    } catch {
-      router.replace("/login");
     }
-  }
-  checkRole();
-  loadSchemes();
-}, []);
+    init();
+    return () => { cancelled = true; };
+  }, []);
 
   // ── FILTER ────────────────────────────────────────────────────────────────
   const filtered = schemes.filter((s) =>

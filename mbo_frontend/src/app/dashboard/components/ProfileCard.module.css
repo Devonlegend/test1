@@ -1,0 +1,123 @@
+/* ══════════════════════════════════════
+   PROFILE CARD — RMHCDT Youth Portal
+══════════════════════════════════════ */
+
+.card {
+  background: var(--surface-white);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-2xl);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 24px var(--overlay-subtle);
+}
+
+/* ── AVATAR ── */
+.avatarWrap { flex-shrink: 0; }
+
+.avatarImg {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-default);
+  display: block;
+}
+
+.avatarInitials {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: var(--green-tint-bg);
+  border: 2px solid var(--green-tint-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sora), 'Sora', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--mbo-forest);
+}
+
+/* ── INFO ── */
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: -0px;
+}
+
+.name {
+  font-family: var(--font-sora), 'Sora', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.email {
+  font-size: 12px;
+  color: var(--ink-tertiary);
+  margin: 0px 0;
+}
+
+.phone {
+  font-size: 12px;
+  color: var(--ink-tertiary);
+  margin: 1px 0 4px;
+}
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 12px;
+  color: var(--ink-tertiary);
+}
+
+.metaItem svg { color: var(--ink-muted); flex-shrink: 0; }
+
+.metaDot {
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  flex-shrink: 0;
+}
+
+/* ── BUTTON ── */
+.profileBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mbo-forest);
+  background: var(--green-tint-bg);
+  border: 1px solid var(--green-tint-border);
+  border-radius: var(--radius-md);
+  padding: 9px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.18s;
+}
+
+.profileBtn:hover {
+  background: var(--green-tint-hover);
+  border-color: var(--mbo-forest-pale);
+}
+
+/* ── MOBILE ── */
+@media (max-width: 640px) {
+  .card { flex-wrap: wrap; padding: var(--space-lg); gap: 14px; }
+  .profileBtn { width: 100%; justify-content: center; }
+  .metaDot { display: none; }
+}

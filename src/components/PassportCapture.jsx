@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Camera, RotateCcw, CheckCircle2, AlertCircle, X, ZoomIn } from "lucide-react";
 import styles from "./Passportcapture.module.css";
 
@@ -52,6 +52,19 @@ export default function PassportCapture({ value, onChange, error }) {
     stream?.getTracks().forEach((t) => t.stop());
     setStream(null);
   }
+
+  // Cleanup camera stream on unmount
+  useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach((t) => t.stop());
+      }
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Retake — go back to camera
   function retake() {

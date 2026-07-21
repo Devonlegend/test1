@@ -1,0 +1,229 @@
+/*
+  Font-token aliases.
+  index.html loads Sora + DM Sans from Google Fonts.
+  The codebase (admin, verifier, student dashboards) references --font-jakarta
+  and --font-inter. Alias the legacy names to the loaded families so every
+  surface renders in the design-system pair (Sora display, DM Sans body)
+  instead of falling back to system sans.
+*/
+:root {
+  /* ── Fonts ────────────────────────────────────────────────────────────── */
+  --font-sora: 'Sora', sans-serif;
+  --font-dm: 'DM Sans', sans-serif;
+  --font-jakarta: var(--font-sora), 'Sora', sans-serif;
+  --font-inter: var(--font-dm), 'DM Sans', sans-serif;
+
+  /* ── Colors: Primary ──────────────────────────────────────────────────── */
+  --mbo-forest: var(--mbo-forest);
+  --mbo-forest-deep: var(--mbo-forest-deep);
+  --mbo-forest-light: var(--mbo-forest-light);
+  --mbo-forest-pale: var(--mbo-forest-pale);
+
+  /* ── Colors: Accent ───────────────────────────────────────────────────── */
+  --amber-gold: var(--amber-gold);
+  --amber-warm: var(--amber-warm);
+  --amber-earth: var(--amber-earth);
+  --amber-deep: var(--amber-deep);
+
+  /* ── Colors: Category ─────────────────────────────────────────────────── */
+  --blue-training: var(--blue-training);
+  --blue-calm: var(--blue-calm);
+  --purple-grant: var(--purple-grant);
+  --cyan-outcome: var(--cyan-outcome);
+
+  /* ── Colors: Semantic ─────────────────────────────────────────────────── */
+  --red-error: var(--red-error);
+  --red-error-deep: var(--red-error-deep);
+  --red-error-dark: var(--red-error-dark);
+
+  /* ── Colors: Ink (text) ───────────────────────────────────────────────── */
+  --ink-primary: #0f172a;
+  --ink-secondary: #374151;
+  --ink-tertiary: #64748b;
+  --ink-muted: #94a3b8;
+  --ink-disabled: #cbd5e1;
+
+  /* ── Colors: Surface ──────────────────────────────────────────────────── */
+  --surface-white: #ffffff;
+  --surface-page: #f9fafb;
+  --surface-input: #f8fafc;
+  --surface-hover: #f1f5f9;
+
+  /* ── Colors: Border ───────────────────────────────────────────────────── */
+  --border-default: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-card: #e8ecf0;
+
+  /* ── Colors: Tinted backgrounds ───────────────────────────────────────── */
+  --green-tint-bg: var(--green-tint-bg);
+  --green-tint-border: var(--green-tint-border);
+  --green-tint-hover: var(--green-tint-hover);
+  --amber-tint-bg: var(--amber-tint-bg);
+  --amber-tint-border: var(--amber-tint-border);
+  --blue-tint-bg: var(--blue-tint-bg);
+  --blue-tint-border: var(--blue-tint-border);
+  --purple-tint-bg: var(--purple-tint-bg);
+  --purple-tint-border: var(--purple-tint-border);
+  --cyan-tint-bg: var(--cyan-tint-bg);
+  --cyan-tint-border: var(--cyan-tint-border);
+  --red-tint-bg: var(--red-tint-bg);
+  --red-tint-border: var(--red-tint-border);
+
+  /* ── Colors: Dark sections ────────────────────────────────────────────── */
+  --dark-section: #0a1f13;
+  --dark-section-deeper: #060f09;
+
+  /* ── Spacing scale ────────────────────────────────────────────────────── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-3xl: 48px;
+  --space-4xl: 64px;
+
+  /* ── Radius scale ─────────────────────────────────────────────────────── */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-full: 100px;
+
+  /* ── Shadows ──────────────────────────────────────────────────────────── */
+  --shadow-surface-rest: 0 1px 3px var(--overlay-subtle);
+  --shadow-surface-float: 0 2px 8px rgba(0, 0, 0, 0.03);
+  --shadow-surface-lift: 0 8px 32px var(--overlay-light);
+  --shadow-surface-hover: 0 6px 20px var(--overlay-medium);
+  --shadow-button-rest: 0 4px 14px rgba(21,128,61,0.22);
+  --shadow-button-lift: 0 6px 20px rgba(21,128,61,0.32);
+  --shadow-modal: 0 8px 40px rgba(0, 0, 0, 0.14);
+  --shadow-navbar-scroll: 0 1px 12px rgba(0, 0, 0, 0.3);
+  --shadow-card-hover: 0 12px 36px var(--shadow-card-hover);
+
+  /* ── Overlay opacity scale ────────────────────────────────────────────── */
+  --overlay-subtle: var(--overlay-subtle);
+  --overlay-light: var(--overlay-light);
+  --overlay-medium: var(--overlay-medium);
+  --overlay-strong: var(--overlay-strong);
+  --overlay-heavy: var(--overlay-heavy);
+  --overlay-extra: var(--overlay-extra);
+  --overlay-mask: var(--overlay-mask);
+  --overlay-dimmer: var(--overlay-dimmer);
+  --overlay-backdrop: var(--overlay-backdrop);
+  --overlay-intense: rgba(0, 0, 0, 0.18);
+  --overlay-dark: var(--overlay-dark);
+
+  /* ── Nav-specific brand-dark variants ──────────────────────────────────── */
+  --nav-border: var(--nav-border);
+  --nav-link-muted: var(--nav-link-muted);
+  --nav-dark-border: var(--nav-dark-border);
+  --footer-separator: var(--footer-separator);
+
+  /* ── Notification badge red ───────────────────────────────────────────── */
+  --notif-badge-bg: var(--notif-badge-bg);
+  --notif-badge-ring: var(--notif-badge-ring);
+
+  /* ── Focus ring ───────────────────────────────────────────────────────── */
+  --focus-ring: 0 0 0 3px rgba(21,128,61,0.08);
+
+  /* ── Z-index scale ────────────────────────────────────────────────────── */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-drawer: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-toast: 600;
+  --z-skip-link: 1000;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--surface-page);
+  color: var(--ink-primary);
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-jakarta), sans-serif;
+  letter-spacing: -0.02em;
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+p, a, span, li, label, input, button {
+  font-family: var(--font-inter), sans-serif;
+  text-wrap: pretty;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--mbo-forest);
+  outline-offset: 2px;
+  box-shadow: var(--focus-ring);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: var(--z-skip-link);
+  padding: 8px 16px;
+  background: var(--mbo-forest);
+  color: var(--surface-white);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: 8px;
+}
+
+/* Subtle grain overlay for depth */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  pointer-events: none;
+  opacity: 0.018;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

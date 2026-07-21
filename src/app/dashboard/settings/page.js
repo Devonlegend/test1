@@ -6,6 +6,7 @@ import {
   Smartphone, Mail, Megaphone, CalendarCheck, AlertTriangle, KeyRound, Check, X,
 } from "lucide-react";
 import styles from "./page.module.css";
+import axiosInstance from "@/services/axiosInstance";
 
 function Section({ icon, title, sub, children, defaultOpen = false }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -166,16 +167,16 @@ function PasswordCard() {
   async function handleVerifyOtp() {
     if (otp.length < 6) { setOtpError("Please enter all 6 digits."); return; }
     setVerifying(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setVerifying(false);
-    // Simulate success (any 6-digit code works in this demo)
-    setStage("success");
-    setTimeout(() => {
-      setStage("form");
-      setIsEditing(false);
-      setPasswords({ newPass: "", confirm: "" });
-      setOtp("");
-    }, 2000);
+    setOtpError("");
+    try {
+      // NOTE: Wire to password change endpoint when backend adds it
+      // await verifyOtpAndChangePassword({ code: otp, new_password: passwords.newPass });
+      setOtpError("Password change is not yet available. Please contact an administrator.");
+    } catch (err) {
+      setOtpError(err?.response?.data?.detail || "Verification failed.");
+    } finally {
+      setVerifying(false);
+    }
   }
 
   async function handleResend() {
@@ -366,6 +367,19 @@ export default function SettingsPage() {
 
   /* ── Deactivate modal ── */
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
+
+  async function handleDeactivate() {
+    setDeactivating(true);
+    try {
+      // TODO: Wire to deactivation endpoint when backend adds it.
+      // await axiosInstance.post("/auth/deactivate/");
+      await new Promise((r) => setTimeout(r, 600));
+      window.location.href = "/login";
+    } catch {
+      setDeactivating(false);
+    }
+  }
 
   function toggleNotif(key)   { setNotifs((n)  => ({ ...n, [key]: !n[key] })); }
   function togglePrivacy(key) { setPrivacy((p) => ({ ...p, [key]: !p[key] })); }
@@ -420,7 +434,10 @@ export default function SettingsPage() {
               <p className={styles.actionTitle}>Download my data</p>
               <p className={styles.actionSub}>Export a copy of your profile and activity data.</p>
             </div>
-            <button className={styles.btnOutline}>Download</button>
+            <button className={styles.btnOutline} onClick={() => {
+              // TODO: Wire to data export API when available.
+              alert("Data export is not yet available. Please contact support.");
+            }}>Download</button>
           </div>
           <div className={styles.divider} />
           <div className={styles.actionRowDanger}>
@@ -449,8 +466,8 @@ export default function SettingsPage() {
               <button className={styles.btnOutline} onClick={() => setShowDeactivateModal(false)}>
                 Cancel, keep account
               </button>
-              <button className={styles.btnDanger} onClick={() => setShowDeactivateModal(false)}>
-                Yes, deactivate
+              <button className={styles.btnDanger} onClick={handleDeactivate} disabled={deactivating}>
+                {deactivating ? "Deactivating..." : "Yes, deactivate"}
               </button>
             </div>
           </div>

@@ -1,7 +1,11 @@
 import axios from "axios";
 
+const isServer = typeof window === "undefined";
+const siteOrigin = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const apiBaseURL = isServer ? new URL("/api", siteOrigin).toString().replace(/\/$/, "") : "/api";
+
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: apiBaseURL,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -89,7 +93,9 @@ api.interceptors.response.use(
     } catch (refreshError) {
       // Refresh token is also expired — clear queue and send to login
       processQueue(refreshError);
-      window.location.href = "/login";
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      }
       return Promise.reject(refreshError);
 
     } finally {

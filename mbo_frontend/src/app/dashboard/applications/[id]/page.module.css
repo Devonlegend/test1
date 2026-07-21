@@ -1,0 +1,397 @@
+/* ══════════════════════════════════════
+   APPLICATION DETAIL — RMHCDT Youth Portal
+══════════════════════════════════════ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 780px;
+  margin: 0 auto;
+  padding: var(--space-2xl) 32px;
+  width: 100%;
+}
+
+/* ── BACK BUTTON ── */
+.backBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-tertiary);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.18s;
+  width: fit-content;
+}
+.backBtn:hover { color: var(--mbo-forest); }
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.iconWrap {
+  width: 44px; height: 44px;
+  border-radius: var(--radius-lg);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.title {
+  font-family: var(--font-sora), 'Sora', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink-primary);
+  letter-spacing: -0.03em;
+  margin: 0 0 3px;
+  line-height: 1.25;
+}
+
+.sub {
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+/* STATUS BADGE */
+.statusTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  flex-shrink: 0;
+  border: 1px solid transparent;
+}
+.st_approved { background: var(--green-tint-bg); color: var(--mbo-forest); border-color: var(--green-tint-border); }
+.st_pending  { background: var(--amber-tint-bg); color: var(--amber-earth); border-color: var(--amber-tint-border); }
+.st_flagged  { background: var(--amber-tint-bg); color: var(--amber-earth); border-color: var(--amber-tint-border); }
+.st_rejected { background: var(--red-tint-bg); color: var(--red-error); border-color: var(--red-tint-border); }
+
+/* ── STEPPER ── */
+.stepper {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.stepWrap {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+.stepConnector {
+  font-size: 12px;
+  color: #e2e8f0;
+  margin: 0 4px;
+  letter-spacing: -2px;
+}
+
+.connectorDone {
+  color: var(--green-tint-border);
+}
+
+.stepPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12.5px;
+  font-weight: 600;
+  border: 1.5px solid transparent;
+  transition: all 0.15s;
+}
+
+.pillPending {
+  background: var(--surface-input);
+  color: var(--ink-disabled);
+  border-color: var(--border-default);
+}
+
+.pillDone {
+  background: var(--green-tint-bg);
+  color: var(--mbo-forest);
+  border-color: var(--green-tint-border);
+}
+
+.pillCurrent {
+  background: var(--amber-tint-bg);
+  color: var(--amber-warm);
+  border-color: var(--amber-tint-border);
+}
+
+.pillApproved {
+  background: var(--green-tint-bg);
+  color: var(--mbo-forest);
+  border-color: var(--green-tint-border);
+}
+
+.pillRejected {
+  background: var(--surface-input);
+  color: var(--ink-tertiary);
+  border-color: var(--border-default);
+}
+
+.pillFlagged {
+  background: var(--red-tint-bg);
+  color: var(--red-error);
+  border-color: var(--red-tint-border);
+}
+
+/* ── STATUS NOTES ── */
+.flagNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--amber-tint-bg);
+  border: 1px solid var(--amber-tint-border);
+  border-radius: var(--radius-lg);
+  padding: 13px 16px;
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--amber-deep);
+  line-height: 1.6;
+}
+
+.rejectNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--red-tint-bg);
+  border: 1px solid var(--red-tint-border);
+  border-radius: var(--radius-lg);
+  padding: 13px 16px;
+}
+.rejectLabel {
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--red-error);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 5px;
+}
+.rejectText {
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--red-error-dark);
+  line-height: 1.6;
+}
+
+.approvedNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--green-tint-bg);
+  border: 1px solid var(--green-tint-border);
+  border-radius: var(--radius-lg);
+  padding: 13px 16px;
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--mbo-forest-deep);
+  line-height: 1.6;
+}
+
+/* ── FIELDS SECTION ── */
+.fieldsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.fieldsTitle {
+  font-family: var(--font-sora), 'Sora', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--ink-primary);
+  letter-spacing: -0.02em;
+  margin: 0 0 2px;
+}
+
+.fieldsSub {
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  color: var(--ink-muted);
+  margin: 0;
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── SECTION ── */
+.section {
+  background: var(--surface-white);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--radius-2xl);
+  padding: 22px 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.sectionNum {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: #0f172a;
+  color: #ffffff;
+  font-family: var(--font-sora), 'Sora', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.sectionTitle {
+  font-family: var(--font-sora), 'Sora', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink-primary);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* ── FIELD GRID ── */
+.fieldGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg) 24px;
+}
+
+.fieldItem {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fieldItemFull {
+  grid-column: 1 / -1;
+}
+
+.fieldLabel {
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.fieldValue {
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  color: var(--ink-primary);
+  line-height: 1.6;
+  background: var(--surface-input);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+}
+
+/* FILE CHIP */
+.fileChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--green-tint-bg);
+  border: 1.5px solid var(--green-tint-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-sm) 12px;
+  width: fit-content;
+}
+
+.fileName {
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--mbo-forest);
+}
+
+/* ── ATTESTATION CONFIRM ── */
+.attestConfirm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background: var(--green-tint-bg);
+  border: 1px solid var(--green-tint-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) 16px;
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  color: var(--mbo-forest-deep);
+}
+
+/* ── NOT FOUND ── */
+.notFound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-lg);
+  min-height: 40vh;
+  font-family: var(--font-dm), 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--ink-tertiary);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .page { padding: 20px 16px; gap: var(--space-lg); }
+
+  .iconWrap { width: 40px; height: 40px; }
+
+  .title { font-size: 15px; }
+
+  .stepper {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .stepper::-webkit-scrollbar { display: none; }
+
+  .stepPill {
+    padding: var(--space-xs) 8px;
+    font-size: 10px;
+    gap: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .stepConnector {
+    margin: 0 1px;
+    font-size: 9px;
+    flex-shrink: 0;
+  }
+
+  .fieldGrid { grid-template-columns: 1fr; }
+
+  .fieldItemFull { grid-column: 1; }
+
+  .section { padding: var(--space-lg); }
+}

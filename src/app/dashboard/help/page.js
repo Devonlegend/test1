@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import axiosInstance from "@/services/axiosInstance";
 import {
   HelpCircle, MessageSquare, ChevronDown, ChevronUp,
   MapPin, Mail, Phone, Send, CheckCircle,
@@ -117,14 +118,27 @@ export default function HelpPage() {
 
   const totalResults = filtered.reduce((acc, f) => acc + f.items.length, 0);
 
+  const [submitError, setSubmitError] = useState("");
+
   function handleChange(e) { setForm({ ...form, [e.target.name]: e.target.value }); }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setSending(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setSending(false);
-    setSubmitted(true);
+    setSubmitError("");
+    try {
+      // TODO: Wire to backend support endpoint when available.
+      // await axiosInstance.post("/support/contact/", form);
+      await new Promise((r) => setTimeout(r, 800));
+      setSubmitted(true);
+    } catch (err) {
+      setSubmitError(
+        err?.response?.data?.detail ||
+          "Could not send your message. Please try again or email support directly."
+      );
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -327,6 +341,9 @@ export default function HelpPage() {
                       : <><Send size={14} strokeWidth={2} /> Send Message</>
                     }
                   </button>
+                  {submitError && (
+                    <p className={styles.errorMsg} role="alert">{submitError}</p>
+                  )}
                 </form>
               )}
             </div>

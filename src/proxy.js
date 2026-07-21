@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 const BACKEND_URL = (process.env.BACKEND_URL || 'http://localhost:8000').replace(/\/+$/, '');
 const PROTECTED = ["/dashboard", "/admin", "/verifier"];
 
-export async function middleware(request) {
+export async function proxy(request) {
   const { pathname } = request.nextUrl;
 
   if (pathname.startsWith("/api/")) {
@@ -29,9 +29,8 @@ export async function middleware(request) {
 
 async function proxyApi(request) {
   const { pathname, search } = request.nextUrl;
-  // Strip the leading /api prefix; keep the rest of the path.
-  const backendPath = pathname.replace(/^\/api/, '') || '/';
-  const target = new URL(`${BACKEND_URL}${backendPath}`);
+  const backendPath = (pathname.replace(/^\/api/, '') || '/').replace(/^\//, '');
+  const target = new URL(backendPath, `${BACKEND_URL}/`);
   target.search = search;
 
   const headers = new Headers();
@@ -41,16 +40,25 @@ async function proxyApi(request) {
     headers.set(key, value);
   }
 
+  let body = null;
+  if (!['GET', 'HEAD'].includes(request.method)) {
+    body = await request.arrayBuffer();
+  }
+
   const response = await fetch(target, {
     method: request.method,
     headers,
-    body: ['GET', 'HEAD'].includes(request.method) ? null : request.body,
-    duplex: 'half',
+    body,
+    redirect: 'manual',
   });
 
   const resHeaders = new Headers();
   for (const [key, value] of response.headers) {
     if (key.toLowerCase() === 'set-cookie') continue;
+    if (key.toLowerCase() === 'location') {
+      resHeaders.set(key, `/api${value}`);
+      continue;
+    }
     resHeaders.set(key, value);
   }
   for (const cookie of (response.headers.getSetCookie?.() || [])) {

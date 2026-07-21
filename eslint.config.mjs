@@ -10,6 +10,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Project-specific ignores:
+    ".venv/**",
+    "mbo_frontend/**",
+    "mbo_youth_emp/**",
+    "staticfiles/**",
   ]),
 ]);
 
