@@ -5,6 +5,7 @@ import {
   Calendar, Clock, FileText, CheckCircle2,
   GraduationCap, Briefcase, Wrench, Banknote,
   ArrowRight, ChevronRight, AlertCircle, Hourglass,
+  UserCheck, Search, ShieldCheck,
 } from "lucide-react";
 import ProfileCard from "./components/ProfileCard";
 import LoadingSpinner from "./components/LoadingSpinner";
@@ -169,13 +170,37 @@ export default function DashboardPage() {
       {/* VERIFICATION BANNER */}
       {user && !user.is_verified && (
         <div className={styles.verifyBanner}>
-          <AlertCircle size={16} strokeWidth={2} className={styles.verifyBannerIcon} />
-          <div className={styles.verifyBannerText}>
+          <div className={styles.verifyBannerIcon}>
+            <UserCheck size={18} strokeWidth={2} />
+          </div>
+          <div className={styles.verifyBannerBody}>
             <span className={styles.verifyBannerTitle}>Account pending verification</span>
             <span className={styles.verifyBannerDesc}>
-              An admin is reviewing your registration documents. You'll be able to apply for
-              programmes once your account is verified this usually doesn't take long.
+              An admin is reviewing your registration documents. You'll be able to apply
+              for programmes once your account is verified, this usually doesn't take long.
             </span>
+            <div className={styles.verifySteps}>
+              <span className={`${styles.verifyStep} ${styles.verifyStepDone}`}>
+                <span className={`${styles.verifyStepIcon} ${styles.vsiDone}`}>
+                  <CheckCircle2 size={11} strokeWidth={2.5} />
+                </span>
+                Submitted
+              </span>
+              <span className={`${styles.verifyStepConnector} ${styles.vscDone}`} />
+              <span className={`${styles.verifyStep} ${styles.verifyStepActive}`}>
+                <span className={`${styles.verifyStepIcon} ${styles.vsiActive}`}>
+                  <Search size={11} strokeWidth={2.5} />
+                </span>
+                Under review
+              </span>
+              <span className={`${styles.verifyStepConnector} ${styles.vscPending}`} />
+              <span className={`${styles.verifyStep} ${styles.verifyStepPending}`}>
+                <span className={`${styles.verifyStepIcon} ${styles.vsiPending}`}>
+                  <ShieldCheck size={11} strokeWidth={2.5} />
+                </span>
+                Verified
+              </span>
+            </div>
           </div>
         </div>
       )}
