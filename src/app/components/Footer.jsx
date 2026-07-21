@@ -9,13 +9,11 @@ export default function Footer() {
         <div className={styles.bottom}>
           {/* LEFT: Logo */}
           <Link href="/" className={styles.logo}>
-            <div className={styles.logoBox}>
-              <span className={styles.logoLetter}>R</span>
-            </div>
-            <div className={styles.logoText}>
-              <span className={styles.logoName}>RMHCDT</span>
-              <span className={styles.logoSub}>Youth Portal</span>
-            </div>
+            <img
+              src="/mboyouths.png"
+              alt="RMHCDT Youth Portal"
+              className="h-8 w-8 rounded-full object-cover"
+            />
           </Link>
 
           {/* RIGHT: Legal links + Copyright stacked */}

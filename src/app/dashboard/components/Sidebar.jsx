@@ -89,11 +89,9 @@ export default function Sidebar({ isOpen, onClose }) {
 
         {/* LOGO */}
         <div className={styles.logo}>
-          <div className={styles.logoIcon}><span>R</span></div>
-          <div className={styles.logoBrand}>
-            <span className={styles.logoName}>RMHCDT</span>
-            <span className={styles.logoSub}>Youth Portal</span>
-          </div>
+          <Link href="/" className="flex items-center">
+            <img src="/mboyouths.png" alt="RMHCDT Youth Portal" className="h-8 w-8 rounded-full object-cover" />
+          </Link>
           <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
             <X size={14} strokeWidth={2} />
           </button>

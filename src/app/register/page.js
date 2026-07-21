@@ -278,11 +278,7 @@ function handleCertificateChange(e) {
   const Logo = () => (
     <div className={styles.logoWrap}>
       <Link href="/" className={styles.logo}>
-        <div className={styles.logoBox}><span className={styles.logoLetter}>R</span></div>
-        <div className={styles.logoText}>
-          <span className={styles.logoName}>RMHCDT</span>
-          <span className={styles.logoSub}>Youth Portal</span>
-        </div>
+        <img src="/mboyouths.png" alt="RMHCDT Youth Portal" className="h-10 w-10 rounded-full object-cover" />
       </Link>
     </div>
   );

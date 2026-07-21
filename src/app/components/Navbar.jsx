@@ -35,48 +35,12 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between h-16">
 
           {/* LOGO */}
-          <Link href="/" className="flex items-center gap-3 no-underline">
-            <div
-              className="w-8 h-8 flex items-center justify-center"
-              style={{ background: "#15803d", borderRadius: "8px" }}
-            >
-              <span
-                style={{
-                  color: "#fbbf24",
-                  fontWeight: 800,
-                  fontSize: "15px",
-                  fontFamily: "var(--font-jakarta)",
-                }}
-              >
-                R
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span
-                style={{
-                  color: "#0f172a",
-                  fontWeight: 800,
-                  fontSize: "14px",
-                  letterSpacing: "0.01em",
-                  lineHeight: 1.1,
-                  fontFamily: "var(--font-jakarta)",
-                }}
-              >
-                RMHCDT
-              </span>
-              <span
-                style={{
-                  color: "#94a3b8",
-                  fontSize: "9px",
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  lineHeight: 1.2,
-                  fontFamily: "var(--font-inter)",
-                }}
-              >
-                Youth Portal
-              </span>
-            </div>
+          <Link href="/" className="flex items-center no-underline">
+            <img
+              src="/mboyouths.png"
+              alt="RMHCDT Youth Portal"
+              className="h-10 w-10 rounded-full object-cover"
+            />
           </Link>
 
           {/* DESKTOP NAV LINKS */}

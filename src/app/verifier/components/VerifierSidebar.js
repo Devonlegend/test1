@@ -61,13 +61,9 @@ export default function VerifierSidebar({ isOpen, onClose, user }) {
 
         {/* ── LOGO ── */}
         <div className={styles.logo}>
-          <div className={styles.logoIcon}>
-            <span className={styles.logoLetter}>R</span>
-          </div>
-          <div className={styles.logoBrand}>
-            <span className={styles.logoName}>RMHCDT</span>
-            <span className={styles.logoSub}>Verifier Portal</span>
-          </div>
+          <Link href="/" className="flex items-center flex-shrink-0">
+            <img src="/mboyouths.png" alt="RMHCDT Youth Portal" className="h-8 w-8 rounded-full object-cover" />
+          </Link>
           <button
             className={styles.closeBtn}
             onClick={onClose}
