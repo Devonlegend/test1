@@ -29,7 +29,15 @@ export async function proxy(request) {
 
 async function proxyApi(request) {
   const { pathname, search } = request.nextUrl;
-  const backendPath = (pathname.replace(/^\/api/, '') || '/').replace(/^\//, '');
+  let backendPath = (pathname.replace(/^\/api/, '') || '/').replace(/^\//, '');
+
+  // Django requires trailing slashes on API endpoints. Without them, Django
+  // returns a 301 redirect, which turns POST/PUT/PATCH into GET — breaking
+  // mutations.  Ensure every path that does not look like a static file has one.
+  if (backendPath && !backendPath.endsWith('/') && !/\.[a-z0-9]+$/i.test(backendPath)) {
+    backendPath += '/';
+  }
+
   const target = new URL(backendPath, `${BACKEND_URL}/`);
   target.search = search;
 
