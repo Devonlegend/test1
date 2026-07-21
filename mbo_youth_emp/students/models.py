@@ -26,6 +26,7 @@ class Student(models.Model):
     phone_number = models.CharField(max_length=20, blank=True, default='')
     cgpa = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     level = models.IntegerField(null=True, blank=True)
+    gender = models.CharField(max_length=10, blank=True, default='Male')
     is_verified = models.BooleanField(default=False)
     verification_rejection_reason = models.TextField(blank=True, default='')
     verification_reviewed_at = models.DateTimeField(null=True, blank=True)

@@ -179,6 +179,7 @@ def register(request):
                 phone_number=phone_number,
                 ward=ward or '',
                 lga=lga or '',
+                gender=gender,
                 date_of_birth=date_of_birth,
                 nin_hash=nin_hash,
                 certificate=certificate
