@@ -43,6 +43,13 @@ from verification.tasks import (
     send_application_approved_email,
     send_double_dip_flagged_email,
 )
+from notifications.helpers import (
+    notify_application_submitted,
+    notify_award_conflict,
+    notify_application_status_update,
+    notify_approval_published,
+    notify_new_application_in_queue,
+)
 
 
 def _dispatch_email(task, application, scheme):
@@ -417,8 +424,22 @@ class ApplicationViewSet(viewsets.ViewSet):
 
         if result['has_conflict']:
             _dispatch_email(send_double_dip_flagged_email, application, scheme)
+            try:
+                notify_award_conflict(request.user, application)
+            except Exception:
+                logger.exception("Failed to create conflict notification")
         else:
             _dispatch_email(send_application_submitted_email, application, scheme)
+            try:
+                notify_application_submitted(request.user, application)
+            except Exception:
+                logger.exception("Failed to create submission notification")
+
+        # Alert all verifier/admin staff that a new application is in the queue.
+        try:
+            notify_new_application_in_queue(application)
+        except Exception:
+            logger.exception("Failed to create staff queue alert")
 
         return Response({
             "application_id":   str(application.id),
@@ -693,6 +714,12 @@ class ApplicationViewSet(viewsets.ViewSet):
                 notification_type = 'approved',
             )
 
+        # In-app notification for the student.
+        try:
+            notify_application_status_update(student.user, application, decision)
+        except Exception:
+            logger.exception("Failed to create status update notification")
+
         return Response({
             "message": f"Application {decision} successfully.",
             "status":  application.status,
@@ -741,6 +768,11 @@ class ApplicationViewSet(viewsets.ViewSet):
                 row = None
             if row is not None:
                 _dispatch_email(send_application_approved_email, row, scheme)
+                try:
+                    notify_approval_published(row.student.user, row)
+                except Exception:
+                    logger.exception(
+                        "Failed to create publish notification for app %s", row.id)
                 sent += 1
             notification.sent_at = timezone.now()
             notification.save(update_fields=['sent_at'])

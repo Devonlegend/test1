@@ -5,9 +5,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiResponse, inline_serializer
 
+import logging
+
 from .models import Student, AcademicRecord
 from .serializers import StudentSerializer, StudentCreateSerializer, AcademicRecordSerializer
 from accounts.permissions import IsAdmin, IsStudent, IsVerifier
+
+logger = logging.getLogger(__name__)
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -179,6 +183,23 @@ class StudentViewSet(viewsets.ModelViewSet):
         student.save(update_fields=[
             'is_verified', 'verification_rejection_reason', 'verification_reviewed_at'
         ])
+
+        # ── Notifications ──────────────────────────────────────────────────
+        if decision == 'approved':
+            from verification.tasks import send_student_verified_email
+            from notifications.helpers import notify_profile_verified
+
+            try:
+                send_student_verified_email.delay(student_id=str(student.pk))
+            except Exception:
+                logger.exception(
+                    "Failed to enqueue verified email for student %s", student.pk)
+
+            try:
+                notify_profile_verified(student.user)
+            except Exception:
+                logger.exception(
+                    "Failed to create verified notification for student %s", student.pk)
 
         return Response({
             "is_verified": student.is_verified,

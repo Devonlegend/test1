@@ -226,3 +226,15 @@ class EmailService:
                 'reference':          str(application.id)[:8].upper(),
             }
         )
+
+    @classmethod
+    def send_student_verified(cls, student) -> bool:
+        """Send when admin approves a student's identity verification."""
+        return cls._send(
+            to_email=student.user.email,
+            subject='Your Profile Has Been Verified — Start Applying Now',
+            template='student_verified',
+            context={
+                'student_name': student.full_name,
+            }
+        )

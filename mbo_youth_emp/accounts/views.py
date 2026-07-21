@@ -20,7 +20,8 @@ from accounts.models import EmailOTP, PasswordResetOTP, Role
 from students.models import Student
 
 from .authentication import ACCESS_COOKIE_NAME, REFRESH_COOKIE_NAME
-from .services import ApiException, send_otp_email, send_password_reset_email
+from verification.tasks import send_email_task, send_welcome_email, send_password_reset_email as send_password_reset_task
+from notifications.helpers import notify_welcome, notify_password_changed
 from .validators import validate_upload, FileValidationError
 from .throttles import OTPThrottle, AuthThrottle
 from .utils import hash_nin
@@ -291,12 +292,9 @@ def _issue_otp(email):
         )
 
     try:
-        send_otp_email(user.email, code)
-    except ApiException:
-        logger.exception("Brevo send_transac_email failed for %s", user.email)
-        return {"error": "Failed to send OTP email"}, status.HTTP_502_BAD_GATEWAY
+        send_email_task.delay(email=user.email, template_name='otp', otp=code)
     except Exception:
-        logger.exception("Unexpected error sending OTP email to %s", user.email)
+        logger.exception("Failed to enqueue OTP email for %s", user.email)
         return {"error": "Failed to send OTP email"}, status.HTTP_502_BAD_GATEWAY
 
     return None, status.HTTP_200_OK
@@ -393,6 +391,15 @@ def otp_verify(request):
     if not user.email_verified:
         user.email_verified = True
         user.save(update_fields=['email_verified'])
+        # Fire once on first verification — welcome email + in-app notification.
+        try:
+            send_welcome_email.delay(user_id=str(user.id))
+        except Exception:
+            logger.exception("Failed to enqueue welcome email for %s", user.email)
+        try:
+            notify_welcome(user)
+        except Exception:
+            logger.exception("Failed to create welcome notification for %s", user.email)
 
     refresh = RefreshToken.for_user(user)
     response = Response({"message": "Verified"})
@@ -538,11 +545,9 @@ def password_reset_request(request):
         )
 
     try:
-        send_password_reset_email(user.email, code)
-    except ApiException:
-        logger.exception("Brevo send_password_reset_email failed for %s", user.email)
+        send_password_reset_task.delay(email=user.email, otp=code)
     except Exception:
-        logger.exception("Unexpected error sending password reset email to %s", user.email)
+        logger.exception("Failed to enqueue password reset email for %s", user.email)
 
     return Response(_RESET_GENERIC_OK)
 
@@ -657,6 +662,12 @@ def password_reset_confirm(request):
         PasswordResetOTP.objects.filter(email__iexact=user.email).delete()
         for token in OutstandingToken.objects.filter(user=user):
             BlacklistedToken.objects.get_or_create(token=token)
+
+    # Notify the user of the password change.
+    try:
+        notify_password_changed(user)
+    except Exception:
+        logger.exception("Failed to create password-changed notification for %s", user.email)
 
     response = Response({"message": "Password has been reset. Please log in."})
     # Also clear cookies on this response in case the caller was logged in.

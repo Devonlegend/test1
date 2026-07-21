@@ -223,3 +223,8 @@ __pycache__/
 # Test Frontend
 testone/
 CLAUDE.md
+mbo_frontend/
+.claude/
+.github/
+.codex/
+.impeccable/
