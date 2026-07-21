@@ -23,6 +23,7 @@ class Student(models.Model):
     email = models.CharField(max_length=100)
     firstname    = models.CharField(max_length=50, blank=True, default='')
     lastname     = models.CharField(max_length=50, blank=True, default='')
+    phone_number = models.CharField(max_length=20, blank=True, default='')
     cgpa = models.DecimalField(max_digits=4, decimal_places=2, null=True, blank=True)
     level = models.IntegerField(null=True, blank=True)
     is_verified = models.BooleanField(default=False)

@@ -176,6 +176,7 @@ def register(request):
                 email=email,
                 firstname=firstname,
                 lastname=lastname,
+                phone_number=phone_number,
                 ward=ward or '',
                 lga=lga or '',
                 date_of_birth=date_of_birth,
