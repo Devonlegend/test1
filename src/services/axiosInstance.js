@@ -6,7 +6,15 @@ const apiBaseURL = isServer ? new URL("/api", siteOrigin).toString().replace(/\/
 
 const api = axios.create({
   baseURL: apiBaseURL,
-  headers: { "Content-Type": "application/json" },
+});
+
+// Set Content-Type: application/json for all requests EXCEPT FormData
+// (FormData must let the browser auto-set multipart/form-data with boundary)
+api.interceptors.request.use((config) => {
+  if (!(config.data instanceof FormData)) {
+    config.headers["Content-Type"] = "application/json";
+  }
+  return config;
 });
 
 // These paths must match error.config.url — which is relative to baseURL ("/api"),
