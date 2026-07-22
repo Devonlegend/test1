@@ -22,13 +22,9 @@ export default function AdminLayout({ children }) {
 
         const u = res.data;
 
-        // Only allow admin and superadmin roles
-        if (u.role !== "admin" && u.role !== "superadmin") {
-          if (u.role === "verifier") {
-            router.replace("/verifier");
-          } else {
-            router.replace("/dashboard");
-          }
+        // Only allow admin, superadmin, and verifier roles
+        if (u.role !== "admin" && u.role !== "superadmin" && u.role !== "verifier") {
+          router.replace("/dashboard");
           return;
         }
 

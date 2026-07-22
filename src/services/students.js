@@ -24,5 +24,5 @@ export const addAcademicRecord = (body) =>
 export const getBankDetail = () => 
   api.get("/verification/bank/");
 
-export const verifyStudent = (id) =>
-  api.post(`/students/${id}/verify/`);
+export const verifyStudent = (id, body) =>
+  api.patch(`/students/${id}/verify/`, body);

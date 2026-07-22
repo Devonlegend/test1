@@ -10,7 +10,7 @@ import {
   FileText, Image as ImageIcon,
 } from "lucide-react";
 import styles from "./page.module.css";
-import { getStudentById, getApplications } from "@/services";
+import { getStudentById, getApplications, verifyStudent } from "@/services";
 
 // ── STATUS CONFIG ─────────────────────────────────────────────────────────────
 const statusConfig = {
@@ -71,8 +71,10 @@ export default function StudentDetailPage() {
   const [applications,  setApplications]  = useState([]);
   const [loading,       setLoading]       = useState(true);
   const [error,         setError]         = useState(null);
-  // const [verifying,     setVerifying]     = useState(false);
-  // const [verifyError,   setVerifyError]   = useState("");
+  const [verifying,     setVerifying]     = useState(false);
+  const [verifyError,   setVerifyError]   = useState("");
+  const [showRejectDialog, setShowRejectDialog] = useState(false);
+  const [rejectNotes,   setRejectNotes]   = useState("");
 
   // ── FETCH ─────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -113,19 +115,43 @@ export default function StudentDetailPage() {
     return () => { cancelled = true; };
   }, [params.id]);
 
-  // ── TOGGLE VERIFICATION 
-// async function handleToggleVerification() {
-//   setVerifying(true);
-//   setVerifyError("");
-//   try {
-//     const res = await verifyStudent(params.id);
-//     setStudent((s) => ({ ...s, is_verified: res.data.is_verified }));
-//   } catch {
-//     setVerifyError("Failed to update verification status.");
-//   } finally {
-//     setVerifying(false);
-//   }
-// }
+  // ── VERIFY ───────────────────────────────────────────────────────────────────
+  async function handleVerifyApprove() {
+    setVerifying(true);
+    setVerifyError("");
+    try {
+      const res = await verifyStudent(params.id, { decision: "approved" });
+      setStudent((s) => ({ ...s, is_verified: res.data.is_verified }));
+    } catch (err) {
+      setVerifyError(err.response?.data?.error || "Failed to approve verification.");
+    } finally {
+      setVerifying(false);
+    }
+  }
+
+  async function handleVerifyReject() {
+    const notes = rejectNotes.trim();
+    if (!notes) {
+      setVerifyError("Please provide a reason for rejection.");
+      return;
+    }
+    setVerifying(true);
+    setVerifyError("");
+    try {
+      const res = await verifyStudent(params.id, { decision: "rejected", notes });
+      setStudent((s) => ({
+        ...s,
+        is_verified: res.data.is_verified,
+        verification_rejection_reason: res.data.verification_rejection_reason,
+      }));
+      setShowRejectDialog(false);
+      setRejectNotes("");
+    } catch (err) {
+      setVerifyError(err.response?.data?.error || "Failed to reject verification.");
+    } finally {
+      setVerifying(false);
+    }
+  }
 
   // ── LOADING ───────────────────────────────────────────────────────────────
   if (loading) {
@@ -173,9 +199,14 @@ export default function StudentDetailPage() {
           </div>
         </div>
 
-        {/* Verification toggle */}
+        {/* Verification controls */}
         <div className={styles.verifyWrap}>
-          <span className={`${styles.verifyBtn} ${student.is_verified ? styles.verifyBtnVerified : styles.verifyBtnUnverified}`}>
+          {verifyError && (
+            <p className={styles.verifyError}>{verifyError}</p>
+          )}
+          <span
+            className={`${styles.verifyBtn} ${student.is_verified ? styles.verifyBtnVerified : styles.verifyBtnUnverified}`}
+          >
             {student.is_verified ? (
               <ShieldCheck size={14} strokeWidth={2} />
             ) : (
@@ -183,7 +214,76 @@ export default function StudentDetailPage() {
             )}
             {student.is_verified ? "Verified" : "Not Verified"}
           </span>
+
+          {!student.is_verified && (
+            <div className={styles.verifyActions}>
+              <button
+                className={styles.verifyApproveBtn}
+                onClick={handleVerifyApprove}
+                disabled={verifying}
+              >
+                {verifying ? (
+                  <Loader2 size={14} strokeWidth={2} className={styles.spin} />
+                ) : (
+                  <CheckCircle2 size={14} strokeWidth={2} />
+                )}
+                Approve
+              </button>
+              <button
+                className={styles.verifyRejectBtn}
+                onClick={() => { setShowRejectDialog(true); setVerifyError(""); setRejectNotes(""); }}
+                disabled={verifying}
+              >
+                {verifying ? (
+                  <Loader2 size={14} strokeWidth={2} className={styles.spin} />
+                ) : (
+                  <XCircle size={14} strokeWidth={2} />
+                )}
+                Reject
+              </button>
+            </div>
+          )}
         </div>
+
+        {/* Reject dialog overlay */}
+        {showRejectDialog && (
+          <div className={styles.rejectOverlay} onClick={() => setShowRejectDialog(false)}>
+            <div className={styles.rejectDialog} onClick={(e) => e.stopPropagation()}>
+              <h3 className={styles.rejectTitle}>Reject Student Verification</h3>
+              <p className={styles.rejectSub}>
+                Please provide a reason for rejecting <strong>{fullName}</strong>'s verification.
+              </p>
+              <textarea
+                className={styles.rejectTextarea}
+                placeholder="e.g. Invalid documents, mismatched NIN, incomplete profile..."
+                value={rejectNotes}
+                onChange={(e) => setRejectNotes(e.target.value)}
+                rows={4}
+                autoFocus
+              />
+              <div className={styles.rejectActions}>
+                <button
+                  className={styles.rejectCancelBtn}
+                  onClick={() => setShowRejectDialog(false)}
+                  disabled={verifying}
+                >
+                  Cancel
+                </button>
+                <button
+                  className={styles.rejectConfirmBtn}
+                  onClick={handleVerifyReject}
+                  disabled={verifying || !rejectNotes.trim()}
+                >
+                  {verifying ? (
+                    <Loader2 size={14} strokeWidth={2} className={styles.spin} />
+                  ) : (
+                    "Confirm Rejection"
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         </div>
 
       {/* BODY */}
@@ -260,6 +360,11 @@ export default function StudentDetailPage() {
               <InfoRow icon={ShieldCheck} label="Verification Status" value={
                 student.is_verified ? "Verified" : "Not Verified"
               } />
+              {!student.is_verified && student.verification_rejection_reason && (
+                <InfoRow icon={AlertCircle} label="Rejection Reason" value={
+                  student.verification_rejection_reason
+                } />
+              )}
             </div>
           </div>
 

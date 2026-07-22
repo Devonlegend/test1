@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard, ClipboardList,
+  LayoutDashboard, ClipboardList, Users,
   LogOut, X,
 } from "lucide-react";
 import styles from "./Sidebar.module.css";
@@ -12,6 +12,7 @@ import { logout } from "@/services";
 const navMain = [
   { label: "Overview",      href: "/verifier",              icon: LayoutDashboard, roles: ["verifier"] },
   { label: "Applications",  href: "/verifier/applications", icon: ClipboardList,   roles: ["verifier"] },
+  { label: "Students",      href: "/admin/students",         icon: Users,           roles: ["verifier"] },
 ];
 
 // ── NAV ITEM ──────────────────────────────────────────────────────────────────

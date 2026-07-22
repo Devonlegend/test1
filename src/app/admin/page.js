@@ -11,7 +11,7 @@ import {
   Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
 import styles from "./page.module.css";
-import { getApplications, getSchemes, getMe } from "@/services";
+import { getApplications, getSchemes, getMe, getStudentStats } from "@/services";
 
 // ── STAT CARD ─────────────────────────────────────────────────────────────────
 function StatCard({ icon: Icon, label, value, iconBg, iconColor, loading }) {
@@ -85,10 +85,11 @@ export default function AdminOverviewPage() {
 
     async function load() {
       try {
-        const [appsRes, schemesRes, meRes] = await Promise.allSettled([
+        const [appsRes, schemesRes, meRes, statsRes] = await Promise.allSettled([
           getApplications(1, { page_size: 9999 }),
           getSchemes(),
           getMe(),
+          getStudentStats(),
         ]);
 
         if (cancelled) return;
@@ -119,7 +120,13 @@ export default function AdminOverviewPage() {
           : [];
         const openSchemes = schemes.filter((s) => s.is_active && s.is_published).length;
 
-        setStats({ total, pending, flagged, approved, rejected, openSchemes });
+        // ── Student stats ────────────────────────────────────────────────
+        const studentStats = statsRes.status === "fulfilled" ? statsRes.value.data : {};
+        const totalStudents    = studentStats.total_students    ?? 0;
+        const verifiedStudents = studentStats.verified          ?? 0;
+        const unverifiedStudents = totalStudents - verifiedStudents;
+
+        setStats({ total, pending, flagged, approved, rejected, openSchemes, totalStudents, unverifiedStudents });
 
         setChartData([
           { label: "Pending",  value: pending,  fill: "#f59e0b" },
@@ -135,7 +142,7 @@ export default function AdminOverviewPage() {
         setActivity(sorted);
 
       } catch {
-        setStats({ total: 0, pending: 0, flagged: 0, approved: 0, rejected: 0, openSchemes: 0 });
+        setStats({ total: 0, pending: 0, flagged: 0, approved: 0, rejected: 0, openSchemes: 0, totalStudents: 0, unverifiedStudents: 0 });
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -152,6 +159,8 @@ export default function AdminOverviewPage() {
     { icon: CheckCircle2,  label: "Approved",           value: stats?.approved   ?? 0, iconBg: "rgba(21,128,61,0.1)",   iconColor: "#4ade80" },
     { icon: XCircle,       label: "Rejected",           value: stats?.rejected   ?? 0, iconBg: "rgba(100,116,139,0.1)", iconColor: "#64748b" },
     { icon: BookOpen,      label: "Open Schemes",       value: stats?.openSchemes ?? 0, iconBg: "rgba(21,128,61,0.1)",   iconColor: "#4ade80" },
+    { icon: Users,         label: "Total Students",     value: stats?.totalStudents ?? 0, iconBg: "rgba(59,130,246,0.1)",  iconColor: "#3b82f6" },
+    { icon: ShieldAlert,   label: "Unverified Students", value: stats?.unverifiedStudents ?? 0, iconBg: "rgba(239,68,68,0.1)",   iconColor: "#ef4444" },
   ];
 
   return (
@@ -251,6 +260,7 @@ export default function AdminOverviewPage() {
               { label: "Review pending applications", href: "/admin/applications",             icon: ClipboardList, color: "#f59e0b", bg: "#fffbeb", roles: ["admin", "superadmin", "verifier"] },
               { label: "View flagged applications",   href: "/admin/applications?tab=flagged", icon: AlertCircle,   color: "#ef4444", bg: "#fef2f2", roles: ["admin", "superadmin", "verifier"] },
               { label: "Manage students",             href: "/admin/students",                 icon: Users,         color: "#3b82f6", bg: "#eff6ff", roles: ["admin", "superadmin", "verifier"] },
+              { label: "Verify students",            href: "/admin/students?filter=unverified", icon: ShieldAlert,   color: "#ef4444", bg: "#fef2f2", roles: ["admin", "superadmin"] },
               { label: "Manage schemes",              href: "/admin/schemes",                  icon: BookOpen,      color: "#15803d", bg: "#f0fdf4", roles: ["admin", "superadmin"] },
               { label: "Beneficiary register",        href: "/admin/beneficiaries",            icon: BadgeCheck,    color: "#15803d", bg: "#f0fdf4", roles: ["admin", "superadmin", "verifier"] },
               { label: "Disqualification register",   href: "/admin/disqualifications",        icon: ShieldAlert,   color: "#ef4444", bg: "#fef2f2", roles: ["admin", "superadmin", "verifier"] },

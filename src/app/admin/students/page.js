@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Users, Search, ArrowRight, AlertCircle,
   CheckCircle2, XCircle, Shield,
@@ -24,12 +24,13 @@ function SkeletonRow() {
 // ── PAGE ──────────────────────────────────────────────────────────────────────
 export default function AdminStudentsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [students,    setStudents]    = useState([]);
   const [loading,     setLoading]     = useState(true);
   const [error,       setError]       = useState(null);
   const [search,      setSearch]      = useState("");
-  const [filterVerified, setFilterVerified] = useState("all"); // "all" | "verified" | "unverified"
+  const [filterVerified, setFilterVerified] = useState(searchParams.get("filter") === "unverified" ? "unverified" : "all");
   const [filterOpen,  setFilterOpen]  = useState(false);
 
   // ── FETCH ─────────────────────────────────────────────────────────────────

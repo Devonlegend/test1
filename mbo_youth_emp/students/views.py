@@ -156,7 +156,7 @@ class StudentViewSet(viewsets.ModelViewSet):
         ),
         responses=OpenApiResponse(description='{ is_verified, verification_rejection_reason }'),
     )
-    @action(detail=True, methods=['patch'], url_path='verify', permission_classes=[IsAdmin])
+    @action(detail=True, methods=['patch'], url_path='verify', permission_classes=[IsVerifier])
     def verify(self, request, pk=None):
         """PATCH /students/{id}/verify/ — Body: { decision, notes? }"""
         from django.utils import timezone
