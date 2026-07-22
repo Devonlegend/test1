@@ -83,7 +83,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     )
     @action(detail=False, methods=['get'], url_path='stats')
     def stats(self, request):
-        """GET /students/stats/"""
+        # /students/stats/
         from django.db.models import Count
 
         total        = Student.objects.count()
